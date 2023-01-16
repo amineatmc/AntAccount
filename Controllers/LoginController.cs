@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -8,7 +7,37 @@ namespace AntalyaTaksiAccount.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        // GET: api/<LoginController>
+        private readonly IConfiguration _configuration;
+        public LoginController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        private bool LoginUser(string username, string password)
+        {
+            try
+            {
+
+               
+                //HttpContext.Session.SetObject("User", signIn.User);
+                //HttpContext.Session.SetObject("OrganizationLicenses", signIn.OrganizationLicenses);
+                //HttpContext.Session.SetString("Jwt", signIn.JWTAuthToken);
+
+                // should be store as string. Use json serialize and deserialize
+                //HttpContext.Session.SetString("Licenses",JsonConvert.SerializeObject(signIn.Licenses) );
+
+
+                return true;
+
+
+
+
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
         [HttpGet]
         public IEnumerable<string> Get()
         {

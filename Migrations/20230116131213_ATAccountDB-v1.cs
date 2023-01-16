@@ -12,7 +12,7 @@ namespace AntalyaTaksiAccount.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Company",
+                name: "Companies",
                 columns: table => new
                 {
                     CompanyID = table.Column<int>(type: "int", nullable: false)
@@ -22,12 +22,12 @@ namespace AntalyaTaksiAccount.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Company", x => x.CompanyID)
+                    table.PrimaryKey("PK_Companies", x => x.CompanyID)
                         .Annotation("SqlServer:Clustered", true);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Department",
+                name: "Departments",
                 columns: table => new
                 {
                     DepartmentID = table.Column<int>(type: "int", nullable: false)
@@ -37,12 +37,12 @@ namespace AntalyaTaksiAccount.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Department", x => x.DepartmentID)
+                    table.PrimaryKey("PK_Departments", x => x.DepartmentID)
                         .Annotation("SqlServer:Clustered", true);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Gender",
+                name: "Genders",
                 columns: table => new
                 {
                     GenderID = table.Column<int>(type: "int", nullable: false)
@@ -52,12 +52,12 @@ namespace AntalyaTaksiAccount.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Gender", x => x.GenderID)
+                    table.PrimaryKey("PK_Genders", x => x.GenderID)
                         .Annotation("SqlServer:Clustered", true);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Role",
+                name: "Roles",
                 columns: table => new
                 {
                     RoleID = table.Column<int>(type: "int", nullable: false)
@@ -67,12 +67,12 @@ namespace AntalyaTaksiAccount.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Role", x => x.RoleID)
+                    table.PrimaryKey("PK_Roles", x => x.RoleID)
                         .Annotation("SqlServer:Clustered", true);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Passenger",
+                name: "Passengers",
                 columns: table => new
                 {
                     PassengerID = table.Column<int>(type: "int", nullable: false)
@@ -85,25 +85,25 @@ namespace AntalyaTaksiAccount.Migrations
                     ProfilePhotoPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MailVerify = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     ResetPasswordVerify = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    InsertedDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 1, 16, 15, 5, 16, 879, DateTimeKind.Local).AddTicks(5982)),
+                    InsertedDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 1, 16, 16, 12, 13, 548, DateTimeKind.Local).AddTicks(6737)),
                     GenderID = table.Column<int>(type: "int", nullable: true),
-                    PasswordChangeDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 1, 16, 15, 5, 16, 879, DateTimeKind.Local).AddTicks(6683)),
+                    PasswordChangeDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 1, 16, 16, 12, 13, 548, DateTimeKind.Local).AddTicks(7289)),
                     PasswordExpiration = table.Column<int>(type: "int", nullable: false, defaultValue: 90),
                     Activity = table.Column<int>(type: "int", nullable: false, defaultValue: 1)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Passenger", x => x.PassengerID)
+                    table.PrimaryKey("PK_Passengers", x => x.PassengerID)
                         .Annotation("SqlServer:Clustered", true);
                     table.ForeignKey(
-                        name: "FK_Passenger_Gender_GenderID",
+                        name: "FK_Passengers_Genders_GenderID",
                         column: x => x.GenderID,
-                        principalTable: "Gender",
+                        principalTable: "Genders",
                         principalColumn: "GenderID");
                 });
 
             migrationBuilder.CreateTable(
-                name: "User",
+                name: "Users",
                 columns: table => new
                 {
                     UserID = table.Column<int>(type: "int", nullable: false)
@@ -116,64 +116,64 @@ namespace AntalyaTaksiAccount.Migrations
                     ProfilePhotoPath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MailVerify = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     ResetPasswordVerify = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    InsertedDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 1, 16, 15, 5, 16, 875, DateTimeKind.Local).AddTicks(7469)),
+                    InsertedDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 1, 16, 16, 12, 13, 548, DateTimeKind.Local).AddTicks(3420)),
                     RoleID = table.Column<int>(type: "int", nullable: true),
                     DepartmentID = table.Column<int>(type: "int", nullable: true),
                     GenderID = table.Column<int>(type: "int", nullable: true),
                     CompanyID = table.Column<int>(type: "int", nullable: true),
-                    PasswordChangeDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 1, 16, 15, 5, 16, 875, DateTimeKind.Local).AddTicks(7963)),
+                    PasswordChangeDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 1, 16, 16, 12, 13, 548, DateTimeKind.Local).AddTicks(3922)),
                     PasswordExpiration = table.Column<int>(type: "int", nullable: false, defaultValue: 90),
                     Activity = table.Column<int>(type: "int", nullable: false, defaultValue: 1)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_User", x => x.UserID)
+                    table.PrimaryKey("PK_Users", x => x.UserID)
                         .Annotation("SqlServer:Clustered", true);
                     table.ForeignKey(
-                        name: "FK_User_Company_CompanyID",
+                        name: "FK_Users_Companies_CompanyID",
                         column: x => x.CompanyID,
-                        principalTable: "Company",
+                        principalTable: "Companies",
                         principalColumn: "CompanyID");
                     table.ForeignKey(
-                        name: "FK_User_Department_DepartmentID",
+                        name: "FK_Users_Departments_DepartmentID",
                         column: x => x.DepartmentID,
-                        principalTable: "Department",
+                        principalTable: "Departments",
                         principalColumn: "DepartmentID");
                     table.ForeignKey(
-                        name: "FK_User_Gender_GenderID",
+                        name: "FK_Users_Genders_GenderID",
                         column: x => x.GenderID,
-                        principalTable: "Gender",
+                        principalTable: "Genders",
                         principalColumn: "GenderID");
                     table.ForeignKey(
-                        name: "FK_User_Role_RoleID",
+                        name: "FK_Users_Roles_RoleID",
                         column: x => x.RoleID,
-                        principalTable: "Role",
+                        principalTable: "Roles",
                         principalColumn: "RoleID");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Passenger_GenderID",
-                table: "Passenger",
+                name: "IX_Passengers_GenderID",
+                table: "Passengers",
                 column: "GenderID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_CompanyID",
-                table: "User",
+                name: "IX_Users_CompanyID",
+                table: "Users",
                 column: "CompanyID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_DepartmentID",
-                table: "User",
+                name: "IX_Users_DepartmentID",
+                table: "Users",
                 column: "DepartmentID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_GenderID",
-                table: "User",
+                name: "IX_Users_GenderID",
+                table: "Users",
                 column: "GenderID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_RoleID",
-                table: "User",
+                name: "IX_Users_RoleID",
+                table: "Users",
                 column: "RoleID");
         }
 
@@ -181,22 +181,22 @@ namespace AntalyaTaksiAccount.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Passenger");
+                name: "Passengers");
 
             migrationBuilder.DropTable(
-                name: "User");
+                name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Company");
+                name: "Companies");
 
             migrationBuilder.DropTable(
-                name: "Department");
+                name: "Departments");
 
             migrationBuilder.DropTable(
-                name: "Gender");
+                name: "Genders");
 
             migrationBuilder.DropTable(
-                name: "Role");
+                name: "Roles");
         }
     }
 }

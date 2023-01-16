@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AntalyaTaksiAccount.Migrations
 {
     [DbContext(typeof(ATAccountContext))]
-    [Migration("20230116120517_ATAccountDB-v1")]
+    [Migration("20230116131213_ATAccountDB-v1")]
     partial class ATAccountDBv1
     {
         /// <inheritdoc />
@@ -46,7 +46,7 @@ namespace AntalyaTaksiAccount.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("CompanyID"));
 
-                    b.ToTable("Company");
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("AntalyaTaksiAccount.Models.Department", b =>
@@ -70,7 +70,7 @@ namespace AntalyaTaksiAccount.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("DepartmentID"));
 
-                    b.ToTable("Department");
+                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("AntalyaTaksiAccount.Models.Gender", b =>
@@ -94,7 +94,7 @@ namespace AntalyaTaksiAccount.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("GenderID"));
 
-                    b.ToTable("Gender");
+                    b.ToTable("Genders");
                 });
 
             modelBuilder.Entity("AntalyaTaksiAccount.Models.Passenger", b =>
@@ -116,7 +116,7 @@ namespace AntalyaTaksiAccount.Migrations
                     b.Property<DateTime>("InsertedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 1, 16, 15, 5, 16, 879, DateTimeKind.Local).AddTicks(5982));
+                        .HasDefaultValue(new DateTime(2023, 1, 16, 16, 12, 13, 548, DateTimeKind.Local).AddTicks(6737));
 
                     b.Property<string>("MailAdress")
                         .IsRequired()
@@ -138,7 +138,7 @@ namespace AntalyaTaksiAccount.Migrations
                     b.Property<DateTime>("PasswordChangeDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 1, 16, 15, 5, 16, 879, DateTimeKind.Local).AddTicks(6683));
+                        .HasDefaultValue(new DateTime(2023, 1, 16, 16, 12, 13, 548, DateTimeKind.Local).AddTicks(7289));
 
                     b.Property<int>("PasswordExpiration")
                         .ValueGeneratedOnAdd()
@@ -168,7 +168,7 @@ namespace AntalyaTaksiAccount.Migrations
 
                     b.HasIndex("GenderID");
 
-                    b.ToTable("Passenger");
+                    b.ToTable("Passengers");
                 });
 
             modelBuilder.Entity("AntalyaTaksiAccount.Models.Role", b =>
@@ -192,7 +192,7 @@ namespace AntalyaTaksiAccount.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("RoleID"));
 
-                    b.ToTable("Role");
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("AntalyaTaksiAccount.Models.User", b =>
@@ -220,7 +220,7 @@ namespace AntalyaTaksiAccount.Migrations
                     b.Property<DateTime>("InsertedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 1, 16, 15, 5, 16, 875, DateTimeKind.Local).AddTicks(7469));
+                        .HasDefaultValue(new DateTime(2023, 1, 16, 16, 12, 13, 548, DateTimeKind.Local).AddTicks(3420));
 
                     b.Property<string>("MailAdress")
                         .IsRequired()
@@ -242,7 +242,7 @@ namespace AntalyaTaksiAccount.Migrations
                     b.Property<DateTime>("PasswordChangeDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 1, 16, 15, 5, 16, 875, DateTimeKind.Local).AddTicks(7963));
+                        .HasDefaultValue(new DateTime(2023, 1, 16, 16, 12, 13, 548, DateTimeKind.Local).AddTicks(3922));
 
                     b.Property<int>("PasswordExpiration")
                         .ValueGeneratedOnAdd()
@@ -281,7 +281,7 @@ namespace AntalyaTaksiAccount.Migrations
 
                     b.HasIndex("RoleID");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("AntalyaTaksiAccount.Models.Passenger", b =>
