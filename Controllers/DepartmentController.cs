@@ -17,21 +17,23 @@ namespace AntalyaTaksiAccount.Controllers
         } 
 
         [HttpGet("Get")]
-        public Task<List<Department>> Get()
+        public async Task<List<Department>> Get()
         {
-            return _aTAccountContext.Departments.Where(c => c.Activity == 1).ToListAsync();
+            var departments =await _aTAccountContext.Departments.Where(c => c.Activity == 1).ToListAsync();
+            return departments;
         }
 
 
         [HttpGet("Get/{id}")]
-        public Task<Department> Get(int id)
+        public async Task<Department> Get(int id)
         {
-            return _aTAccountContext.Departments.Where(c => c.DepartmentID == id && c.Activity == 1).FirstOrDefaultAsync();
+            var department = await _aTAccountContext.Departments.Where(c => c.DepartmentID == id && c.Activity == 1).FirstOrDefaultAsync();
+            return department;
         }
 
 
         [HttpPost("Post")]
-        public ActionResult Post(Department department)
+        public async Task<ActionResult> Post(Department department)
         {
             try
             {

@@ -49,7 +49,7 @@ namespace AntalyaTaksiAccount.Controllers
 
 
         [HttpPost("Post")]
-        public ActionResult Post(User user)
+        public async Task<ActionResult> Post(User user)
         {
             try
             {

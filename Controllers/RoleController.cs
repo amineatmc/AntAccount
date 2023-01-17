@@ -18,19 +18,21 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpGet("Get")]
         public async Task<List<Role>> Get()
         {
-            return _aTAccountContext.Roles.Where(c => c.Activity == 1).ToListAsync();
+            var roles=await _aTAccountContext.Roles.Where(c => c.Activity == 1).ToListAsync();
+            return roles;
         }
 
 
         [HttpGet("Get/{id}")]
         public async Task<Role> Get(int id)
         {
-            return _aTAccountContext.Roles.Where(c => c.RoleID == id && c.Activity == 1).FirstOrDefaultAsync();
+            var role=await _aTAccountContext.Roles.Where(c => c.RoleID == id && c.Activity == 1).FirstOrDefaultAsync();
+            return role;
         }
 
 
         [HttpPost("Post")]
-        public ActionResult Post(Role role)
+        public async Task<ActionResult> Post(Role role)
         {
             try
             {
