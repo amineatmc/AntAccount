@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
+﻿using AntalyaTaksiAccount.Models;
+using AntalyaTaksiAccount.Models.DummyModels;
+using AntalyaTaksiAccount.Utils;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -7,66 +11,47 @@ namespace AntalyaTaksiAccount.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
-        public LoginController(IConfiguration configuration)
+        private readonly ATAccountContext _aTAccountContext;
+        public LoginController(ATAccountContext aTAccountContext)
         {
-            _configuration = configuration;
+            _aTAccountContext = aTAccountContext;
         }
-
-        private bool LoginUser(string username, string password)
+        [HttpGet("LoginUser")]
+        public async Task<ActionResult> LoginUser(SignIn signIn)
         {
             try
             {
+                if (string.IsNullOrEmpty(signIn.username))
+                {
+                    BadRequest("Mail or Password is invalid");
+                }
+                else if (string.IsNullOrEmpty(signIn.password))
+                {
+                    BadRequest("Mail or Password is invalid");
+                }
+                User user = _aTAccountContext.Users.Where(c => c.MailAdress == signIn.username && c.Password == signIn.password).FirstOrDefaultAsync().Result;
+                if (user == null)
+                {
+                    return NoContent();
+                }
+                else if (user.PasswordChangeDate.AddDays(user.PasswordExpiration) <= DateTime.Now)
+                {
+                    user.ResetPasswordVerify = 0;
+                    _aTAccountContext.SaveChanges();
+                }
 
-               
-                //HttpContext.Session.SetObject("User", signIn.User);
-                //HttpContext.Session.SetObject("OrganizationLicenses", signIn.OrganizationLicenses);
-                //HttpContext.Session.SetString("Jwt", signIn.JWTAuthToken);
+                //JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
+                //string token = jwtTokenGenerator.Generate(signIn.User.Name, signIn.User.Email);
+                //signIn.JWTAuthToken = token;
 
-                // should be store as string. Use json serialize and deserialize
-                //HttpContext.Session.SetString("Licenses",JsonConvert.SerializeObject(signIn.Licenses) );
-
-
-                return true;
-
-
-
+                return Ok("Hosgeldiniz "+ user.Name);
 
             }
             catch (Exception ex)
             {
-                return false;
+                return Problem(ex.Message);
             }
         }
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<LoginController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<LoginController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<LoginController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<LoginController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+       
     }
 }
