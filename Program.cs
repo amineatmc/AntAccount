@@ -31,6 +31,8 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
