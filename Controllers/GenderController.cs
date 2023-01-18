@@ -1,4 +1,5 @@
 ﻿using AntalyaTaksiAccount.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +16,7 @@ namespace AntalyaTaksiAccount.Controllers
         }
 
         [HttpGet("Get")]
+        [Authorize]
         public async Task<List<Gender>> Get()
         {
             var genders=await _aTAccountContext.Genders.Where(c => c.Activity == 1).ToListAsync();

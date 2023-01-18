@@ -12,12 +12,15 @@ namespace AntalyaTaksiAccount.Controllers
     public class LoginController : ControllerBase
     {
         private readonly ATAccountContext _aTAccountContext;
-        public LoginController(ATAccountContext aTAccountContext)
+        private IConfiguration _configuration;
+
+        public LoginController(ATAccountContext aTAccountContext, IConfiguration configuration)
         {
             _aTAccountContext = aTAccountContext;
+            _configuration = configuration;
         }
-        [HttpGet("LoginUser")]
-        public async Task<ActionResult> LoginUser(SignIn signIn)
+        [HttpPost("LoginUser")]
+        public async Task<ActionResult<string>> LoginUser(SignIn signIn)
         {
             try
             {
@@ -40,11 +43,11 @@ namespace AntalyaTaksiAccount.Controllers
                     _aTAccountContext.SaveChanges();
                 }
 
-                //JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
-                //string token = jwtTokenGenerator.Generate(signIn.User.Name, signIn.User.Email);
-                //signIn.JWTAuthToken = token;
+                JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
+                string token = jwtTokenGenerator.Generate(user.Name, user.MailAdress);
+                
 
-                return Ok("Hosgeldiniz "+ user.Name);
+                return Ok(token);
 
             }
             catch (Exception ex)
