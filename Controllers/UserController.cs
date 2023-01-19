@@ -47,7 +47,7 @@ namespace AntalyaTaksiAccount.Controllers
             }
         }
         [HttpGet("GetByMail/{mailAdress}")]
-        public async Task<User> GetByMail(string mailAdress)
+        private async Task<User> GetByMail(string mailAdress)
         {
             try
             {
