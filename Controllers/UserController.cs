@@ -46,7 +46,22 @@ namespace AntalyaTaksiAccount.Controllers
                 return user;
             }
         }
+        [HttpGet("GetByMail/{mailAdress}")]
+        private async Task<User> GetByMail(string mailAdress)
+        {
+            try
+            {
+               
+                Task<User> user = (from c in _aTAccountContext.Users where c.Activity == 1 && c.MailAdress == mailAdress select c).Include(c => c.Role).Include(c => c.Company).Include(c => c.Department).Include(c => c.Gender).FirstAsync();
+                var user1 = await user;
+                return user1;
 
+            }
+            catch (Exception)
+            {
+                return new User();
+            }
+        }
 
         [HttpPost("Post")]
         public async Task<ActionResult> Post(User user)
@@ -110,6 +125,74 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+        }
+
+        public async Task<ActionResult> VerifyMail(string mailAdress)
+        {
+            try
+            {
+                var user = await _aTAccountContext.Users.Select(u => u).Where(u => u.MailAdress.Equals(mailAdress)).FirstOrDefaultAsync();
+                User user1 = user;
+                if (user1 != null)
+                {
+                    user1.MailVerify = 1;
+                    _aTAccountContext.SaveChanges();
+                    return Ok("Kayıt Eklendi.");
+                }
+                else return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return Problem("hata.");
+            }
+        }
+        [HttpGet("ForgotMyPasssword/{mail}")]
+        public async Task<ActionResult> ForgotMyPasssword(string mail)
+        {
+            try
+            {
+                Models.User user = await GetByMail(mail);
+                if (user != null)
+                {
+                    string newPass = Helper.GeneratePassword();
+                    bool ResetPassControl = ResetPassword(user.UserID, newPass);
+                    if (ResetPassControl)
+                    {
+                       // await Task.Run(() => Helper.SendMail(user.Email, "Yeni şifreniz: " + newPass + "\nLütfen şifrenizi değiştiriniz.", "BAMS Şifre Değişikliği"));
+                        return Ok("Şifre Değiştirilmiştir.");
+                    }
+                    else
+                        return BadRequest("Yeni Şifre Kaydedilemedi. Tekrar Deneyiniz.");
+                }
+                else
+                    return NoContent();
+            }
+            catch (Exception)
+            {
+
+                return Problem();
+            }
+        }
+        private bool ResetPassword(int id, string NewPassword)
+        {
+            try
+            {
+                Models.User user = (from c in _aTAccountContext.Users where c.UserID == id && c.Activity == 1 select c).FirstOrDefault();
+                if (user != null)
+                {
+                    string sifre = Helper.PasswordEncode(NewPassword);
+                    user.Password = sifre;
+                    user.ResetPasswordVerify = 0;
+                    _aTAccountContext.SaveChanges();
+                    return true;
+                }
+                else
+                    return false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }
