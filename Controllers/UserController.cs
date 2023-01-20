@@ -9,11 +9,12 @@ namespace AntalyaTaksiAccount.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
+       
         private readonly ATAccountContext _aTAccountContext;
-        public UserController(IConfiguration configuration, ATAccountContext aTAccountContext)
+      private readonly ILogger<UserController> _logger;
+        public UserController(ILogger<UserController> logger, ATAccountContext aTAccountContext)
         {
-            _configuration = configuration;
+            _logger = logger;
             _aTAccountContext = aTAccountContext;
         }
 
@@ -23,10 +24,13 @@ namespace AntalyaTaksiAccount.Controllers
             try
             {
                 var users = await _aTAccountContext.Users.Where(c => c.Activity == 1).Include(c=>c.Role).Include(c=>c.Company).Include(c=>c.Department).Include(c=>c.Gender).ToListAsync();
+             
                 return users;
             }
             catch (Exception)
             {
+                //Serilog.Sinks.MSSqlServer use
+               // _logger.LogInformation("test log", DateTime.Now.ToString());
                 return new List<User>();
             }
         }
@@ -126,7 +130,7 @@ namespace AntalyaTaksiAccount.Controllers
         public void Delete(int id)
         {
         }
-
+        [HttpGet("VerifyMail/{mail}")]
         public async Task<ActionResult> VerifyMail(string mailAdress)
         {
             try

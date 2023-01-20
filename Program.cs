@@ -1,13 +1,19 @@
 using AntalyaTaksiAccount.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+//using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers(options=>options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes=true);
+builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 builder.Services.AddDbContext<ATAccountContext>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
@@ -38,6 +44,26 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //builder.Services.AddAuthorization();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
+builder.Services.AddAuthentication()
+    .AddGoogle(googleOptions => {
+        googleOptions.ClientId = "104743001505-4db8mq6lki3ep6pcfl4br0a79l3tlhe4.apps.googleusercontent.com";
+        googleOptions.ClientSecret = "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";
+        googleOptions.ReturnUrlParameter = "https://localhost:44314/api/Login/GetTest";
+    });
+    //.AddMicrosoftAccount(microsoftOptions =>
+    //{
+    //    microsoftOptions.ClientId = "";
+    //    microsoftOptions.ClientSecret = "";
+    //});
+builder.Services.AddIdentity<ApplicationUser,IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+   
+        .AddEntityFrameworkStores<ATAccountContext>();
+
+//.AddGoogle(googleOptions => { ... })
+//.AddTwitter(twitterOptions => { ... })
+//.AddFacebook(facebookOptions => { ... });
+
 var app = builder.Build();
 
 

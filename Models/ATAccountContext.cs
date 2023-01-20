@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace AntalyaTaksiAccount.Models
 {
-    public class ATAccountContext : DbContext
+    public class ATAccountContext : IdentityDbContext<ApplicationUser>  
     {
         private readonly IConfiguration _configuration;
 
@@ -16,6 +17,8 @@ namespace AntalyaTaksiAccount.Models
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<User>().Property(c => c.UserID).IsRequired();
             modelBuilder.Entity<User>().HasKey(c => c.UserID).IsClustered();
             modelBuilder.Entity<User>().Property(c => c.Name).HasMaxLength(100);
