@@ -1,10 +1,14 @@
 using AntalyaTaksiAccount.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 //using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 
 
@@ -15,14 +19,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 builder.Services.AddDbContext<ATAccountContext>();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(o =>
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+    //options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    //options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    //options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddCookie()
+ .AddGoogle(GoogleDefaults.AuthenticationScheme, googleOptions =>
+ {
+     googleOptions.ClientId = "1063124829350-i4c5l73tlci3075l7fvsjmt5pamvn3i4.apps.googleusercontent.com";
+     googleOptions.ClientSecret = "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";
+     googleOptions.ReturnUrlParameter = "https://localhost:44314/api/Login/GoogleResponse";
+ })
+.AddJwtBearer(o =>
 {
     o.TokenValidationParameters = new TokenValidationParameters
     {
@@ -45,30 +56,26 @@ builder.Services.AddSwaggerGen();
 //builder.Services.AddAuthorization();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
-builder.Services.AddAuthentication()
-    .AddGoogle(googleOptions => {
-        googleOptions.ClientId = "104743001505-4db8mq6lki3ep6pcfl4br0a79l3tlhe4.apps.googleusercontent.com";
-        googleOptions.ClientSecret = "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";
-        googleOptions.ReturnUrlParameter = "https://localhost:44314/api/Login/GetTest";
-    });
-    //.AddMicrosoftAccount(microsoftOptions =>
-    //{
-    //    microsoftOptions.ClientId = "";
-    //    microsoftOptions.ClientSecret = "";
-    //});
-builder.Services.AddIdentity<ApplicationUser,IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
-   
-        .AddEntityFrameworkStores<ATAccountContext>();
+//builder.Services.AddAuthentication()
+//    .AddGoogle(googleOptions => {
+//        googleOptions.ClientId = "104743001505-4db8mq6lki3ep6pcfl4br0a79l3tlhe4.apps.googleusercontent.com";
+//        googleOptions.ClientSecret = "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";
+//        googleOptions.ReturnUrlParameter = "https://localhost:44314/api/Login/GetTest";
+//    });
+//.AddMicrosoftAccount(microsoftOptions =>
+//{
+//    microsoftOptions.ClientId = "";
+//    microsoftOptions.ClientSecret = "";
+//});
+//builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+
+//        .AddEntityFrameworkStores<ATAccountContext>();
 
 //.AddGoogle(googleOptions => { ... })
 //.AddTwitter(twitterOptions => { ... })
 //.AddFacebook(facebookOptions => { ... });
 
 var app = builder.Build();
-
-
-
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

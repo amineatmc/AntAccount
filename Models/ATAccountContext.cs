@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AntalyaTaksiAccount.Models
 {
-    public class ATAccountContext : IdentityDbContext<ApplicationUser>  
+    public class ATAccountContext : DbContext
     {
         private readonly IConfiguration _configuration;
 
