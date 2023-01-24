@@ -96,8 +96,7 @@ namespace AntalyaTaksiAccount.Controllers
             Models.DummyModels.SignIn signIn = new SignIn();
             signIn.username= claims[4].Value;
             signIn.OtherAuthentication = true;
-          var token=  LoginUser(signIn);
-            return Ok(token);
+            return await LoginUser(signIn);
         }
 
     }
