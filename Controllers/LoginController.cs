@@ -58,7 +58,7 @@ namespace AntalyaTaksiAccount.Controllers
                 }
 
                 JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
-                string token = jwtTokenGenerator.Generate(user.Name, user.MailAdress);
+                string token = jwtTokenGenerator.Generate(user.Name, user.MailAdress,user.RoleID.Value);
 
 
                 return Ok(token);

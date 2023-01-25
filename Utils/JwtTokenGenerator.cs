@@ -13,7 +13,7 @@ namespace AntalyaTaksiAccount.Utils
         {
             _configuration = configuration;
         }
-        private string Generator(string userName, string mail, string issuer, string audience, byte[] key)
+        private string Generator(string userName, string mail,int roleID, string issuer, string audience, byte[] key)
         {
 
             var securityDescriptor = new SecurityTokenDescriptor
@@ -29,6 +29,7 @@ namespace AntalyaTaksiAccount.Utils
                    new Claim("Id", Guid.NewGuid().ToString()),
                    new Claim(JwtRegisteredClaimNames.Sub, userName),
                    new Claim(JwtRegisteredClaimNames.Email,mail),
+                   new Claim(JwtRegisteredClaimNames.UniqueName,roleID.ToString()),
                    new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
                 })
             };
@@ -37,15 +38,15 @@ namespace AntalyaTaksiAccount.Utils
             string tokenString = tokenHandler.WriteToken(token);
             return tokenString;
         }
-        public string Generate(string userName, string mail)
+        public string Generate(string userName, string mail,int roleID)
         {
             var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
-            return Generator(userName, mail, _configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], key);
+            return Generator(userName, mail, roleID, _configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], key);
         }
-        public string GeneratorTest(string userName, string mail, string issuer, string audience, string key)
+        public string GeneratorTest(string userName, string mail,int roleID, string issuer, string audience, string key)
         {
             var keyBytes = Encoding.ASCII.GetBytes(key);
-            return Generator(userName, mail, issuer, audience, keyBytes);
+            return Generator(userName, mail,roleID, issuer, audience, keyBytes);
         }
     }
 }
