@@ -1,7 +1,7 @@
 ﻿using AntalyaTaksiAccount.Models;
 using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Utils;
-using Entities.Dtos;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -17,16 +17,16 @@ namespace AntalyaTaksiAccount.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private readonly Otp _otp;
+        //private readonly Otp _otp;
         //private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ATAccountContext _aTAccountContext;
         private IConfiguration _configuration;
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
-        public LoginController(ATAccountContext aTAccountContext, IConfiguration configuration, Otp otp)
+        public LoginController(ATAccountContext aTAccountContext, IConfiguration configuration)
         {
             _aTAccountContext = aTAccountContext;
             _configuration = configuration;
-            _otp = otp;
+           // _otp = otp;
             //_signInManager = signInManager;
         }
 
@@ -104,10 +104,13 @@ namespace AntalyaTaksiAccount.Controllers
         }
 
 
-        [HttpPost("[action]")]
+        [HttpPost("OtpSend")]
         public async Task<ActionResult> OtpSend(CheckOtpDto checkOtpDto)
         {
+           
+            Otp _otp = new Otp(_aTAccountContext,"");
             var result = _otp.CheckOtpSendMethod(checkOtpDto);
+          
             return Ok(result);
           
         }

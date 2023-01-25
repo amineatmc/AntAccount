@@ -1,5 +1,5 @@
 ﻿using AntalyaTaksiAccount.Models;
-using Entities.Dtos;
+
 using Microsoft.AspNetCore.Http.HttpResults;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -12,14 +12,13 @@ namespace AntalyaTaksiAccount.Utils
     {
 
         private readonly ATAccountContext _aTAccountContext;
-        private readonly User _user;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        //private readonly User _user;
+        //private readonly IHttpContextAccessor _httpContextAccessor;
         string rootDir = "./Content/OtpMessage/";
-        public Otp(ATAccountContext aTAccountContext, User user, IHttpContextAccessor httpContextAccessor, string rootDir)
+        public Otp(ATAccountContext aTAccountContext,string rootDir)
         {
             _aTAccountContext = aTAccountContext;
-            _user = user;
-            _httpContextAccessor = httpContextAccessor;
+            
             this.rootDir = rootDir;
         }
 
