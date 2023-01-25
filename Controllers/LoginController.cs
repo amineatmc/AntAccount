@@ -16,7 +16,6 @@ namespace AntalyaTaksiAccount.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        //private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ATAccountContext _aTAccountContext;
         private IConfiguration _configuration;
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
@@ -24,7 +23,6 @@ namespace AntalyaTaksiAccount.Controllers
         {
             _aTAccountContext = aTAccountContext;
             _configuration = configuration;
-            //_signInManager = signInManager;
         }
 
         [HttpPost("LoginUser")]

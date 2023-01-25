@@ -9,9 +9,9 @@ namespace AntalyaTaksiAccount.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-       
+
         private readonly ATAccountContext _aTAccountContext;
-      private readonly ILogger<UserController> _logger;
+        private readonly ILogger<UserController> _logger;
         public UserController(ILogger<UserController> logger, ATAccountContext aTAccountContext)
         {
             _logger = logger;
@@ -23,14 +23,14 @@ namespace AntalyaTaksiAccount.Controllers
         {
             try
             {
-                var users = await _aTAccountContext.Users.Where(c => c.Activity == 1).Include(c=>c.Role).Include(c=>c.Company).Include(c=>c.Department).Include(c=>c.Gender).ToListAsync();
-             
+                var users = await _aTAccountContext.Users.Where(c => c.Activity == 1).Include(c => c.Role).Include(c => c.Company).Include(c => c.Department).Include(c => c.Gender).ToListAsync();
+
                 return users;
             }
             catch (Exception)
             {
                 //Serilog.Sinks.MSSqlServer use
-               // _logger.LogInformation("test log", DateTime.Now.ToString());
+                // _logger.LogInformation("test log", DateTime.Now.ToString());
                 return new List<User>();
             }
         }
@@ -55,7 +55,7 @@ namespace AntalyaTaksiAccount.Controllers
         {
             try
             {
-               
+
                 Task<User> user = (from c in _aTAccountContext.Users where c.Activity == 1 && c.MailAdress == mailAdress select c).Include(c => c.Role).Include(c => c.Company).Include(c => c.Department).Include(c => c.Gender).FirstAsync();
                 var user1 = await user;
                 return user1;
@@ -119,16 +119,69 @@ namespace AntalyaTaksiAccount.Controllers
             }
         }
 
-        // PUT api/<UserController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut("Put")]
+        public async Task<ActionResult> Put(User user)
         {
+            try
+            {
+                if (user != null && user.UserID != 0)
+                {
+                    Models.User user1 = await (from c in _aTAccountContext.Users where c.UserID == user.UserID && c.Activity == 1 select c).FirstOrDefaultAsync();
+                    if (user1 == null) { return NoContent(); }
+                    if (user1.Name != user.Name)
+                    {
+                        user1.Name = user.Name;
+                    }
+                    if (user1.Surname != user.Surname)
+                    {
+                        user1.Surname = user.Surname;
+                    }
+                    if (user1.CompanyID != user.CompanyID)
+                    {
+                        user1.CompanyID = user.CompanyID;
+                    }
+                    if (user1.DepartmentID != user.DepartmentID)
+                    {
+                        user1.DepartmentID = user.DepartmentID;
+                    }
+                    if (user1.GenderID != user.GenderID)
+                    {
+                        user1.GenderID = user.GenderID;
+                    }
+                    if (user1.MailAdress != user.MailAdress)
+                    {
+                        user1.MailAdress = user.MailAdress;
+                        user1.MailVerify = 0;
+                    }
+                    if (user1.Phone != user.Phone)
+                    {
+                        user1.Phone = user.Phone;
+                    }
+                    if (user1.RoleID != user.RoleID)
+                    {
+                        user1.RoleID = user.RoleID;
+                    }
+                    _aTAccountContext.SaveChanges();
+                    return Ok("Kayıt Güncellendi.");
+                }
+                else return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return Problem();
+            }
         }
 
-        // DELETE api/<UserController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async void Delete(int id)
         {
+            try 
+            {
+                Models.User user =await (from c in _aTAccountContext.Users where c.UserID == id && c.Activity == 1 select c).FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+            }
         }
         [HttpGet("VerifyMail/{mail}")]
         public async Task<ActionResult> VerifyMail(string mailAdress)
@@ -162,7 +215,7 @@ namespace AntalyaTaksiAccount.Controllers
                     bool ResetPassControl = ResetPassword(user.UserID, newPass);
                     if (ResetPassControl)
                     {
-                       // await Task.Run(() => Helper.SendMail(user.Email, "Yeni şifreniz: " + newPass + "\nLütfen şifrenizi değiştiriniz.", "BAMS Şifre Değişikliği"));
+                        // await Task.Run(() => Helper.SendMail(user.Email, "Yeni şifreniz: " + newPass + "\nLütfen şifrenizi değiştiriniz.", "BAMS Şifre Değişikliği"));
                         return Ok("Şifre Değiştirilmiştir.");
                     }
                     else
