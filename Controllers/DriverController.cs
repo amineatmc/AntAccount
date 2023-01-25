@@ -7,23 +7,23 @@ namespace AntalyaTaksiAccount.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class DriverController : ControllerBase
     {
 
         private readonly ATAccountContext _aTAccountContext;
-        private readonly ILogger<UserController> _logger;
-        public UserController(ILogger<UserController> logger, ATAccountContext aTAccountContext)
+        private readonly ILogger<DriverController> _logger;
+        public DriverController(ILogger<DriverController> logger, ATAccountContext aTAccountContext)
         {
             _logger = logger;
             _aTAccountContext = aTAccountContext;
         }
 
         [HttpGet("Get")]
-        public async Task<List<User>> Get()
+        public async Task<List<Driver>> Get()
         {
             try
             {
-                var users = await _aTAccountContext.Users.Where(c => c.Activity == 1).Include(c => c.Role).Include(c => c.Company).Include(c => c.Department).Include(c => c.Gender).ToListAsync();
+                var users = await _aTAccountContext.Users.Where(c => c.Activity == 1).Include(c => c.Role).ToListAsync();
 
                 return users;
             }
@@ -31,44 +31,44 @@ namespace AntalyaTaksiAccount.Controllers
             {
                 //Serilog.Sinks.MSSqlServer use
                 // _logger.LogInformation("test log", DateTime.Now.ToString());
-                return new List<User>();
+                return new List<Driver>();
             }
         }
 
 
         [HttpGet("Get/{id}")]
-        public async Task<User> Get(int id)
+        public async Task<Driver> Get(int id)
         {
             try
             {
-                var user = await _aTAccountContext.Users.Where(c => c.Activity == 1 && c.UserID == id).Include(c => c.Role).Include(c => c.Company).Include(c => c.Department).Include(c => c.Gender).FirstOrDefaultAsync();
+                var user = await _aTAccountContext.Users.Where(c => c.Activity == 1 && c.UserID == id).Include(c => c.Role).FirstOrDefaultAsync();
                 return user;
             }
             catch (Exception)
             {
-                User user = new User();
+                Driver user = new Driver();
                 return user;
             }
         }
         [HttpGet("GetByMail/{mailAdress}")]
-        private async Task<User> GetByMail(string mailAdress)
+        private async Task<Driver> GetByMail(string mailAdress)
         {
             try
             {
 
-                Task<User> user = (from c in _aTAccountContext.Users where c.Activity == 1 && c.MailAdress == mailAdress select c).Include(c => c.Role).Include(c => c.Company).Include(c => c.Department).Include(c => c.Gender).FirstAsync();
+                Task<Driver> user = (from c in _aTAccountContext.Users where c.Activity == 1 && c.MailAdress == mailAdress select c).Include(c => c.Role).FirstAsync();
                 var user1 = await user;
                 return user1;
 
             }
             catch (Exception)
             {
-                return new User();
+                return new Driver();
             }
         }
 
         [HttpPost("Post")]
-        public async Task<ActionResult> Post(User user)
+        public async Task<ActionResult> Post(Driver user)
         {
             try
             {
@@ -85,29 +85,22 @@ namespace AntalyaTaksiAccount.Controllers
                     return BadRequest("Model bilgileri doğru değil.");
                 }
 
-                User user1 = new User();
+                Driver user1 = new Driver();
                 user1.Name = user.Name;
                 user1.Surname = user.Surname;
                 user1.RoleID = user.RoleID;
                 user1.MailAdress = user.MailAdress;
-                user1.PasswordChangeDate = DateTime.Now;
+               
 
-                //must do ui
-                //if (Helper.PasswordControl(signUp.User.Password))
+                
                 user1.Password = Helper.PasswordEncode(user.Password);
-                //else
-                //   return BadRequest("Password istenen şartlarda değil.");
+               
                 user1.Phone = user.Phone;
-                user1.ProfilePhotoPath = user.ProfilePhotoPath;
+              
                 user1.MailVerify = 0;
-                //user create own password. Below field should be 0 if system create first password.
-                user1.ResetPasswordVerify = 1;
-                user1.InsertedDate = DateTime.Now;
+             
                 user1.RoleID = user.RoleID;
-                user1.GenderID = user.GenderID;
-                user1.DepartmentID = user.DepartmentID;
-                user1.CompanyID = user.CompanyID;
-                user1.PasswordExpiration = 60;
+              
                 user1.Activity = 1;
                 _aTAccountContext.Users.Add(user1);
                 _aTAccountContext.SaveChanges();
@@ -120,13 +113,13 @@ namespace AntalyaTaksiAccount.Controllers
         }
 
         [HttpPut("Put")]
-        public async Task<ActionResult> Put(User user)
+        public async Task<ActionResult> Put(Driver user)
         {
             try
             {
                 if (user != null && user.UserID != 0)
                 {
-                    Models.User user1 = await (from c in _aTAccountContext.Users where c.UserID == user.UserID && c.Activity == 1 select c).FirstOrDefaultAsync();
+                    Models.Driver user1 = await (from c in _aTAccountContext.Users where c.UserID == user.UserID && c.Activity == 1 select c).FirstOrDefaultAsync();
                     if (user1 == null) { return NoContent(); }
                     if (user1.Name != user.Name)
                     {
@@ -136,18 +129,7 @@ namespace AntalyaTaksiAccount.Controllers
                     {
                         user1.Surname = user.Surname;
                     }
-                    if (user1.CompanyID != user.CompanyID)
-                    {
-                        user1.CompanyID = user.CompanyID;
-                    }
-                    if (user1.DepartmentID != user.DepartmentID)
-                    {
-                        user1.DepartmentID = user.DepartmentID;
-                    }
-                    if (user1.GenderID != user.GenderID)
-                    {
-                        user1.GenderID = user.GenderID;
-                    }
+                   
                     if (user1.MailAdress != user.MailAdress)
                     {
                         user1.MailAdress = user.MailAdress;
@@ -177,7 +159,7 @@ namespace AntalyaTaksiAccount.Controllers
         {
             try 
             {
-                Models.User user =await (from c in _aTAccountContext.Users where c.UserID == id && c.Activity == 1 select c).FirstOrDefaultAsync();
+                Models.Driver user =await (from c in _aTAccountContext.Users where c.UserID == id && c.Activity == 1 select c).FirstOrDefaultAsync();
             }
             catch (Exception ex)
             {
@@ -189,7 +171,7 @@ namespace AntalyaTaksiAccount.Controllers
             try
             {
                 var user = await _aTAccountContext.Users.Select(u => u).Where(u => u.MailAdress.Equals(mailAdress)).FirstOrDefaultAsync();
-                User user1 = user;
+                Driver user1 = user;
                 if (user1 != null)
                 {
                     user1.MailVerify = 1;
@@ -208,7 +190,7 @@ namespace AntalyaTaksiAccount.Controllers
         {
             try
             {
-                Models.User user = await GetByMail(mail);
+                Models.Driver user = await GetByMail(mail);
                 if (user != null)
                 {
                     string newPass = Helper.GeneratePassword();
@@ -234,12 +216,12 @@ namespace AntalyaTaksiAccount.Controllers
         {
             try
             {
-                Models.User user = (from c in _aTAccountContext.Users where c.UserID == id && c.Activity == 1 select c).FirstOrDefault();
+                Models.Driver user = (from c in _aTAccountContext.Users where c.UserID == id && c.Activity == 1 select c).FirstOrDefault();
                 if (user != null)
                 {
                     string sifre = Helper.PasswordEncode(NewPassword);
                     user.Password = sifre;
-                    user.ResetPasswordVerify = 0;
+                   
                     _aTAccountContext.SaveChanges();
                     return true;
                 }

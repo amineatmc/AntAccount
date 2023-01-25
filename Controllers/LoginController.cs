@@ -30,7 +30,7 @@ namespace AntalyaTaksiAccount.Controllers
         {
             try
             {
-                User user = new User();
+                Driver user = new Driver();
                 if (!signIn.OtherAuthentication)
                 {
                     if (string.IsNullOrEmpty(signIn.username))
@@ -51,11 +51,7 @@ namespace AntalyaTaksiAccount.Controllers
                 {
                     return NoContent();
                 }
-                else if (user.PasswordChangeDate.AddDays(user.PasswordExpiration) <= DateTime.Now)
-                {
-                    user.ResetPasswordVerify = 0;
-                    _aTAccountContext.SaveChanges();
-                }
+               
 
                 JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
                 string token = jwtTokenGenerator.Generate(user.Name, user.MailAdress,user.RoleID.Value);
