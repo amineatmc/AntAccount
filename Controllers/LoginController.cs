@@ -107,12 +107,9 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpPost("OtpSend")]
         public async Task<ActionResult> OtpSend(CheckOtpDto checkOtpDto)
         {
-           
             Otp _otp = new Otp(_aTAccountContext,"");
             var result = _otp.CheckOtpSendMethod(checkOtpDto);
-          
             return Ok(result);
-          
         }
     }
 }

@@ -12,13 +12,10 @@ namespace AntalyaTaksiAccount.Utils
     {
 
         private readonly ATAccountContext _aTAccountContext;
-        //private readonly User _user;
-        //private readonly IHttpContextAccessor _httpContextAccessor;
         string rootDir = "./Content/OtpMessage/";
         public Otp(ATAccountContext aTAccountContext,string rootDir)
         {
             _aTAccountContext = aTAccountContext;
-            
             this.rootDir = rootDir;
         }
 
@@ -58,7 +55,6 @@ namespace AntalyaTaksiAccount.Utils
                 }
             }
         }
-
 
         public IResult CheckOtpSendMethod(CheckOtpDto checkOtpDto)
         {
