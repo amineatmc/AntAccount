@@ -4,6 +4,7 @@ using AntalyaTaksiAccount.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AntalyaTaksiAccount.Migrations
 {
     [DbContext(typeof(ATAccountContext))]
-    partial class ATAccountContextModelSnapshot : ModelSnapshot
+    [Migration("20230126064623_ATAccountDB-v1")]
+    partial class ATAccountDBv1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,54 +24,6 @@ namespace AntalyaTaksiAccount.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("AntalyaTaksiAccount.Models.AllUser", b =>
-                {
-                    b.Property<int>("AllUserID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AllUserID"));
-
-                    b.Property<int>("Activity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MailAdress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("MailVerify")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("nvarchar(11)");
-
-                    b.Property<string>("Surname")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("UserType")
-                        .HasColumnType("int");
-
-                    b.HasKey("AllUserID");
-
-                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("AllUserID"));
-
-                    b.ToTable("AllUsers");
-                });
 
             modelBuilder.Entity("AntalyaTaksiAccount.Models.Driver", b =>
                 {
@@ -79,9 +34,6 @@ namespace AntalyaTaksiAccount.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DriverID"));
 
                     b.Property<int>("Activity")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("AllUserID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("BirthDay")
@@ -102,11 +54,34 @@ namespace AntalyaTaksiAccount.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("MailAdress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("MailVerify")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("Penalty")
                         .HasColumnType("bit");
 
                     b.Property<bool>("Pet")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
 
                     b.Property<int?>("Rating")
                         .HasColumnType("int");
@@ -117,11 +92,13 @@ namespace AntalyaTaksiAccount.Migrations
                     b.Property<int>("StationID")
                         .HasColumnType("int");
 
+                    b.Property<string>("Surname")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("DriverID");
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("DriverID"));
-
-                    b.HasIndex("AllUserID");
 
                     b.HasIndex("RoleID");
 
@@ -170,9 +147,6 @@ namespace AntalyaTaksiAccount.Migrations
                     b.Property<int>("Activity")
                         .HasColumnType("int");
 
-                    b.Property<int?>("AllUserID")
-                        .HasColumnType("int");
-
                     b.Property<bool>("Banned")
                         .HasColumnType("bit");
 
@@ -197,8 +171,27 @@ namespace AntalyaTaksiAccount.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Mail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<bool>("Pet")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("Travel")
                         .HasColumnType("bit");
@@ -206,8 +199,6 @@ namespace AntalyaTaksiAccount.Migrations
                     b.HasKey("PassengerID");
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("PassengerID"));
-
-                    b.HasIndex("AllUserID");
 
                     b.ToTable("Passengers");
                 });
@@ -249,9 +240,6 @@ namespace AntalyaTaksiAccount.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(1);
 
-                    b.Property<int?>("AllUserID")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -274,8 +262,20 @@ namespace AntalyaTaksiAccount.Migrations
                     b.Property<bool>("StationAuto")
                         .HasColumnType("bit");
 
+                    b.Property<string>("StationMail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StationName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("StationNumber")
                         .HasColumnType("int");
+
+                    b.Property<string>("StationPhone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("StationStatu")
                         .HasColumnType("bit");
@@ -283,8 +283,6 @@ namespace AntalyaTaksiAccount.Migrations
                     b.HasKey("StationID");
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("StationID"));
-
-                    b.HasIndex("AllUserID");
 
                     b.ToTable("Stations");
                 });
@@ -340,10 +338,6 @@ namespace AntalyaTaksiAccount.Migrations
 
             modelBuilder.Entity("AntalyaTaksiAccount.Models.Driver", b =>
                 {
-                    b.HasOne("AntalyaTaksiAccount.Models.AllUser", "AllUser")
-                        .WithMany()
-                        .HasForeignKey("AllUserID");
-
                     b.HasOne("AntalyaTaksiAccount.Models.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleID");
@@ -353,8 +347,6 @@ namespace AntalyaTaksiAccount.Migrations
                         .HasForeignKey("StationID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("AllUser");
 
                     b.Navigation("Role");
 
@@ -378,24 +370,6 @@ namespace AntalyaTaksiAccount.Migrations
                     b.Navigation("Driver");
 
                     b.Navigation("Vehicle");
-                });
-
-            modelBuilder.Entity("AntalyaTaksiAccount.Models.Passenger", b =>
-                {
-                    b.HasOne("AntalyaTaksiAccount.Models.AllUser", "AllUser")
-                        .WithMany()
-                        .HasForeignKey("AllUserID");
-
-                    b.Navigation("AllUser");
-                });
-
-            modelBuilder.Entity("AntalyaTaksiAccount.Models.Station", b =>
-                {
-                    b.HasOne("AntalyaTaksiAccount.Models.AllUser", "AllUser")
-                        .WithMany()
-                        .HasForeignKey("AllUserID");
-
-                    b.Navigation("AllUser");
                 });
 
             modelBuilder.Entity("AntalyaTaksiAccount.Models.VehicleOwner", b =>

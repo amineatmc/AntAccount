@@ -10,10 +10,7 @@ namespace AntalyaTaksiAccount.Models
     public class Passenger
     {
         public int PassengerID { get; set; }
-        public string Name { get; set; }
-        public string Surname { get; set; }
-        public string Phone { get; set; }
-        public string Mail { get; set; }
+      
         //tc
         public string IdNo { get; set; }
         public DateTime Birthday { get; set; }
@@ -24,6 +21,8 @@ namespace AntalyaTaksiAccount.Models
         public string Lang { get; set; }
         public string Lat { get; set; }
         public DateTime Created { get; set; }
+        public int? AllUserID { get; set; }
+        public AllUser AllUser { get; set; }
         public int Activity { get; set; }
     }
 }

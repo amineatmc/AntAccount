@@ -5,11 +5,7 @@ namespace AntalyaTaksiAccount.Models
     public class Driver
     {
         public int DriverID { get; set; }
-        public string? Name { get; set; }
-        public string? Surname { get; set; }
-        public string MailAdress { get; set; }
-        public string Password { get; set; }
-        public string Phone { get; set; }
+       
         //tc
         public string IdNo { get; set; }
         public string DriverLicenseNo { get; set; }
@@ -23,7 +19,8 @@ namespace AntalyaTaksiAccount.Models
         public DateTime CreatedDate { get; set; }
         public int? RoleID { get; set; }
         public Role Role { get; set; }
-        public int? MailVerify { get; set; }
+        public int? AllUserID { get; set; }
+        public AllUser AllUser { get; set; }
         public int Activity { get; set; }
 
 

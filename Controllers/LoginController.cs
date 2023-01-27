@@ -30,7 +30,7 @@ namespace AntalyaTaksiAccount.Controllers
         {
             try
             {
-                Driver user = new Driver();
+                AllUser user = new AllUser();
                 if (!signIn.OtherAuthentication)
                 {
                     if (string.IsNullOrEmpty(signIn.username))
@@ -41,11 +41,11 @@ namespace AntalyaTaksiAccount.Controllers
                     {
                         BadRequest("Mail or Password is invalid");
                     }
-                     user = _aTAccountContext.Users.Where(c => c.MailAdress == signIn.username && c.Password == signIn.password).FirstOrDefaultAsync().Result; 
+                     user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username && c.Password == signIn.password).FirstOrDefaultAsync().Result; 
                 }
                 else
                 {
-                     user = _aTAccountContext.Users.Where(c => c.MailAdress == signIn.username).FirstOrDefaultAsync().Result;
+                     user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username).FirstOrDefaultAsync().Result;
                 }
                 if (user == null)
                 {
@@ -54,7 +54,7 @@ namespace AntalyaTaksiAccount.Controllers
                
 
                 JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
-                string token = jwtTokenGenerator.Generate(user.Name, user.MailAdress,user.RoleID.Value);
+                string token = jwtTokenGenerator.Generate(user.Name, user.MailAdress,1);
 
 
                 return Ok(token);

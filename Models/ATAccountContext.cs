@@ -19,53 +19,47 @@ namespace AntalyaTaksiAccount.Models
         {
             base.OnModelCreating(modelBuilder);
 
-            //modelBuilder.Entity<Driver>().Property(c => c.UserID).IsRequired();
-            //modelBuilder.Entity<Driver>().HasKey(c => c.UserID).IsClustered();
-            //modelBuilder.Entity<Driver>().Property(c => c.Name).HasMaxLength(100);
-            //modelBuilder.Entity<Driver>().Property(c => c.Surname).HasMaxLength(100);
-            //modelBuilder.Entity<Driver>().Property(c => c.MailAdress).IsRequired();
-            //modelBuilder.Entity<Driver>().Property(c => c.Phone).IsRequired().HasMaxLength(11);
-            //modelBuilder.Entity<Driver>().Property(c => c.Password).IsRequired();
-            //modelBuilder.Entity<Driver>().Property(c => c.MailVerify).IsRequired().HasDefaultValue(0);
-            //modelBuilder.Entity<Driver>().Property(c => c.ResetPasswordVerify).IsRequired().HasDefaultValue(0);
+            modelBuilder.Entity<Driver>().Property(c => c.DriverID).IsRequired();
+            modelBuilder.Entity<Driver>().HasKey(c => c.DriverID).IsClustered();
+           
+           
+          
+            //modelBuilder.Entity<Driver>().Property(c => c.).IsRequired().HasDefaultValue(0);
             //modelBuilder.Entity<Driver>().Property(c => c.InsertedDate).HasDefaultValue(DateTime.Now).IsRequired();
             //modelBuilder.Entity<Driver>().Property(c => c.PasswordChangeDate).HasDefaultValue(DateTime.Now).IsRequired();
             //modelBuilder.Entity<Driver>().Property(c => c.PasswordExpiration).HasDefaultValue(90).IsRequired();
             //modelBuilder.Entity<Driver>().Property(c => c.Activity).HasDefaultValue(1).IsRequired();
 
-            // modelBuilder.Entity<Passenger>().Property(c => c.PassengerID).IsRequired();
-            // modelBuilder.Entity<Passenger>().HasKey(c => c.PassengerID).IsClustered();
-            // modelBuilder.Entity<Passenger>().Property(c => c.Name).HasMaxLength(100);
-            // modelBuilder.Entity<Passenger>().Property(c => c.Surname).HasMaxLength(100);
-            //// modelBuilder.Entity<Passenger>().Property(c => c.MailAdress).IsRequired();
-            // modelBuilder.Entity<Passenger>().Property(c => c.Phone).IsRequired().HasMaxLength(11);
-            // modelBuilder.Entity<Passenger>().Property(c => c.Password).IsRequired();
-            // modelBuilder.Entity<Passenger>().Property(c => c.MailVerify).IsRequired().HasDefaultValue(0);
-            // modelBuilder.Entity<Passenger>().Property(c => c.ResetPasswordVerify).IsRequired().HasDefaultValue(0);
-            // modelBuilder.Entity<Passenger>().Property(c => c.InsertedDate).HasDefaultValue(DateTime.Now).IsRequired();
-            // modelBuilder.Entity<Passenger>().Property(c => c.PasswordChangeDate).HasDefaultValue(DateTime.Now).IsRequired();
-            // modelBuilder.Entity<Passenger>().Property(c => c.PasswordExpiration).HasDefaultValue(90).IsRequired();
-            // modelBuilder.Entity<Passenger>().Property(c => c.Activity).HasDefaultValue(1).IsRequired();
+            modelBuilder.Entity<Passenger>().Property(c => c.PassengerID).IsRequired();
+            modelBuilder.Entity<Passenger>().HasKey(c => c.PassengerID).IsClustered();
+           
+           
+            //modelBuilder.Entity<Passenger>().Property(c => c.Password).IsRequired();
+            //modelBuilder.Entity<Passenger>().Property(c => c.MailVerify).IsRequired().HasDefaultValue(0);
+            //modelBuilder.Entity<Passenger>().Property(c => c.ResetPasswordVerify).IsRequired().HasDefaultValue(0);
+            //modelBuilder.Entity<Passenger>().Property(c => c.InsertedDate).HasDefaultValue(DateTime.Now).IsRequired();
+            //modelBuilder.Entity<Passenger>().Property(c => c.PasswordChangeDate).HasDefaultValue(DateTime.Now).IsRequired();
+            //modelBuilder.Entity<Passenger>().Property(c => c.PasswordExpiration).HasDefaultValue(90).IsRequired();
+            //modelBuilder.Entity<Passenger>().Property(c => c.Activity).HasDefaultValue(1).IsRequired();
+          
+            modelBuilder.Entity<Station>().Property(c => c.Activity).HasDefaultValue(1).IsRequired();
+            modelBuilder.Entity<Station>().HasKey(c => c.StationID).IsClustered();
 
-            //modelBuilder.Entity<Department>().Property(c => c.DepartmentID).IsRequired();
-            //modelBuilder.Entity<Department>().HasKey(c => c.DepartmentID).IsClustered();
-            //modelBuilder.Entity<Department>().Property(c => c.DepartmentName).HasMaxLength(100);
-            //modelBuilder.Entity<Department>().Property(c => c.Activity).HasDefaultValue(1).IsRequired();
+            modelBuilder.Entity<Vehicle>().Property(c => c.Activity).HasDefaultValue(1).IsRequired();
+            modelBuilder.Entity<Vehicle>().HasKey(c => c.VehicleID).IsClustered();
 
-            //modelBuilder.Entity<Company>().Property(c => c.CompanyID).IsRequired();
-            //modelBuilder.Entity<Company>().HasKey(c => c.CompanyID).IsClustered();
-            //modelBuilder.Entity<Company>().Property(c => c.CompanyName).HasMaxLength(100);
-            //modelBuilder.Entity<Company>().Property(c => c.Activity).HasDefaultValue(1).IsRequired();
+            modelBuilder.Entity<Role>().Property(c => c.RoleID).IsRequired();
+            modelBuilder.Entity<Role>().HasKey(c => c.RoleID).IsClustered();
+            modelBuilder.Entity<Role>().Property(c => c.RoleName).HasMaxLength(100);
+            modelBuilder.Entity<Role>().Property(c => c.Activity).HasDefaultValue(1).IsRequired();
 
-            //modelBuilder.Entity<Gender>().Property(c => c.GenderID).IsRequired();
-            //modelBuilder.Entity<Gender>().HasKey(c => c.GenderID).IsClustered();
-            //modelBuilder.Entity<Gender>().Property(c => c.GenderName).HasMaxLength(100);
-            //modelBuilder.Entity<Gender>().Property(c => c.Activity).HasDefaultValue(1).IsRequired();
-
-            //modelBuilder.Entity<Role>().Property(c => c.RoleID).IsRequired();
-            //modelBuilder.Entity<Role>().HasKey(c => c.RoleID).IsClustered();
-            //modelBuilder.Entity<Role>().Property(c => c.RoleName).HasMaxLength(100);
-            //modelBuilder.Entity<Role>().Property(c => c.Activity).HasDefaultValue(1).IsRequired();
+            modelBuilder.Entity<AllUser>().HasKey(c => c.AllUserID).IsClustered();
+            modelBuilder.Entity<AllUser>().Property(c => c.Name).HasMaxLength(100);
+            modelBuilder.Entity<AllUser>().Property(c => c.Surname).HasMaxLength(100);
+            modelBuilder.Entity<AllUser>().Property(c => c.MailAdress).IsRequired();
+            modelBuilder.Entity<AllUser>().Property(c => c.Phone).IsRequired().HasMaxLength(11);
+            modelBuilder.Entity<AllUser>().Property(c => c.Password).IsRequired();
+            modelBuilder.Entity<AllUser>().Property(c => c.MailVerify).IsRequired().HasDefaultValue(0);
 
 
         }
@@ -73,9 +67,10 @@ namespace AntalyaTaksiAccount.Models
         public DbSet<Station> Stations { get; set; }
         public DbSet<Passenger> Passengers { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<Driver> Users { get; set; }
+        public DbSet<Driver> Drivers { get; set; }
         public DbSet<DriverVehicle> DriverVehicles { get; set; }
         public DbSet<VehicleOwner> VehicleOwners { get; set; }
+        public DbSet<AllUser> AllUsers { get; set; }
       
     }
 }
