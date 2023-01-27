@@ -17,6 +17,22 @@ namespace AntalyaTaksiAccount.Controllers
             _logger = logger;
             _aTAccountContext = aTAccountContext;
         }
+        [HttpGet("Get")]
+        public async Task<List<AllUser>> Get()
+        {
+            try
+            {
+                var users = await _aTAccountContext.AllUsers.Where(c => c.Activity == 1).ToListAsync();
+
+                return users;
+            }
+            catch (Exception)
+            {
+                //Serilog.Sinks.MSSqlServer use
+                // _logger.LogInformation("test log", DateTime.Now.ToString());
+                return new List<AllUser>();
+            }
+        }
         [HttpGet("GetByMail/{mailAdress}")]
         private async Task<AllUser> GetByMail(string mailAdress)
         {
@@ -173,6 +189,7 @@ namespace AntalyaTaksiAccount.Controllers
                 return Problem();
             }
         }
+        [HttpGet]
         private bool ResetPassword(int id, string NewPassword)
         {
             try

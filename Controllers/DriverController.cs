@@ -50,7 +50,7 @@ namespace AntalyaTaksiAccount.Controllers
                 return user;
             }
         }
-        [HttpGet("Get/{id}")]
+        [HttpGet("GetByUserID/{id}")]
         public async Task<Driver> GetByUserID(int id)
         {
             try
@@ -78,7 +78,7 @@ namespace AntalyaTaksiAccount.Controllers
 
                 Driver user1 = new Driver();
                
-                user1.RoleID = user.RoleID;
+                
                user1.AllUserID= user.AllUserID;
                 user1.Activity = 1;
                 _aTAccountContext.Drivers.Add(user1);

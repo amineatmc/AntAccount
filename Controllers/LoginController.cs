@@ -52,22 +52,9 @@ namespace AntalyaTaksiAccount.Controllers
                     return NoContent();
                 }
 
-                int roleID = 0;
-                if (user.UserType==1)
-                {
-                    DriverController driverController = new DriverController(_aTAccountContext);
-                    roleID = driverController.GetByUserID(user.AllUserID).Result.RoleID.Value;
-                }
-                else if (user.UserType==2)
-                {
-
-                }
-                else
-                {
-
-                }
+               
                 JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
-                string token = jwtTokenGenerator.Generate(user.Name, user.MailAdress,roleID);
+                string token = jwtTokenGenerator.Generate(user.Name, user.MailAdress,user.UserType);
 
 
                 return Ok(token);
