@@ -11,10 +11,10 @@ namespace AntalyaTaksiAccount.Controllers
     {
 
         private readonly ATAccountContext _aTAccountContext;
-        private readonly ILogger<DriverController> _logger;
-        public DriverController(ILogger<DriverController> logger, ATAccountContext aTAccountContext)
+       // private readonly ILogger<DriverController> _logger;
+        public DriverController( ATAccountContext aTAccountContext)
         {
-            _logger = logger;
+           // _logger = logger;
             _aTAccountContext = aTAccountContext;
         }
 
@@ -50,7 +50,20 @@ namespace AntalyaTaksiAccount.Controllers
                 return user;
             }
         }
-       
+        [HttpGet("Get/{id}")]
+        public async Task<Driver> GetByUserID(int id)
+        {
+            try
+            {
+                var user = await _aTAccountContext.Drivers.Where(c => c.Activity == 1 && c.AllUserID == id).Include(c => c.Role).FirstOrDefaultAsync();
+                return user;
+            }
+            catch (Exception)
+            {
+                Driver user = new Driver();
+                return user;
+            }
+        }
 
         [HttpPost("Post")]
         public async Task<ActionResult> Post(Driver user)
