@@ -1,6 +1,7 @@
 ﻿using AntalyaTaksiAccount.Models;
 using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Utils;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -16,6 +17,7 @@ namespace AntalyaTaksiAccount.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
+        //private readonly Otp _otp;
         //private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ATAccountContext _aTAccountContext;
         private IConfiguration _configuration;
@@ -24,6 +26,7 @@ namespace AntalyaTaksiAccount.Controllers
         {
             _aTAccountContext = aTAccountContext;
             _configuration = configuration;
+            // _otp = otp;
             //_signInManager = signInManager;
         }
 
@@ -32,7 +35,7 @@ namespace AntalyaTaksiAccount.Controllers
         {
             try
             {
-                User user = new User();
+                AllUser user = new AllUser();
                 if (!signIn.OtherAuthentication)
                 {
                     if (string.IsNullOrEmpty(signIn.username))
@@ -43,24 +46,20 @@ namespace AntalyaTaksiAccount.Controllers
                     {
                         BadRequest("Mail or Password is invalid");
                     }
-                     user = _aTAccountContext.Users.Where(c => c.MailAdress == signIn.username && c.Password == signIn.password).FirstOrDefaultAsync().Result; 
+                     user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username && c.Password == signIn.password).FirstOrDefaultAsync().Result; 
                 }
                 else
                 {
-                     user = _aTAccountContext.Users.Where(c => c.MailAdress == signIn.username).FirstOrDefaultAsync().Result;
+                     user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username).FirstOrDefaultAsync().Result;
                 }
                 if (user == null)
                 {
                     return NoContent();
                 }
-                else if (user.PasswordChangeDate.AddDays(user.PasswordExpiration) <= DateTime.Now)
-                {
-                    user.ResetPasswordVerify = 0;
-                    _aTAccountContext.SaveChanges();
-                }
 
+               
                 JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
-                string token = jwtTokenGenerator.Generate(user.Name, user.MailAdress);
+                string token = jwtTokenGenerator.Generate(user.Name, user.MailAdress,user.UserType);
 
 
                 return Ok(token);
@@ -80,6 +79,7 @@ namespace AntalyaTaksiAccount.Controllers
                 RedirectUri = Url.Action("GoogleResponse")
             });
         }
+
         [HttpGet("GoogleResponse")]
         public async Task<ActionResult<string>> GoogleResponse()
         {
@@ -99,5 +99,13 @@ namespace AntalyaTaksiAccount.Controllers
             return await LoginUser(signIn);
         }
 
+
+        [HttpPost("OtpSend")]
+        public async Task<ActionResult> OtpSend(CheckOtpDto checkOtpDto)
+        {
+            Otp _otp = new Otp(_aTAccountContext,"");
+            var result = _otp.CheckOtpSendMethod(checkOtpDto);
+            return Ok(result);
+        }
     }
 }
