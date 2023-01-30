@@ -26,7 +26,7 @@ namespace AntalyaTaksiAccount.Controllers
         {
             _aTAccountContext = aTAccountContext;
             _configuration = configuration;
-           // _otp = otp;
+            // _otp = otp;
             //_signInManager = signInManager;
         }
 
@@ -35,7 +35,7 @@ namespace AntalyaTaksiAccount.Controllers
         {
             try
             {
-                User user = new User();
+                AllUser user = new AllUser();
                 if (!signIn.OtherAuthentication)
                 {
                     if (string.IsNullOrEmpty(signIn.username))
@@ -46,24 +46,20 @@ namespace AntalyaTaksiAccount.Controllers
                     {
                         BadRequest("Mail or Password is invalid");
                     }
-                     user = _aTAccountContext.Users.Where(c => c.MailAdress == signIn.username && c.Password == signIn.password).FirstOrDefaultAsync().Result; 
+                     user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username && c.Password == signIn.password).FirstOrDefaultAsync().Result; 
                 }
                 else
                 {
-                     user = _aTAccountContext.Users.Where(c => c.MailAdress == signIn.username).FirstOrDefaultAsync().Result;
+                     user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username).FirstOrDefaultAsync().Result;
                 }
                 if (user == null)
                 {
                     return NoContent();
                 }
-                else if (user.PasswordChangeDate.AddDays(user.PasswordExpiration) <= DateTime.Now)
-                {
-                    user.ResetPasswordVerify = 0;
-                    _aTAccountContext.SaveChanges();
-                }
 
+               
                 JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
-                string token = jwtTokenGenerator.Generate(user.Name, user.MailAdress);
+                string token = jwtTokenGenerator.Generate(user.Name, user.MailAdress,user.UserType);
 
 
                 return Ok(token);

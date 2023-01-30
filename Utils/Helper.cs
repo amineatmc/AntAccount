@@ -72,7 +72,7 @@ namespace AntalyaTaksiAccount.Utils
                 {
                     return false;
                 }
-                var any= aTAccountContext.Users.Any(c => c.Activity == 1 && c.MailAdress == email);
+                var any= aTAccountContext.AllUsers.Any(c => c.Activity == 1 && c.MailAdress == email);
                 return !any;
                     
             }
