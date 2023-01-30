@@ -38,7 +38,6 @@ namespace AntalyaTaksiAccount.Controllers
         {
             try
             {
-
                 Task<AllUser> user = (from c in _aTAccountContext.AllUsers where c.Activity == 1 && c.MailAdress == mailAdress select c).FirstAsync();
                 var user1 = await user;
                 return user1;
@@ -70,21 +69,42 @@ namespace AntalyaTaksiAccount.Controllers
                 AllUser user1 = new AllUser();
                 user1.Name = user.Name;
                 user1.Surname = user.Surname;
-               
                 user1.MailAdress = user.MailAdress;
-
-
-
                 user1.Password = Helper.PasswordEncode(user.Password);
-
                 user1.Phone = user.Phone;
-
                 user1.MailVerify = 0;
-              
-
                 user1.Activity = 1;
                 _aTAccountContext.AllUsers.Add(user1);
                 _aTAccountContext.SaveChanges();
+
+                switch (user.UserType)
+                {
+                    case 1:
+                        Driver driver = new Driver();
+                        driver.Activity = 1;
+                        driver.AllUserID = user1.AllUserID;
+                        driver.StationID = 7;
+                        driver.RoleID=1;
+                        _aTAccountContext.Drivers.Add(driver);
+                        _aTAccountContext.SaveChanges();
+                        break;
+                    case 2:
+                        Passenger passenger = new Passenger();
+                        passenger.Activity = 1;
+                        passenger.AllUserID = user1.AllUserID;
+                        _aTAccountContext.Passengers.Add(passenger);
+                        _aTAccountContext.SaveChanges();
+                        break;
+                    case 3:
+                        Station station = new Station();
+                        station.Activity = 1;
+                        station.AllUserID = user1.AllUserID;
+                        break;
+
+                    default:
+                        break;
+                }
+                
                 return Ok("Kayıt Eklendi.");
             }
             catch (Exception ex)
@@ -119,7 +139,7 @@ namespace AntalyaTaksiAccount.Controllers
                     {
                         user1.Phone = user.Phone;
                     }
-                   
+
                     _aTAccountContext.SaveChanges();
                     return Ok("Kayıt Güncellendi.");
                 }
