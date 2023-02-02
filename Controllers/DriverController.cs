@@ -4,6 +4,7 @@ using AntalyaTaksiAccount.Services;
 using AntalyaTaksiAccount.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.Intrinsics.X86;
 using System.Security.Cryptography.Xml;
 
 namespace AntalyaTaksiAccount.Controllers
@@ -141,7 +142,6 @@ namespace AntalyaTaksiAccount.Controllers
                 return BadRequest("Var olan bir email adresi.");
             }
 
-            AllUserController allUserController = new AllUserController(null,_aTAccountContext);
 
             AllUser allUser = new AllUser();
             allUser.Surname = addDriverWithStation.Surname;
@@ -150,8 +150,9 @@ namespace AntalyaTaksiAccount.Controllers
             allUser.Name = addDriverWithStation.Name;
             allUser.MailAdress = addDriverWithStation.MailAddress;
             allUser.Phone = addDriverWithStation.Phone;
+            allUser.Password = Helper.PasswordEncode("123456");
 
-            allUserController.Post(allUser);
+            _aTAccountContext.AllUsers.Add(allUser);
 
             Driver driver = new Driver();
 
@@ -162,8 +163,11 @@ namespace AntalyaTaksiAccount.Controllers
             driver.CreatedDate = DateTime.UtcNow;
             driver.AllUser = allUser;
 
+            RoleController roleController = new RoleController(_aTAccountContext);
+            Role role=await roleController.Get(2);
+            driver.Role = role;
 
-            Post(driver);
+            _aTAccountContext.Add(driver);
 
             await _aTAccountContext.SaveChangesAsync();
 
