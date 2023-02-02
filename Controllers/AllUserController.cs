@@ -74,6 +74,7 @@ namespace AntalyaTaksiAccount.Controllers
                 user1.Phone = user.Phone;
                 user1.MailVerify = 0;
                 user1.Activity = 1;
+                user1.UserType = user.UserType;
                 _aTAccountContext.AllUsers.Add(user1);
                 _aTAccountContext.SaveChanges();
 
@@ -83,8 +84,9 @@ namespace AntalyaTaksiAccount.Controllers
                         Driver driver = new Driver();
                         driver.Activity = 1;
                         driver.AllUserID = user1.AllUserID;
-                        driver.StationID = 7;
-                        driver.RoleID=1;
+                        driver.StationID = 10;
+                        driver.RoleID = 1;
+                        driver.CreatedDate = DateTime.Now;
                         _aTAccountContext.Drivers.Add(driver);
                         _aTAccountContext.SaveChanges();
                         break;
@@ -92,6 +94,8 @@ namespace AntalyaTaksiAccount.Controllers
                         Passenger passenger = new Passenger();
                         passenger.Activity = 1;
                         passenger.AllUserID = user1.AllUserID;
+                        passenger.IdNo = "0";
+                        passenger.Created = DateTime.Now;
                         _aTAccountContext.Passengers.Add(passenger);
                         _aTAccountContext.SaveChanges();
                         break;
@@ -99,12 +103,17 @@ namespace AntalyaTaksiAccount.Controllers
                         Station station = new Station();
                         station.Activity = 1;
                         station.AllUserID = user1.AllUserID;
+                        station.CreatedDate = DateTime.Now;
+                        station.StationStatu = true;
+                        station.StationAuto = true;
+                        _aTAccountContext.Stations.Add(station);
+                        _aTAccountContext.SaveChanges();
                         break;
 
                     default:
                         break;
                 }
-                
+
                 return Ok("Kayıt Eklendi.");
             }
             catch (Exception ex)
@@ -112,6 +121,57 @@ namespace AntalyaTaksiAccount.Controllers
                 return Problem(ex.Message);
             }
         }
+
+        [HttpPost("Post")]
+        public async Task<ActionResult> Add(AllUser user)
+        {
+            try
+            {
+                if (!Helper.UnicEmailControl(user.MailAdress, _aTAccountContext))
+                {
+                    return BadRequest("Var olan bir email adresi.");
+                }
+
+                // string tempPassword = Helper.GeneratePassword();
+                //user.Password = Helper.PasswordEncode(tempPassword);
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Model bilgileri doğru değil.");
+                }
+
+
+                AllUser user1 = new AllUser();
+                user1.Name = user.Name;
+                user1.Surname = user.Surname;
+                user1.MailAdress = user.MailAdress;
+                user1.Password = Helper.PasswordEncode(user.Password);
+                user1.Phone = user.Phone;
+                user1.MailVerify = 0;
+                user1.Activity = 1;
+                user1.UserType = 1;
+                _aTAccountContext.AllUsers.Add(user1);
+                _aTAccountContext.SaveChanges();
+
+
+                Driver driver = new Driver();
+                driver.Activity = 1;
+                driver.AllUserID = user1.AllUserID;
+                driver.StationID = 10;
+                driver.RoleID = 1;
+                driver.CreatedDate = DateTime.Now;
+                _aTAccountContext.Drivers.Add(driver);
+                _aTAccountContext.SaveChanges();
+                return Ok("Kayıt Eklendi.");
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+
+
         [HttpPut("Put")]
         public async Task<ActionResult> Put(AllUser user)
         {

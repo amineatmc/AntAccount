@@ -98,7 +98,7 @@ namespace AntalyaTaksiAccount.Utils
                 if (checkOtpDto.OtpMessage == readOtp.OtpMessage && checkOtpDto.Phone == readOtp.Phone)
                 {
                     File.Delete(newfile);
-                    User user = _aTAccountContext.Users.Where(p => p.Phone == checkOtpDto.Phone).First();
+                    AllUser user = _aTAccountContext.AllUsers.Where(p => p.Phone == checkOtpDto.Phone).First();
 
                     return CheckOtpVerification(checkOtpDto);
                 }
