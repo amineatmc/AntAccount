@@ -135,7 +135,26 @@ namespace AntalyaTaksiAccount.Controllers
         {
             AllUserController allUserController = new AllUserController(null,_aTAccountContext);
 
+            AllUser allUser = new AllUser();
+            allUser.Surname = addDriverWithStation.Surname;
+            allUser.MailVerify = 1;
+            allUser.Activity = 1;
+            allUser.Name = addDriverWithStation.Name;
 
+            allUserController.Post(allUser);
+
+            Driver driver = new Driver();
+
+            driver.Station = null;//Come From Token or Header
+            driver.IdNo = addDriverWithStation.IdNo;
+            driver.Ip = string.Empty;
+            driver.BirthDay = addDriverWithStation.Birthday;
+            driver.CreatedDate = DateTime.UtcNow;
+
+
+            Post(driver);
+
+            await _aTAccountContext.SaveChangesAsync();
 
             return Ok();
         }
