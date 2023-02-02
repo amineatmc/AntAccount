@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AntalyaTaksiAccount.Models;
+using AntalyaTaksiAccount.Models.DummyModels;
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -119,5 +120,13 @@ namespace AntalyaTaksiAccount.Controllers
         {
             return (_context.Stations?.Any(e => e.StationID == id)).GetValueOrDefault();
         }
+
+        [HttpPost("stationwithstation")]
+        public async Task<ActionResult> AddStationWithStation(AddStationWithStationRequest addStationWithStationRequest)
+        {
+
+            return Ok();
+        }
+
     }
 }
