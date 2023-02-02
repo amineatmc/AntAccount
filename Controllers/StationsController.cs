@@ -125,6 +125,16 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpPost("stationwithstation")]
         public async Task<ActionResult> AddStationWithStation(AddStationWithStationRequest addStationWithStationRequest)
         {
+            if (!Helper.UnicEmailControl(addStationWithStationRequest.MailAddress, _context))
+            {
+                return BadRequest("Var olan bir email adresi.");
+            }
+
+            if (!Helper.UnicPhoneNumberControl(addStationWithStationRequest.Phone, _context))
+            {
+                return BadRequest("Var olan bir Telefon numarası.");
+            }
+
             AllUser allUser = new AllUser();
             allUser.Surname = addStationWithStationRequest.Surname;
             allUser.MailVerify = 1;

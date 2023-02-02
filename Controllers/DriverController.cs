@@ -147,7 +147,7 @@ namespace AntalyaTaksiAccount.Controllers
                 return BadRequest("Var olan bir Id Numarası.");
             }
 
-            if (!Helper.UnicPhoneNumberControl(addDriverWithStation.IdNo,_aTAccountContext))
+            if (!Helper.UnicPhoneNumberControl(addDriverWithStation.Phone,_aTAccountContext))
             {
                 return BadRequest("Var olan bir Telefon numarası.");
             }
