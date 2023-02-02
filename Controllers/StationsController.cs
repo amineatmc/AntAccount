@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AntalyaTaksiAccount.Models;
 using AntalyaTaksiAccount.Models.DummyModels;
+using AntalyaTaksiAccount.Utils;
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -124,6 +125,28 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpPost("stationwithstation")]
         public async Task<ActionResult> AddStationWithStation(AddStationWithStationRequest addStationWithStationRequest)
         {
+            AllUser allUser = new AllUser();
+            allUser.Surname = addStationWithStationRequest.Surname;
+            allUser.MailVerify = 1;
+            allUser.Activity = 1;
+            allUser.Name = addStationWithStationRequest.Name;
+            allUser.MailAdress = addStationWithStationRequest.MailAddress;
+            allUser.Phone = addStationWithStationRequest.Phone;
+            allUser.Password = Helper.PasswordEncode("123456");
+
+            _context.AllUsers.Add(allUser);
+
+            Station station = new Station();
+            station.Latitude = addStationWithStationRequest.Latitude;
+            station.Longitude = addStationWithStationRequest.Longtitude;
+            station.Activity = 1;
+            station.AllUser = allUser;
+            station.CreatedDate = DateTime.UtcNow;
+            station.StationArea = addStationWithStationRequest.StationArea;
+
+            _context.Stations.Add(station);
+
+            _context.SaveChangesAsync();
 
             return Ok();
         }
