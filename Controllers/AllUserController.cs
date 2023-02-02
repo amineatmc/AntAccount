@@ -122,7 +122,7 @@ namespace AntalyaTaksiAccount.Controllers
             }
         }
 
-        [HttpPost("Post")]
+        [HttpPost("Post2")]
         public async Task<ActionResult> Add(AllUser user)
         {
             try
