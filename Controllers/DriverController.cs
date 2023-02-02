@@ -1,7 +1,9 @@
 ﻿using AntalyaTaksiAccount.Models;
+using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography.Xml;
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -126,6 +128,16 @@ namespace AntalyaTaksiAccount.Controllers
             catch (Exception ex)
             {
             }
+        }
+
+        [HttpPost("driverwithstation")]
+        public async Task<ActionResult> AddDriverWithStation(AddDriverWithStationRequest addDriverWithStation)
+        {
+            AllUserController allUserController = new AllUserController(null,_aTAccountContext);
+
+
+
+            return Ok();
         }
         
     }
