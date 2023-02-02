@@ -1,4 +1,5 @@
 using AntalyaTaksiAccount.Models;
+using AntalyaTaksiAccount.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 //using Microsoft.AspNetCore.Authorization;
@@ -14,6 +15,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 builder.Services.AddDbContext<ATAccountContext>();
+
+builder.Services.AddHttpClient<DriverNodeService>();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;

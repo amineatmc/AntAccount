@@ -1,5 +1,6 @@
 ﻿using AntalyaTaksiAccount.Models;
 using AntalyaTaksiAccount.Models.DummyModels;
+using AntalyaTaksiAccount.Services;
 using AntalyaTaksiAccount.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,11 +14,13 @@ namespace AntalyaTaksiAccount.Controllers
     {
 
         private readonly ATAccountContext _aTAccountContext;
+        private readonly DriverNodeService _driverNodeService;
        // private readonly ILogger<DriverController> _logger;
-        public DriverController( ATAccountContext aTAccountContext)
+        public DriverController( ATAccountContext aTAccountContext,DriverNodeService driverNodeService)
         {
            // _logger = logger;
             _aTAccountContext = aTAccountContext;
+            _driverNodeService = driverNodeService;
         }
 
         [HttpGet("Get")]
@@ -145,6 +148,8 @@ namespace AntalyaTaksiAccount.Controllers
             allUser.MailVerify = 1;
             allUser.Activity = 1;
             allUser.Name = addDriverWithStation.Name;
+            allUser.MailAdress = addDriverWithStation.MailAddress;
+            allUser.Phone = addDriverWithStation.Phone;
 
             allUserController.Post(allUser);
 
@@ -155,11 +160,18 @@ namespace AntalyaTaksiAccount.Controllers
             driver.Ip = string.Empty;
             driver.BirthDay = addDriverWithStation.Birthday;
             driver.CreatedDate = DateTime.UtcNow;
+            driver.AllUser = allUser;
 
 
             Post(driver);
 
             await _aTAccountContext.SaveChangesAsync();
+
+            bool resultOfNodeService=await _driverNodeService.SendDriver(driver.DriverID, driver.StationID);
+            if (!resultOfNodeService)
+            {
+                //TODO Add POlly for this logic. 
+            }
 
             return Ok();
         }
