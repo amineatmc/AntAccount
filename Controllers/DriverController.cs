@@ -71,7 +71,7 @@ namespace AntalyaTaksiAccount.Controllers
         }
 
         [HttpPost("Post")]
-        public async Task<ActionResult> Post(Driver user)
+        private  async Task<ActionResult> Post(Driver user)
         {
             try
             {
