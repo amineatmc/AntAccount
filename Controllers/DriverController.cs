@@ -162,10 +162,15 @@ namespace AntalyaTaksiAccount.Controllers
             driver.BirthDay = addDriverWithStation.Birthday;
             driver.CreatedDate = DateTime.UtcNow;
             driver.AllUser = allUser;
+            driver.DriverLicenseNo = addDriverWithStation.DriverLicenseNo;
 
             RoleController roleController = new RoleController(_aTAccountContext);
             Role role=await roleController.Get(2);
             driver.Role = role;
+
+            var stationController=new StationsController(_aTAccountContext);
+            var stationResult=await stationController.GetStation(10);
+            driver.Station = stationResult.Value;  //Todo Get From Request.
 
             _aTAccountContext.Add(driver);
 
