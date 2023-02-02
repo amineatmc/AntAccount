@@ -151,7 +151,7 @@ namespace AntalyaTaksiAccount.Controllers
             allUser.MailAdress = addDriverWithStation.MailAddress;
             allUser.Phone = addDriverWithStation.Phone;
             allUser.Password = Helper.PasswordEncode("123456");
-
+            
             _aTAccountContext.AllUsers.Add(allUser);
 
             Driver driver = new Driver();
@@ -167,7 +167,7 @@ namespace AntalyaTaksiAccount.Controllers
             RoleController roleController = new RoleController(_aTAccountContext);
             Role role=await roleController.Get(1);
             driver.Role = role;
-
+            driver.Activity = 1;
             allUser.UserType = role.RoleID;
 
             var stationController=new StationsController(_aTAccountContext);
