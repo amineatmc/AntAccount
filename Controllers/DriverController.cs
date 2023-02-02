@@ -142,6 +142,17 @@ namespace AntalyaTaksiAccount.Controllers
                 return BadRequest("Var olan bir email adresi.");
             }
 
+            if (!Helper.UnicIdNoControl(addDriverWithStation.IdNo,_aTAccountContext))
+            {
+                return BadRequest("Var olan bir Id Numarası.");
+            }
+
+            if (!Helper.UnicPhoneNumberControl(addDriverWithStation.IdNo,_aTAccountContext))
+            {
+                return BadRequest("Var olan bir Telefon numarası.");
+            }
+
+
 
             AllUser allUser = new AllUser();
             allUser.Surname = addDriverWithStation.Surname;

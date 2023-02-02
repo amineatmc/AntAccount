@@ -81,6 +81,48 @@ namespace AntalyaTaksiAccount.Utils
                 return false;
             }
         }
+
+
+        public static bool UnicIdNoControl(string idNo,ATAccountContext aTAccountContext)
+        {
+            if (string.IsNullOrEmpty(idNo))
+            {
+                return false;
+            }
+
+            try
+            {
+                var any = aTAccountContext.Drivers.Any(c => c.Activity == 1 && c.IdNo == idNo);
+                return !any;
+
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+        }
+
+        public static bool UnicPhoneNumberControl(string phoneNumber, ATAccountContext aTAccountContext) 
+        {
+            if (string.IsNullOrEmpty(phoneNumber))
+            {
+                return false;
+            }
+
+            try
+            {
+                var any = aTAccountContext.Drivers.Any(c => c.Activity == 1 && c.AllUser.Phone == phoneNumber);
+                return !any;
+
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+        }
+
      //should be send mail codes of service from masteraccountapi
         public static string GeneratePassword()
         {
