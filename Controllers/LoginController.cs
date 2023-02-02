@@ -30,7 +30,7 @@ namespace AntalyaTaksiAccount.Controllers
             //_signInManager = signInManager;
         }
 
-        [HttpPost("LoginUser")]
+        [HttpPost("LoginUserWeb")]
         public async Task<ActionResult<string>> LoginUser(SignIn signIn)
         {
             try
@@ -46,22 +46,54 @@ namespace AntalyaTaksiAccount.Controllers
                     {
                         BadRequest("Mail or Password is invalid");
                     }
-                     user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username && c.Password == signIn.password).FirstOrDefaultAsync().Result; 
+                    user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username && c.Password == signIn.password).FirstOrDefaultAsync().Result;
                 }
                 else
                 {
-                     user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username).FirstOrDefaultAsync().Result;
+                    user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username).FirstOrDefaultAsync().Result;
                 }
                 if (user == null)
                 {
                     return NoContent();
                 }
 
-               
                 JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
-                string token = jwtTokenGenerator.Generate(user.Name, user.MailAdress,user.UserType);
+                string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType);
+                return Ok(token);
+
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpPost("LoginUserMob")]
+        public async Task<ActionResult<string>> LoginUserMob(SignInMob signIn)
+        {
+            try
+            {
+                AllUser user = new AllUser();
+
+                if (string.IsNullOrEmpty(signIn.Phone))
+                {
+                    BadRequest("Phone or Password is invalid");
+                }
+                else if (string.IsNullOrEmpty(signIn.Password))
+                {
+                    BadRequest("Phone or Password is invalid");
+                }
+                user = _aTAccountContext.AllUsers.Where(c => c.Phone == signIn.Phone && c.Password == signIn.Password).FirstOrDefaultAsync().Result;
 
 
+                if (user == null)
+                {
+                    return NoContent();
+                }
+
+
+                JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
+                string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType);
                 return Ok(token);
 
             }
@@ -84,26 +116,17 @@ namespace AntalyaTaksiAccount.Controllers
         public async Task<ActionResult<string>> GoogleResponse()
         {
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            //var claims = result.Principal.Identities
-            //    .FirstOrDefault().Claims.Select(claim => new
-            //    {
-            //        claim.Issuer,
-            //        claim.OriginalIssuer,
-            //        claim.Type,
-            //        claim.Value
-            //    });
             var claims = result.Principal.Claims.ToList();
             Models.DummyModels.SignIn signIn = new SignIn();
-            signIn.username= claims[4].Value;
+            signIn.username = claims[4].Value;
             signIn.OtherAuthentication = true;
             return await LoginUser(signIn);
         }
 
-
         [HttpPost("OtpSend")]
         public async Task<ActionResult> OtpSend(CheckOtpDto checkOtpDto)
         {
-            Otp _otp = new Otp(_aTAccountContext,"");
+            Otp _otp = new Otp(_aTAccountContext, "");
             var result = _otp.CheckOtpSendMethod(checkOtpDto);
             return Ok(result);
         }
