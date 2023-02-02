@@ -133,6 +133,11 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpPost("driverwithstation")]
         public async Task<ActionResult> AddDriverWithStation(AddDriverWithStationRequest addDriverWithStation)
         {
+            if (!Helper.UnicEmailControl(addDriverWithStation.MailAddress, _aTAccountContext))
+            {
+                return BadRequest("Var olan bir email adresi.");
+            }
+
             AllUserController allUserController = new AllUserController(null,_aTAccountContext);
 
             AllUser allUser = new AllUser();
