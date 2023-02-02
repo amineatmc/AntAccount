@@ -143,8 +143,8 @@ namespace AntalyaTaksiAccount.Controllers
             allUser.MailAdress = addStationWithStationRequest.MailAddress;
             allUser.Phone = addStationWithStationRequest.Phone;
             allUser.Password = Helper.PasswordEncode("123456");
-
             _context.AllUsers.Add(allUser);
+            allUser.UserType = 3;
 
             Station station = new Station();
             station.Latitude = addStationWithStationRequest.Latitude;
@@ -153,6 +153,7 @@ namespace AntalyaTaksiAccount.Controllers
             station.AllUser = allUser;
             station.CreatedDate = DateTime.UtcNow;
             station.StationArea = addStationWithStationRequest.StationArea;
+            
 
             _context.Stations.Add(station);
 
