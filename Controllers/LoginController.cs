@@ -80,18 +80,19 @@ namespace AntalyaTaksiAccount.Controllers
 
                 if (string.IsNullOrEmpty(signIn.Phone))
                 {
-                    BadRequest("Phone or Password is invalid");
+                   return  BadRequest("Phone or Password is invalid");
                 }
                 else if (string.IsNullOrEmpty(signIn.Password))
                 {
-                    BadRequest("Phone or Password is invalid");
+                   return  BadRequest("Phone or Password is invalid");
                 }
-                user = _aTAccountContext.AllUsers.Where(c => c.Phone == signIn.Phone && c.Password == signIn.Password).FirstOrDefaultAsync().Result;
+                string encodedPassword = Helper.PasswordEncode(signIn.Password);
+                user = _aTAccountContext.AllUsers.Where(c => c.Phone == signIn.Phone && c.Password == encodedPassword ).FirstOrDefaultAsync().Result;
 
 
                 if (user == null)
                 {
-                    return NoContent();
+                    return BadRequest("Phone or Password is invalid");
                 }
 
 
