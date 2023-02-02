@@ -40,11 +40,11 @@ namespace AntalyaTaksiAccount.Controllers
                 {
                     if (string.IsNullOrEmpty(signIn.username))
                     {
-                        BadRequest("Mail or Password is invalid");
+                       return  BadRequest("Mail or Password is invalid");
                     }
                     else if (string.IsNullOrEmpty(signIn.password))
                     {
-                        BadRequest("Mail or Password is invalid");
+                     return   BadRequest("Mail or Password is invalid");
                     }
 
                     string encodedPassword = Helper.PasswordEncode(signIn.password);
@@ -57,7 +57,7 @@ namespace AntalyaTaksiAccount.Controllers
                 }
                 if (user == null)
                 {
-                    return NoContent();
+                   return  BadRequest("Mail or Password is invalid");
                 }
 
                 JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
