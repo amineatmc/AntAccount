@@ -46,7 +46,10 @@ namespace AntalyaTaksiAccount.Controllers
                     {
                         BadRequest("Mail or Password is invalid");
                     }
-                    user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username && c.Password == signIn.password).FirstOrDefaultAsync().Result;
+
+                    string encodedPassword = Helper.PasswordEncode(signIn.password);
+
+                    user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username && c.Password == encodedPassword).FirstOrDefaultAsync().Result;
                 }
                 else
                 {
