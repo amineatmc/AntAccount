@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using AntalyaTaksiAccount.Models;
 using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Utils;
+using AntalyaTaksiAccount.Services;
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -16,8 +17,9 @@ namespace AntalyaTaksiAccount.Controllers
     public class StationsController : ControllerBase
     {
         private readonly ATAccountContext _context;
+        private readonly DriverNodeService _driverNodeService;
 
-        public StationsController(ATAccountContext context)
+        public StationsController(ATAccountContext context, DriverNodeService driverNodeService)
         {
             _context = context;
         }
@@ -158,6 +160,13 @@ namespace AntalyaTaksiAccount.Controllers
             _context.Stations.Add(station);
 
             _context.SaveChangesAsync();
+
+            bool resultOfNodeService=await _driverNodeService.SendStation(station.StationID, addStationWithStationRequest.Latitude, addStationWithStationRequest.Longtitude);
+
+            if (!resultOfNodeService)
+            {
+                //TODO Add POlly for this logic. 
+            }
 
             return Ok();
         }

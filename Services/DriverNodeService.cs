@@ -36,7 +36,7 @@ namespace AntalyaTaksiAccount.Services
 
         }
 
-        private async Task<bool> SendStation(int stationID,string latitude,string longtitude)
+        public async Task<bool> SendStation(int stationID,string latitude,string longtitude)
         {
             double latitudeAsDouble=Convert.ToDouble(latitude);
             double longtitudeAsDouble = Convert.ToDouble(longtitude);
