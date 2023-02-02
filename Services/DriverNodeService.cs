@@ -10,7 +10,7 @@ namespace AntalyaTaksiAccount.Services
         public DriverNodeService(HttpClient httpClient,IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri("https://5995-89-43-78-197.eu.ngrok.io");
+            _httpClient.BaseAddress = new Uri("https://3f74-89-43-78-197.eu.ngrok.io");
             _configuration = configuration;
         }
 
