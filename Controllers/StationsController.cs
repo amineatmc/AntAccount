@@ -112,9 +112,10 @@ namespace AntalyaTaksiAccount.Controllers
             {
                 return NotFound();
             }
-
-            _context.Stations.Remove(station);
+            station.Activity = 0;
             await _context.SaveChangesAsync();
+
+            _driverNodeService.DeleteStation(id);
 
             return NoContent();
         }

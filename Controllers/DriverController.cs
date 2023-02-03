@@ -128,6 +128,7 @@ namespace AntalyaTaksiAccount.Controllers
             try 
             {
                 Models.Driver user =await (from c in _aTAccountContext.Drivers where c.DriverID == id && c.Activity == 1 select c).FirstOrDefaultAsync();
+                await _driverNodeService.DeleteDriver(id);
             }
             catch (Exception ex)
             {
