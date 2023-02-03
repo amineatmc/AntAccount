@@ -147,7 +147,7 @@ namespace AntalyaTaksiAccount.Controllers
                 return BadRequest("Var olan bir Id Numarası.");
             }
 
-            if (!Helper.UnicPhoneNumberControl(addDriverWithStation.IdNo,_aTAccountContext))
+            if (!Helper.UnicPhoneNumberControl(addDriverWithStation.Phone,_aTAccountContext))
             {
                 return BadRequest("Var olan bir Telefon numarası.");
             }
@@ -181,7 +181,7 @@ namespace AntalyaTaksiAccount.Controllers
             driver.Activity = 1;
             allUser.UserType = role.RoleID;
 
-            var stationController=new StationsController(_aTAccountContext);
+            var stationController=new StationsController(_aTAccountContext,null);
             var stationResult=await stationController.GetStation(10);
             driver.Station = stationResult.Value;  //Todo Get From Request.
 

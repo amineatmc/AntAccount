@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AntalyaTaksiAccount.Models;
+using AntalyaTaksiAccount.Models.DummyModels;
+using AntalyaTaksiAccount.Utils;
+using AntalyaTaksiAccount.Services;
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -14,8 +17,9 @@ namespace AntalyaTaksiAccount.Controllers
     public class StationsController : ControllerBase
     {
         private readonly ATAccountContext _context;
+        private readonly DriverNodeService _driverNodeService;
 
-        public StationsController(ATAccountContext context)
+        public StationsController(ATAccountContext context, DriverNodeService driverNodeService)
         {
             _context = context;
         }
@@ -119,5 +123,53 @@ namespace AntalyaTaksiAccount.Controllers
         {
             return (_context.Stations?.Any(e => e.StationID == id)).GetValueOrDefault();
         }
+
+        [HttpPost("stationwithstation")]
+        public async Task<ActionResult> AddStationWithStation(AddStationWithStationRequest addStationWithStationRequest)
+        {
+            if (!Helper.UnicEmailControl(addStationWithStationRequest.MailAddress, _context))
+            {
+                return BadRequest("Var olan bir email adresi.");
+            }
+
+            if (!Helper.UnicPhoneNumberControl(addStationWithStationRequest.Phone, _context))
+            {
+                return BadRequest("Var olan bir Telefon numarası.");
+            }
+
+            AllUser allUser = new AllUser();
+            allUser.Surname = addStationWithStationRequest.Surname;
+            allUser.MailVerify = 1;
+            allUser.Activity = 1;
+            allUser.Name = addStationWithStationRequest.Name;
+            allUser.MailAdress = addStationWithStationRequest.MailAddress;
+            allUser.Phone = addStationWithStationRequest.Phone;
+            allUser.Password = Helper.PasswordEncode("123456");
+            _context.AllUsers.Add(allUser);
+            allUser.UserType = 3;
+
+            Station station = new Station();
+            station.Latitude = addStationWithStationRequest.Latitude;
+            station.Longitude = addStationWithStationRequest.Longtitude;
+            station.Activity = 1;
+            station.AllUser = allUser;
+            station.CreatedDate = DateTime.UtcNow;
+            station.StationArea = addStationWithStationRequest.StationArea;
+            
+
+            _context.Stations.Add(station);
+
+            _context.SaveChangesAsync();
+
+            bool resultOfNodeService=await _driverNodeService.SendStation(station.StationID, addStationWithStationRequest.Latitude, addStationWithStationRequest.Longtitude);
+
+            if (!resultOfNodeService)
+            {
+                //TODO Add POlly for this logic. 
+            }
+
+            return Ok();
+        }
+
     }
 }
