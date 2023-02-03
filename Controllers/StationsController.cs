@@ -115,7 +115,7 @@ namespace AntalyaTaksiAccount.Controllers
 
             _context.Stations.Remove(station);
             await _context.SaveChangesAsync();
-
+            _driverNodeService.DeleteStation(id);
             return NoContent();
         }
 
