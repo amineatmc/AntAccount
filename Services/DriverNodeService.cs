@@ -54,6 +54,26 @@ namespace AntalyaTaksiAccount.Services
             return sendDriverResult.IsSuccessStatusCode;
         }
 
+        public async Task<bool> DeleteStation(int stationID)
+        {
+            AddJwtToken();
+            var deleteDriverResult=await _httpClient.DeleteAsync("/stations/"+stationID);
+
+            string message=await deleteDriverResult.Content.ReadAsStringAsync();
+
+            return deleteDriverResult.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteDriver(int driverID)
+        {
+            AddJwtToken();
+            var deleteDriverResult = await _httpClient.DeleteAsync("/drivers/" + driverID);
+
+            string message = await deleteDriverResult.Content.ReadAsStringAsync();
+
+            return deleteDriverResult.IsSuccessStatusCode;
+        }
+
     }
 
     public class DriverNode
