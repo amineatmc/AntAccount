@@ -1,7 +1,7 @@
 ﻿using AntalyaTaksiAccount.Models;
 using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Utils;
-
+using Azure.Core.Serialization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -130,9 +131,16 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpPost("OtpSend")]
         public async Task<ActionResult> OtpSend(CheckOtpDto checkOtpDto)
         {
-            Otp _otp = new Otp(_aTAccountContext, "");
+            Otp _otp = new Otp(_aTAccountContext);
             var result = _otp.CheckOtpSendMethod(checkOtpDto);
-            return Ok(result);
+            return Ok("Otp Gönderimi Başarılı.");
+        }
+        [HttpPost("CheckOtp")]
+        public async Task<ActionResult> CheckOtp(CheckOtpDto checkOtpDto)
+        {
+            Otp _otp = new Otp(_aTAccountContext);
+            var result = _otp.CheckOtpVerification(checkOtpDto);           
+            return Ok("Otp Eşleştirme Başarılı.");
         }
     }
 }

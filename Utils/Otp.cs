@@ -13,13 +13,13 @@ namespace AntalyaTaksiAccount.Utils
 
         private readonly ATAccountContext _aTAccountContext;
         string rootDir = "./Content/OtpMessage/";
-        public Otp(ATAccountContext aTAccountContext,string rootDir)
+        public Otp(ATAccountContext aTAccountContext)
         {
             _aTAccountContext = aTAccountContext;
-            this.rootDir = rootDir;
+            
         }
 
-        public IResult SendOtp(VerimorOtpSend verimorOtpSend)
+        public string SendOtp(VerimorOtpSend verimorOtpSend)
         {
             var smsIstegi = new SmsIstegi();
             smsIstegi.username = "908502420134";
@@ -27,7 +27,7 @@ namespace AntalyaTaksiAccount.Utils
             smsIstegi.source_addr = "IPOS";
             smsIstegi.messages = new Mesaj[] { new Mesaj(verimorOtpSend.Mesaj, verimorOtpSend.Phone) };
             IstegiGonder(smsIstegi);
-            return SendOtp(verimorOtpSend);
+            return JsonConvert.SerializeObject(verimorOtpSend);
         }
 
         private void IstegiGonder(SmsIstegi istek)
@@ -56,7 +56,7 @@ namespace AntalyaTaksiAccount.Utils
             }
         }
 
-        public IResult CheckOtpSendMethod(CheckOtpDto checkOtpDto)
+        public string CheckOtpSendMethod(CheckOtpDto checkOtpDto)
         {
             int number = 0;
 
@@ -81,11 +81,13 @@ namespace AntalyaTaksiAccount.Utils
             string filePath = Path.Combine(rootDir, fileName);
             File.WriteAllText(filePath, serializeOtp);
 
-            return SendOtp(otpSend);
+            return JsonConvert.SerializeObject(otpSend);
 
         }
 
-        public IResult CheckOtpVerification(CheckOtpDto checkOtpDto)
+
+
+        public string CheckOtpVerification(CheckOtpDto checkOtpDto)
         {
            
             if (Directory.Exists(rootDir))
@@ -100,11 +102,11 @@ namespace AntalyaTaksiAccount.Utils
                     File.Delete(newfile);
                     AllUser user = _aTAccountContext.AllUsers.Where(p => p.Phone == checkOtpDto.Phone).First();
 
-                    return CheckOtpVerification(checkOtpDto);
+                    return JsonConvert.SerializeObject(checkOtpDto);
                 }
-                return CheckOtpVerification(checkOtpDto);
+                return JsonConvert.SerializeObject(checkOtpDto);
             }
-            return CheckOtpVerification(checkOtpDto);
+            return JsonConvert.SerializeObject(checkOtpDto);
         }
         class Mesaj
         {
