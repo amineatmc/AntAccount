@@ -11,5 +11,6 @@ namespace AntalyaTaksiAccount.Models.DummyModels
         public string IdNo { get; set; }
         public DateTime Birthday { get; set; }
         public string DriverLicenseNo { get;set; }
+        public int? StationID { get; set; }
     }
 }

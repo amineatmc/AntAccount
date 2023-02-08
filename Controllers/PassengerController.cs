@@ -137,9 +137,8 @@ namespace AntalyaTaksiAccount.Controllers
             allUser.MailAdress = addPassengerWithStationRequest.MailAddress;
             allUser.Phone = addPassengerWithStationRequest.Phone;
             allUser.Password = Helper.PasswordEncode("123456");
+            allUser.UserType = 2;
             _context.AllUsers.Add(allUser);
-
-            //i need role build
 
             Passenger passenger = new Passenger();
             passenger.Activity = 1;
