@@ -116,8 +116,8 @@ namespace AntalyaTaksiAccount.Controllers
             return (_context.Passengers?.Any(e => e.PassengerID == id)).GetValueOrDefault();
         }
 
-        [HttpPost("stationwithstation")]
-        public async Task<ActionResult> AddStationWithStation(AddPassengerWithStationRequest addPassengerWithStationRequest)
+        [HttpPost("passengerwithstation")]
+        public async Task<ActionResult> AddPassengerWithStation(AddPassengerWithStationRequest addPassengerWithStationRequest)
         {
             if (!Helper.UnicEmailControl(addPassengerWithStationRequest.MailAddress, _context))
             {
