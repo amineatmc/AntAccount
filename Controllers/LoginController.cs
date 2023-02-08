@@ -62,7 +62,7 @@ namespace AntalyaTaksiAccount.Controllers
                 }
 
                 JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
-                string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType);
+                string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType.ToString());
                 return Ok(token);
 
             }
@@ -98,7 +98,7 @@ namespace AntalyaTaksiAccount.Controllers
 
 
                 JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
-                string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType);
+                string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType.ToString());
                 return Ok(token);
 
             }

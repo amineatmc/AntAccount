@@ -13,8 +13,14 @@ namespace AntalyaTaksiAccount.Utils
         {
             _configuration = configuration;
         }
-        private string Generator(int id,string userName, string mail,int userType, string issuer, string audience, byte[] key)
+        private string Generator(int id, string userName, string mail, string appType, string issuer, string audience, byte[] key)
         {
+            if (appType == "1")
+                appType  = "Driver";
+            if (appType == "2")
+                appType = "User";
+            if (appType == "3")
+                appType = "Station";
 
             var securityDescriptor = new SecurityTokenDescriptor
             {
@@ -26,12 +32,13 @@ namespace AntalyaTaksiAccount.Utils
                 Subject = new System.Security.Claims.ClaimsIdentity(new[]
                 {
                     //TODO Implemented Further. 
-                   new Claim("Id", Guid.NewGuid().ToString()),
-                   new Claim(JwtRegisteredClaimNames.Acr,id.ToString()),
+                   new Claim("GuidId", Guid.NewGuid().ToString()),
+                   new Claim("id",id.ToString()),
                    new Claim(JwtRegisteredClaimNames.Sub, userName),
                    new Claim(JwtRegisteredClaimNames.Email,mail),
-                   new Claim(JwtRegisteredClaimNames.UniqueName,userType.ToString()),
-                   new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
+                   new Claim("app_type",appType.ToString()),
+                   new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+
                 })
             };
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -39,15 +46,15 @@ namespace AntalyaTaksiAccount.Utils
             string tokenString = tokenHandler.WriteToken(token);
             return tokenString;
         }
-        public string Generate(int id,string userName, string mail,int roleID)
+        public string Generate( int id, string userName, string mail, string appType)
         {
             var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
-            return Generator(id,userName, mail, roleID, _configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], key);
+            return Generator(id, userName, mail, appType, _configuration["Jwt:Issuer"], _configuration["Jwt:Audience"], key);
         }
-        public string GeneratorTest(int id,string userName, string mail,int roleID, string issuer, string audience, string key)
+        public string GeneratorTest( int id, string userName, string mail, string appType, string issuer, string audience, string key)
         {
             var keyBytes = Encoding.ASCII.GetBytes(key);
-            return Generator(id,userName, mail,roleID, issuer, audience, keyBytes);
+            return Generator(id, userName, mail, appType, issuer, audience, keyBytes);
         }
     }
 }

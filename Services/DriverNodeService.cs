@@ -31,7 +31,7 @@ namespace AntalyaTaksiAccount.Services
         private void AddJwtToken()
         {
             JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
-            string token = jwtTokenGenerator.Generate(0, "apiuser", "apiuser@apimail.com", 1);
+            string token = jwtTokenGenerator.Generate(0, "apiuser", "apiuser@apimail.com","");
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
         }
