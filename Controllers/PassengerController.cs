@@ -143,6 +143,15 @@ namespace AntalyaTaksiAccount.Controllers
 
             Passenger passenger = new Passenger();
             passenger.Activity = 1;
+            passenger.IdNo = "123";
+            passenger.Birthday= DateTime.UtcNow;
+            passenger.Pet = false;
+            passenger.Travel = false;
+            passenger.Banned = false;
+            passenger.Lang ="1" ;
+            passenger.Lat = "1";
+            passenger.Created = DateTime.UtcNow;
+            passenger.AllUser = allUser;
             _context.Passengers.Add(passenger);
             _context.SaveChangesAsync();
 
