@@ -27,6 +27,7 @@ namespace AntalyaTaksiAccount.Utils
             smsIstegi.source_addr = "IPOS";
             smsIstegi.messages = new Mesaj[] { new Mesaj(verimorOtpSend.Mesaj, verimorOtpSend.Phone) };
             IstegiGonder(smsIstegi);
+            /**/
             return JsonConvert.SerializeObject(verimorOtpSend);
         }
 
@@ -67,19 +68,28 @@ namespace AntalyaTaksiAccount.Utils
             otpSend.Mesaj = "Guvenliginiz icin onay kodunuzu kimse ile paylasmayiniz onay kodunuz: " + number;
             otpSend.Phone = "90" + checkOtpDto.Phone;
             var res = SendOtp(otpSend);
-
-            checkOtpDto.OtpMessage = $"{number}";
-            string serializeOtp = JsonConvert.SerializeObject(checkOtpDto);
-
-
-            if (!Directory.Exists(rootDir))
+            /**/
+            try
             {
-                Directory.CreateDirectory(rootDir);
-            }
+                checkOtpDto.OtpMessage = $"{number}";
+                string serializeOtp = JsonConvert.SerializeObject(checkOtpDto);
 
-            string fileName = $"{checkOtpDto.UserID}_{checkOtpDto.Phone}.json";
-            string filePath = Path.Combine(rootDir, fileName);
-            File.WriteAllText(filePath, serializeOtp);
+
+                if (!Directory.Exists(rootDir))
+                {
+                    Directory.CreateDirectory(rootDir);
+                }
+
+                string fileName = $"{checkOtpDto.UserID}_{checkOtpDto.Phone}.json";
+                string filePath = Path.Combine(rootDir, fileName);
+                File.WriteAllText(filePath, serializeOtp);
+
+            }
+            catch (Exception ex) 
+            {
+
+                var mesaj = ex.Message;
+            }
 
             return JsonConvert.SerializeObject(otpSend);
 
