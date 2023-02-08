@@ -152,7 +152,7 @@ namespace AntalyaTaksiAccount.Controllers
             passenger.Created = DateTime.UtcNow;
             passenger.AllUser = allUser;
             _context.Passengers.Add(passenger);
-            _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             bool resultOfNodeService = await _driverNodeService.SendPassenger(passenger.PassengerID);
 
