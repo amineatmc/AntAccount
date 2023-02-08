@@ -29,9 +29,9 @@ namespace AntalyaTaksiAccount.Services
             return sendDriverResult.IsSuccessStatusCode;
         }
 
-        //public async Task<bool> SendPassenger(int passengerId)
-        //{
-        //    AddJwtToken();
+        public async Task<bool> SendPassenger(int passengerId)
+        {
+            AddJwtToken();
 
             UserNode userNode = new UserNode
             {
