@@ -16,10 +16,10 @@ namespace AntalyaTaksiAccount.Controllers
 
         private readonly ATAccountContext _aTAccountContext;
         private readonly DriverNodeService _driverNodeService;
-       // private readonly ILogger<DriverController> _logger;
-        public DriverController( ATAccountContext aTAccountContext,DriverNodeService driverNodeService)
+        // private readonly ILogger<DriverController> _logger;
+        public DriverController(ATAccountContext aTAccountContext, DriverNodeService driverNodeService)
         {
-           // _logger = logger;
+            // _logger = logger;
             _aTAccountContext = aTAccountContext;
             _driverNodeService = driverNodeService;
         }
@@ -72,19 +72,20 @@ namespace AntalyaTaksiAccount.Controllers
         }
 
         [HttpPost("Post")]
-        private  async Task<ActionResult> Post(Driver user)
+        private async Task<ActionResult> Post(Driver user)
         {
             try
-            {               
+            {
+
                 if (!ModelState.IsValid)
                 {
                     return BadRequest("Model bilgileri doğru değil.");
                 }
 
                 Driver user1 = new Driver();
-               
-                
-               user1.AllUserID= user.AllUserID;
+
+
+                user1.AllUserID = user.AllUserID;
                 user1.Activity = 1;
                 _aTAccountContext.Drivers.Add(user1);
                 _aTAccountContext.SaveChanges();
@@ -105,7 +106,7 @@ namespace AntalyaTaksiAccount.Controllers
                 {
                     Models.Driver user1 = await (from c in _aTAccountContext.Drivers where c.DriverID == user.DriverID && c.Activity == 1 select c).FirstOrDefaultAsync();
                     if (user1 == null) { return NoContent(); }
-                   
+
                     if (user1.RoleID != user.RoleID)
                     {
                         user1.RoleID = user.RoleID;
@@ -124,9 +125,9 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpDelete("{id}")]
         public async void Delete(int id)
         {
-            try 
+            try
             {
-                Models.Driver user =await (from c in _aTAccountContext.Drivers where c.DriverID == id && c.Activity == 1 select c).FirstOrDefaultAsync();
+                Models.Driver user = await (from c in _aTAccountContext.Drivers where c.DriverID == id && c.Activity == 1 select c).FirstOrDefaultAsync();
                 await _driverNodeService.DeleteDriver(id);
             }
             catch (Exception ex)
@@ -142,12 +143,12 @@ namespace AntalyaTaksiAccount.Controllers
                 return BadRequest("Var olan bir email adresi.");
             }
 
-            if (!Helper.UnicIdNoControl(addDriverWithStation.IdNo,_aTAccountContext))
+            if (!Helper.UnicIdNoControl(addDriverWithStation.IdNo, _aTAccountContext))
             {
                 return BadRequest("Var olan bir Id Numarası.");
             }
 
-            if (!Helper.UnicPhoneNumberControl(addDriverWithStation.Phone,_aTAccountContext))
+            if (!Helper.UnicPhoneNumberControl(addDriverWithStation.Phone, _aTAccountContext))
             {
                 return BadRequest("Var olan bir Telefon numarası.");
             }
@@ -162,34 +163,40 @@ namespace AntalyaTaksiAccount.Controllers
             allUser.MailAdress = addDriverWithStation.MailAddress;
             allUser.Phone = addDriverWithStation.Phone;
             allUser.Password = Helper.PasswordEncode("123456");
-            
+            allUser.UserType = 1;
             _aTAccountContext.AllUsers.Add(allUser);
 
             Driver driver = new Driver();
-
-            driver.Station = null;//Come From Token or Header
+           
             driver.IdNo = addDriverWithStation.IdNo;
-            driver.Ip = string.Empty;
+            driver.Ip = "0.0.0.0";
             driver.BirthDay = addDriverWithStation.Birthday;
             driver.CreatedDate = DateTime.UtcNow;
             driver.AllUser = allUser;
             driver.DriverLicenseNo = addDriverWithStation.DriverLicenseNo;
-
-            RoleController roleController = new RoleController(_aTAccountContext);
-            Role role=await roleController.Get(1);
-            driver.Role = role;
+            driver.Rating = 1;
+            driver.StationID = addDriverWithStation.StationID.Value;
+            driver.Penalty = false;
+            driver.Pet = false;
+            driver.RoleID = 1;
             driver.Activity = 1;
-            allUser.UserType = role.RoleID;
+            driver.AllUser = allUser;
 
-            var stationController=new StationsController(_aTAccountContext,null);
-            var stationResult=await stationController.GetStation(10);
-            driver.Station = stationResult.Value;  //Todo Get From Request.
+            //RoleController roleController = new RoleController(_aTAccountContext);
+            //Role role=await roleController.Get(1);
+            //driver.Role = role;
+            //driver.Activity = 1;
+            //allUser.UserType = role.RoleID;
+
+            //var stationController = new StationsController(_aTAccountContext, null);
+            //var stationResult = await stationController.GetStation(10);
+           // driver.Station = stationResult.Value;  //Todo Get From Request.
 
             _aTAccountContext.Add(driver);
 
             await _aTAccountContext.SaveChangesAsync();
 
-            bool resultOfNodeService=await _driverNodeService.SendDriver(driver.DriverID, driver.StationID);
+            bool resultOfNodeService = await _driverNodeService.SendDriver(driver.DriverID, driver.StationID);
             if (!resultOfNodeService)
             {
                 //TODO Add POlly for this logic. 
@@ -197,6 +204,6 @@ namespace AntalyaTaksiAccount.Controllers
 
             return Ok();
         }
-        
+
     }
 }

@@ -28,10 +28,10 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Station>>> GetStations()
         {
-          if (_context.Stations == null)
-          {
-              return NotFound();
-          }
+            if (_context.Stations == null)
+            {
+                return NotFound();
+            }
             return await _context.Stations.ToListAsync();
         }
 
@@ -39,10 +39,10 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Station>> GetStation(int id)
         {
-          if (_context.Stations == null)
-          {
-              return NotFound();
-          }
+            if (_context.Stations == null)
+            {
+                return NotFound();
+            }
             var station = await _context.Stations.FindAsync(id);
 
             if (station == null)
@@ -89,10 +89,10 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpPost]
         public async Task<ActionResult<Station>> PostStation(Station station)
         {
-          if (_context.Stations == null)
-          {
-              return Problem("Entity set 'ATAccountContext.Stations'  is null.");
-          }
+            if (_context.Stations == null)
+            {
+                return Problem("Entity set 'ATAccountContext.Stations'  is null.");
+            }
             _context.Stations.Add(station);
             await _context.SaveChangesAsync();
 
@@ -156,13 +156,14 @@ namespace AntalyaTaksiAccount.Controllers
             station.AllUser = allUser;
             station.CreatedDate = DateTime.UtcNow;
             station.StationArea = addStationWithStationRequest.StationArea;
-            
-
+            station.StationNumber = 0;
+            station.StationStatu = false;
+            station.Ip = "0.0.0.0";
             _context.Stations.Add(station);
 
             _context.SaveChangesAsync();
 
-            bool resultOfNodeService=await _driverNodeService.SendStation(station.StationID, addStationWithStationRequest.Latitude, addStationWithStationRequest.Longtitude);
+            bool resultOfNodeService = await _driverNodeService.SendStation(station.StationID, addStationWithStationRequest.Latitude, addStationWithStationRequest.Longtitude);
 
             if (!resultOfNodeService)
             {

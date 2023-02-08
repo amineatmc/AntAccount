@@ -1,4 +1,5 @@
 ﻿using AntalyaTaksiAccount.Utils;
+using System.Net.Http.Json;
 
 namespace AntalyaTaksiAccount.Services
 {
@@ -32,15 +33,14 @@ namespace AntalyaTaksiAccount.Services
         //{
         //    AddJwtToken();
 
-        //    UsersNode driverNode = new DriverNode
-        //    {
-        //        driverId = driverId,
-        //        stationId = stationId
-        //    };
-        //    var sendDriverResult = await _httpClient.PostAsJsonAsync<DriverNode>("/drivers", driverNode);
-        //    string message = await sendDriverResult.Content.ReadAsStringAsync();
-        //    return sendDriverResult.IsSuccessStatusCode;
-        //}
+            UserNode userNode = new UserNode
+            {
+                userId= passengerId
+            };
+            var sendDriverResult = await _httpClient.PostAsJsonAsync<UserNode>("/users", userNode);
+            string message = await sendDriverResult.Content.ReadAsStringAsync();
+            return sendDriverResult.IsSuccessStatusCode;
+        }
 
         private void AddJwtToken()
         {
