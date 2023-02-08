@@ -28,25 +28,39 @@ namespace AntalyaTaksiAccount.Services
             return sendDriverResult.IsSuccessStatusCode;
         }
 
+        public async Task<bool> SendPassenger(int passengerId)
+        {
+            AddJwtToken();
+
+            UsersNode driverNode = new DriverNode
+            {
+                driverId = driverId,
+                stationId = stationId
+            };
+            var sendDriverResult = await _httpClient.PostAsJsonAsync<DriverNode>("/drivers", driverNode);
+            string message = await sendDriverResult.Content.ReadAsStringAsync();
+            return sendDriverResult.IsSuccessStatusCode;
+        }
+
         private void AddJwtToken()
         {
             JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
-            string token = jwtTokenGenerator.Generate(0, "apiuser", "apiuser@apimail.com","");
+            string token = jwtTokenGenerator.Generate(0, "apiuser", "apiuser@apimail.com", "");
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
         }
 
-        public async Task<bool> SendStation(int stationID,string latitude,string longtitude)
+        public async Task<bool> SendStation(int stationID, string latitude, string longtitude)
         {
-            double latitudeAsDouble=Convert.ToDouble(latitude);
+            double latitudeAsDouble = Convert.ToDouble(latitude);
             double longtitudeAsDouble = Convert.ToDouble(longtitude);
 
             AddJwtToken();
             StationNode stationNode = new StationNode
             {
-                latitude=latitudeAsDouble,
-                longitude=longtitudeAsDouble,
-                stationId= stationID
+                latitude = latitudeAsDouble,
+                longitude = longtitudeAsDouble,
+                stationId = stationID
 
             };
             var sendDriverResult = await _httpClient.PostAsJsonAsync("/stations", stationNode);
@@ -57,9 +71,9 @@ namespace AntalyaTaksiAccount.Services
         public async Task<bool> DeleteStation(int stationID)
         {
             AddJwtToken();
-            var deleteDriverResult=await _httpClient.DeleteAsync("/stations/"+stationID);
+            var deleteDriverResult = await _httpClient.DeleteAsync("/stations/" + stationID);
 
-            string message=await deleteDriverResult.Content.ReadAsStringAsync();
+            string message = await deleteDriverResult.Content.ReadAsStringAsync();
 
             return deleteDriverResult.IsSuccessStatusCode;
         }
@@ -89,6 +103,9 @@ namespace AntalyaTaksiAccount.Services
         public double latitude { get; set; }
         public double longitude { get; set; }
     }
-
+    public class UserNode
+    {
+        public int userId { get; set; }
+    }
 
 }
