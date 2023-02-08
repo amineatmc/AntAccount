@@ -133,6 +133,7 @@ namespace AntalyaTaksiAccount.Controllers
         {
             Otp _otp = new Otp(_aTAccountContext);
             var result = _otp.CheckOtpSendMethod(checkOtpDto);
+
             return Ok("Otp Gönderimi Başarılı.");
         }
         [HttpPost("CheckOtp")]
