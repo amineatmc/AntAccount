@@ -28,19 +28,19 @@ namespace AntalyaTaksiAccount.Services
             return sendDriverResult.IsSuccessStatusCode;
         }
 
-        public async Task<bool> SendPassenger(int passengerId)
-        {
-            AddJwtToken();
+        //public async Task<bool> SendPassenger(int passengerId)
+        //{
+        //    AddJwtToken();
 
-            UsersNode driverNode = new DriverNode
-            {
-                driverId = driverId,
-                stationId = stationId
-            };
-            var sendDriverResult = await _httpClient.PostAsJsonAsync<DriverNode>("/drivers", driverNode);
-            string message = await sendDriverResult.Content.ReadAsStringAsync();
-            return sendDriverResult.IsSuccessStatusCode;
-        }
+        //    UsersNode driverNode = new DriverNode
+        //    {
+        //        driverId = driverId,
+        //        stationId = stationId
+        //    };
+        //    var sendDriverResult = await _httpClient.PostAsJsonAsync<DriverNode>("/drivers", driverNode);
+        //    string message = await sendDriverResult.Content.ReadAsStringAsync();
+        //    return sendDriverResult.IsSuccessStatusCode;
+        //}
 
         private void AddJwtToken()
         {

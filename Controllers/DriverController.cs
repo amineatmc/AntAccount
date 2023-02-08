@@ -75,8 +75,7 @@ namespace AntalyaTaksiAccount.Controllers
         private  async Task<ActionResult> Post(Driver user)
         {
             try
-            {
-               
+            {               
                 if (!ModelState.IsValid)
                 {
                     return BadRequest("Model bilgileri doğru değil.");
