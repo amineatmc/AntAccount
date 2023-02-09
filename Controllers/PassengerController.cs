@@ -70,7 +70,14 @@ namespace AntalyaTaksiAccount.Controllers
                 return BadRequest();
             }
 
+            AllUser user1 = await (from c in _context.AllUsers where c.AllUserID == passenger.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
+            user1.Name=passenger.AllUser.Name;
+            user1.Surname=passenger.AllUser.Surname;
+            user1.MailAdress=passenger.AllUser.MailAdress;
+            user1.Phone=passenger.AllUser.Phone;
+
             _context.Entry(passenger).State = EntityState.Modified;
+            _context.AllUsers.Update(user1);
 
             try
             {
@@ -87,10 +94,8 @@ namespace AntalyaTaksiAccount.Controllers
                     throw;
                 }
             }
-
             return NoContent();
         }
-
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePassenger(int id)
