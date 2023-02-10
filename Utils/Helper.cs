@@ -1,6 +1,5 @@
 ﻿using AntalyaTaksiAccount.Models;
-using BilgeCryptoHelpers;
-using BilgeCryptoHelpers.PasswordControlUtilsHelpers;
+
 using AntalyaTaksiAccount.Models;
 //using AntalyaTaksiAccount.Models.DummyModels;
 using System.Net.Mail;
@@ -13,53 +12,7 @@ namespace AntalyaTaksiAccount.Utils
     {
         
 
-        public static bool PasswordControl(string pass)
-        {
-            var Rules = new List<IRule>();
-
-            IRule lowerCaseRule = new ClassicalRule()
-            {
-                MinValidValue = 2,
-                ErrorMessage = "Not Enough LowerCase Letters Present",
-                RegexValue = "[^a-z]",
-                RuleName = "LowerCase"
-            };
-            Rules.Add(lowerCaseRule);
-
-            Rule upperCaseRule = new ClassicalRule()
-            {
-                MinValidValue = 1,
-                ErrorMessage = "Not Enough UpperCase Letters Present",
-                RegexValue = "[^A-Z]",
-                RuleName = "UpperCase"
-            };
-            Rules.Add(upperCaseRule);
-
-            Rule digitRule = new ClassicalRule()
-            {
-                MinValidValue = 1,
-                ErrorMessage = "Not Enough Digits  Present",
-                RegexValue = "[^0-9]",
-                RuleName = "Digit"
-            };
-            Rules.Add(digitRule);
-
-            Rule symbolRules = new ClassicalRule()
-            {
-                MinValidValue = 1,
-                ErrorMessage = "Not Enough Symbols  Present",
-                RegexValue = "[^.:^,; *?= !&\\-_]",
-                RuleName = "Symbols"
-            };
-            Rules.Add(symbolRules);
-
-            
-            PasswordControlUtils passwordControlUtils = new PasswordControlUtils();
-            passwordControlUtils.Rules = Rules;
-
-            (bool result, List<string> errorResults) = passwordControlUtils.IsPasswordValidWithAllMessageWithRules(pass);
-            return result;
-        }
+        
         public static bool UnicEmailControl(string email,ATAccountContext aTAccountContext)
         {
             try

@@ -52,8 +52,17 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
+ConnectionMultiplexer redis = null;
 
-ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("192.168.2.154:6379 , syncTimeout=10000 ");
+if(builder.Environment.IsDevelopment())
+{
+     redis = ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisDevCon"));
+}
+else
+{
+    redis = ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisProdCon"));
+}
+
 builder.Services.AddSingleton<IConnectionMultiplexer>(redis);
 
 
