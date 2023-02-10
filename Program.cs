@@ -1,5 +1,6 @@
 using AntalyaTaksiAccount.Models;
 using AntalyaTaksiAccount.Services;
+using AntalyaTaksiAccount.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 //using Microsoft.AspNetCore.Authorization;
@@ -13,6 +14,10 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+EnvironmentDetermination environmentDetermination = new EnvironmentDetermination();
+environmentDetermination.IsDevelopment = builder.Environment.IsDevelopment();
+builder.Services.AddSingleton<EnvironmentDetermination>(environmentDetermination);
 
 builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 builder.Services.AddDbContext<ATAccountContext>();

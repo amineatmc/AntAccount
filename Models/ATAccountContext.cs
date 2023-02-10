@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using AntalyaTaksiAccount.Utils;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AntalyaTaksiAccount.Models
@@ -6,14 +7,24 @@ namespace AntalyaTaksiAccount.Models
     public class ATAccountContext : DbContext
     {
         private readonly IConfiguration _configuration;
+        private readonly EnvironmentDetermination _environmentDetermination;
 
-        public ATAccountContext(IConfiguration configuration)
+        public ATAccountContext(IConfiguration configuration,EnvironmentDetermination environmentDetermination)
         {
             _configuration = configuration;
+            _environmentDetermination = environmentDetermination;
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DevCon"));
+            if (_environmentDetermination.IsDevelopment)
+            {
+                optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DevCon"));
+            }
+            else
+            {
+                optionsBuilder.UseSqlServer(_configuration.GetConnectionString("ProdCon"));
+
+            }
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
