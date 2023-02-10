@@ -94,7 +94,7 @@ namespace AntalyaTaksiAccount.Controllers
                     throw;
                 }
             }
-            return NoContent();
+            return Ok("Güncellendi");
         }
 
         [HttpDelete("{id}")]

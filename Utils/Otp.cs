@@ -1,22 +1,28 @@
 ﻿using AntalyaTaksiAccount.Models;
-
+using StackExchange.Redis;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Composition;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AntalyaTaksiAccount.Utils
 {
     public class Otp
     {
 
+
         private readonly ATAccountContext _aTAccountContext;
         string rootDir = "./Content/OtpMessage/";
-        public Otp(ATAccountContext aTAccountContext)
+        private readonly IConnectionMultiplexer _connectionMultiplexer;
+        public Otp(ATAccountContext aTAccountContext/*, IConnectionMultiplexer connectionMultiplexer*/)
         {
             _aTAccountContext = aTAccountContext;
-            
+            // _connectionMultiplexer = connectionMultiplexer;
         }
 
         public string SendOtp(VerimorOtpSend verimorOtpSend)
@@ -68,55 +74,78 @@ namespace AntalyaTaksiAccount.Utils
             otpSend.Mesaj = "Guvenliginiz icin onay kodunuzu kimse ile paylasmayiniz onay kodunuz: " + number;
             otpSend.Phone = "90" + checkOtpDto.Phone;
             var res = SendOtp(otpSend);
-            /**/
+         
             try
             {
                 checkOtpDto.OtpMessage = $"{number}";
                 string serializeOtp = JsonConvert.SerializeObject(checkOtpDto);
+                #region
+                //if (!Directory.Exists(rootDir))
+                //{
+                //    Directory.CreateDirectory(rootDir);
+                //}
+                //string fileName = $"{checkOtpDto.UserID}_{checkOtpDto.Phone}.json";
+                //string filePath = Path.Combine(rootDir, fileName);
+                //File.WriteAllText(filePath, serializeOtp);
+                #endregion
+                var name = checkOtpDto.UserID + "_" + checkOtpDto.Phone;
 
-
-                if (!Directory.Exists(rootDir))
-                {
-                    Directory.CreateDirectory(rootDir);
-                }
-
-                string fileName = $"{checkOtpDto.UserID}_{checkOtpDto.Phone}.json";
-                string filePath = Path.Combine(rootDir, fileName);
-                File.WriteAllText(filePath, serializeOtp);
+                ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("192.168.2.154:6379");
+                var db = redis.GetDatabase();
+                var dd = db.StringSet(name, serializeOtp);
+                db.KeyExpire(name, DateTime.Now.AddSeconds(60));
 
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-
                 var mesaj = ex.Message;
             }
-
             return JsonConvert.SerializeObject(otpSend);
 
         }
 
-
-
-        public string CheckOtpVerification(CheckOtpDto checkOtpDto)
+        public string  CheckOtpVerification(CheckOtpDto checkOtpDto)
         {
-           
-            if (Directory.Exists(rootDir))
+            ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("192.168.2.154:6379");
+            var db = redis.GetDatabase();
+            var name = checkOtpDto.UserID + "_" + checkOtpDto.Phone;
+            string get = db.StringGet(name);
+            if (get!=null)
             {
-                string newfile = $"{rootDir}{checkOtpDto.UserID}_{checkOtpDto.Phone}.json";
-                string messageJson = File.ReadAllText(newfile);
-
-                CheckOtpDto readOtp = JsonConvert.DeserializeObject<CheckOtpDto>(messageJson);
-
-                if (checkOtpDto.OtpMessage == readOtp.OtpMessage && checkOtpDto.Phone == readOtp.Phone)
+                var msg = JsonConvert.DeserializeObject<OtpMsg>(get);
+                if (msg.OtpMessage == checkOtpDto.OtpMessage)
                 {
-                    File.Delete(newfile);
-                    AllUser user = _aTAccountContext.AllUsers.Where(p => p.Phone == checkOtpDto.Phone).First();
-
-                    return JsonConvert.SerializeObject(checkOtpDto);
+                    db.KeyDelete(name);
+                    return ("true");
                 }
-                return JsonConvert.SerializeObject(checkOtpDto);
             }
-            return JsonConvert.SerializeObject(checkOtpDto);
+            #region
+            //if (Directory.Exists(rootDir))
+            //{
+            //    string newfile = $"{rootDir}{checkOtpDto.UserID}_{checkOtpDto.Phone}.json";
+            //    string messageJson = File.ReadAllText(newfile);
+
+            //    CheckOtpDto readOtp = JsonConvert.DeserializeObject<CheckOtpDto>(messageJson);
+
+            //    if (checkOtpDto.OtpMessage == readOtp.OtpMessage && checkOtpDto.Phone == readOtp.Phone)
+            //    {
+            //        File.Delete(newfile);
+            //        AllUser user = _aTAccountContext.AllUsers.Where(p => p.Phone == checkOtpDto.Phone).First();
+
+            //        return JsonConvert.SerializeObject(checkOtpDto);
+            //    }
+            //    return JsonConvert.SerializeObject(checkOtpDto);
+            //}
+            #endregion         
+            return ("false");
+        }
+
+
+        public class OtpMsg
+        {
+            public string Phone { get; set; }
+            public int UserID { get; set; }
+            public string OtpMessage { get; set; }
         }
         class Mesaj
         {

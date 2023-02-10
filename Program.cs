@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 //using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 using System.Text;
 
 
@@ -47,7 +48,13 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+
+
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
+
+ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("192.168.2.154:6379 , syncTimeout=10000 ");
+builder.Services.AddSingleton<IConnectionMultiplexer>(redis);
 
 
 builder.Services.AddEndpointsApiExplorer();
@@ -88,5 +95,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+//app.UseSession();
 app.Run();
