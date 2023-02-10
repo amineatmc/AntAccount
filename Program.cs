@@ -1,5 +1,6 @@
 using AntalyaTaksiAccount.Models;
 using AntalyaTaksiAccount.Services;
+using AntalyaTaksiAccount.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 //using Microsoft.AspNetCore.Authorization;
@@ -13,6 +14,10 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+EnvironmentDetermination environmentDetermination = new EnvironmentDetermination();
+environmentDetermination.IsDevelopment = builder.Environment.IsDevelopment();
+builder.Services.AddSingleton<EnvironmentDetermination>(environmentDetermination);
 
 builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 builder.Services.AddDbContext<ATAccountContext>();
@@ -52,8 +57,17 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
+ConnectionMultiplexer redis = null;
 
-ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("192.168.2.154:6379 , syncTimeout=10000 ");
+if(builder.Environment.IsDevelopment())
+{
+     redis = ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisDevCon"));
+}
+else
+{
+    redis = ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisProdCon"));
+}
+
 builder.Services.AddSingleton<IConnectionMultiplexer>(redis);
 
 
