@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -60,9 +61,25 @@ namespace AntalyaTaksiAccount.Controllers
                 {
                    return  BadRequest("Mail or Password is invalid");
                 }
-
+                int userid=0;
+                if (user.UserType == 1)
+                {
+                    var driver = _aTAccountContext.Drivers.Where(x => x.AllUserID == user.AllUserID).FirstOrDefault();
+                    userid = driver.DriverID;
+                   // var station = _context.Stations.Where(x => x.AllUserID == id).FirstOrDefault();
+                }
+                if (user.UserType==2)
+                {
+                    var passenger = _aTAccountContext.Passengers.Where(x => x.AllUserID == user.AllUserID).FirstOrDefault();
+                    userid = passenger.PassengerID;
+                }
+                if (user.UserType==3)
+                {
+                    var station = _aTAccountContext.Stations.Where(x => x.AllUserID == user.AllUserID).FirstOrDefault();
+                    userid = station.StationID;
+                }
                 JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
-                string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType.ToString());
+                string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType.ToString(),userid);
                 return Ok(token);
 
             }
@@ -96,9 +113,25 @@ namespace AntalyaTaksiAccount.Controllers
                     return BadRequest("Phone or Password is invalid");
                 }
 
-
+                int userid = 0;
+                if (user.UserType == 1)
+                {
+                    var driver = _aTAccountContext.Drivers.Where(x => x.AllUserID == user.AllUserID).FirstOrDefault();
+                    userid = driver.DriverID;
+                    // var station = _context.Stations.Where(x => x.AllUserID == id).FirstOrDefault();
+                }
+                if (user.UserType == 2)
+                {
+                    var passenger = _aTAccountContext.Passengers.Where(x => x.AllUserID == user.AllUserID).FirstOrDefault();
+                    userid = passenger.PassengerID;
+                }
+                if (user.UserType == 3)
+                {
+                    var station = _aTAccountContext.Stations.Where(x => x.AllUserID == user.AllUserID).FirstOrDefault();
+                    userid = station.StationID;
+                }
                 JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
-                string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType.ToString());
+                string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType.ToString(),userid);
                 return Ok(token);
 
             }
@@ -136,11 +169,16 @@ namespace AntalyaTaksiAccount.Controllers
 
             return Ok("Otp Gönderimi Başarılı.");
         }
+
         [HttpPost("CheckOtp")]
         public async Task<ActionResult> CheckOtp(CheckOtpDto checkOtpDto)
         {
             Otp _otp = new Otp(_aTAccountContext);
-            var result = _otp.CheckOtpVerification(checkOtpDto);           
+            var result =  _otp.CheckOtpVerification(checkOtpDto);
+            if (result=="false")
+            {
+                return BadRequest("Doğrulama Başarısız");
+            }
             return Ok("Otp Eşleştirme Başarılı.");
         }
     }

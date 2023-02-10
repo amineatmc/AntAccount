@@ -1,4 +1,5 @@
 ﻿using AntalyaTaksiAccount.Models;
+using AntalyaTaksiAccount.Services;
 using AntalyaTaksiAccount.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,13 @@ namespace AntalyaTaksiAccount.Controllers
     {
         private readonly ATAccountContext _aTAccountContext;
         private readonly ILogger<AllUserController> _logger;
-        public AllUserController(ILogger<AllUserController> logger, ATAccountContext aTAccountContext)
+        private readonly DriverNodeService _driverNodeService;
+
+        public AllUserController(ILogger<AllUserController> logger, ATAccountContext aTAccountContext, DriverNodeService driverNodeService)
         {
             _logger = logger;
             _aTAccountContext = aTAccountContext;
+            _driverNodeService = driverNodeService;
         }
         [HttpGet("Get")]
         public async Task<List<AllUser>> Get()
@@ -96,8 +100,18 @@ namespace AntalyaTaksiAccount.Controllers
                         passenger.AllUserID = user1.AllUserID;
                         passenger.IdNo = "0";
                         passenger.Created = DateTime.Now;
+                        passenger.Birthday = DateTime.Now;
+                        passenger.Pet = true;
+                        passenger.Travel = false;
+                        passenger.Disabled= false;
+                        passenger.Banned= false;
+                        passenger.Lang= "tr";
+                        passenger.Lat = "";
+
                         _aTAccountContext.Passengers.Add(passenger);
                         _aTAccountContext.SaveChanges();
+
+                        bool resultOfNodeService = await _driverNodeService.SendPassenger(passenger.PassengerID);
                         break;
                     case 3:
                         Station station = new Station();
@@ -169,8 +183,6 @@ namespace AntalyaTaksiAccount.Controllers
                 return Problem(ex.Message);
             }
         }
-
-
 
         [HttpPut("Put")]
         public async Task<ActionResult> Put(AllUser user)

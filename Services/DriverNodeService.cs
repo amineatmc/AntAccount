@@ -11,7 +11,7 @@ namespace AntalyaTaksiAccount.Services
         public DriverNodeService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri("https://3f74-89-43-78-197.eu.ngrok.io");
+            _httpClient.BaseAddress = new Uri("https://1a62-89-43-78-197.eu.ngrok.io");
             _configuration = configuration;
         }
 
@@ -45,7 +45,7 @@ namespace AntalyaTaksiAccount.Services
         private void AddJwtToken()
         {
             JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
-            string token = jwtTokenGenerator.Generate(0, "apiuser", "apiuser@apimail.com", "");
+            string token = jwtTokenGenerator.Generate(0, "apiuser", "apiuser@apimail.com", "",0);
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
         }
