@@ -29,7 +29,7 @@ namespace AntalyaTaksiAccount.Controllers
         {
             try
             {
-                var users = await _aTAccountContext.Drivers.Where(c => c.Activity == 1).Include(c => c.Role).ToListAsync();
+                var users = await _aTAccountContext.Drivers.Where(c => c.Activity == 1).ToListAsync();
 
                 return users;
             }
@@ -47,7 +47,7 @@ namespace AntalyaTaksiAccount.Controllers
         {
             try
             {
-                var user = await _aTAccountContext.Drivers.Where(c => c.Activity == 1 && c.DriverID == id).Include(c => c.Role).FirstOrDefaultAsync();
+                var user = await _aTAccountContext.Drivers.Where(c => c.Activity == 1 && c.DriverID == id).FirstOrDefaultAsync();
                 return user;
             }
             catch (Exception)
@@ -61,7 +61,7 @@ namespace AntalyaTaksiAccount.Controllers
         {
             try
             {
-                var user = await _aTAccountContext.Drivers.Where(c => c.Activity == 1 && c.AllUserID == id).Include(c => c.Role).FirstOrDefaultAsync();
+                var user = await _aTAccountContext.Drivers.Where(c => c.Activity == 1 && c.AllUserID == id).FirstOrDefaultAsync();
                 return user;
             }
             catch (Exception)
@@ -76,7 +76,6 @@ namespace AntalyaTaksiAccount.Controllers
         {
             try
             {
-
                 if (!ModelState.IsValid)
                 {
                     return BadRequest("Model bilgileri doğru değil.");
@@ -97,24 +96,48 @@ namespace AntalyaTaksiAccount.Controllers
             }
         }
 
-        [HttpPut("Put")]
-        public async Task<ActionResult> Put(Driver user)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> PutDriver(int id,Driver user)
         {
             try
             {
-                if (user != null && user.DriverID != 0)
+                if (id != user.DriverID)
                 {
-                    Models.Driver user1 = await (from c in _aTAccountContext.Drivers where c.DriverID == user.DriverID && c.Activity == 1 select c).FirstOrDefaultAsync();
-                    if (user1 == null) { return NoContent(); }
-
-                    if (user1.RoleID != user.RoleID)
-                    {
-                        user1.RoleID = user.RoleID;
-                    }
-                    _aTAccountContext.SaveChanges();
-                    return Ok("Kayıt Güncellendi.");
+                    return BadRequest();
                 }
-                else return NoContent();
+
+
+                //if (user != null && user.DriverID != 0)
+                //{
+                //    Models.Driver driver = await (from c in _aTAccountContext.Drivers where c.DriverID == user.DriverID && c.Activity == 1 select c).FirstOrDefaultAsync();
+                //    if (driver == null) { return NoContent(); }
+
+                //    if (driver.RoleID != user.RoleID)
+                //    {
+                //        driver.RoleID = user.RoleID;
+                //    }
+                    //driver.IdNo=user.IdNo;
+                    //driver.DriverLicenseNo=user.DriverLicenseNo;
+                    //driver.Rating=user.Rating;
+                    //driver.BirthDay=user.BirthDay;
+                    //driver.Pet=user.Pet;
+
+                    AllUser user2 = await (from c in _aTAccountContext.AllUsers where c.AllUserID == user.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
+                    user2.Name = user.AllUser.Name;
+                    user2.Surname = user.AllUser.Surname;
+                    user2.MailAdress = user.AllUser.MailAdress;
+                    user2.Phone =  user.AllUser.Phone;
+
+
+                    _aTAccountContext.Entry(user).State = EntityState.Modified;
+                    _aTAccountContext.AllUsers.Update(user2);
+
+                   _aTAccountContext.SaveChanges();
+
+
+                    return Ok("Kayıt Güncellendi.");
+                //}
+                //else return NoContent();
             }
             catch (Exception ex)
             {
