@@ -90,6 +90,11 @@ namespace AntalyaTaksiAccount.Services
             return deleteDriverResult.IsSuccessStatusCode;
         }
 
+        public async Task<bool> DeletePassenger(int passengerID)
+        {
+            throw new NotImplementedException("Not Implemented.");
+        }
+
     }
 
     public class DriverNode
