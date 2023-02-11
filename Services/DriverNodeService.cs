@@ -90,6 +90,15 @@ namespace AntalyaTaksiAccount.Services
             return deleteDriverResult.IsSuccessStatusCode;
         }
 
+        public async Task<bool> DeletePassenger(int userId)
+        {
+            AddJwtToken();
+            var deletePassengerResult = await _httpClient.DeleteAsync("/users/" + userId);
+
+            string message = await deletePassengerResult.Content.ReadAsStringAsync();
+
+            return deletePassengerResult.IsSuccessStatusCode;
+        }
     }
 
     public class DriverNode
