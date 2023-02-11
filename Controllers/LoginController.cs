@@ -5,6 +5,7 @@ using Azure.Core.Serialization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -180,6 +181,12 @@ namespace AntalyaTaksiAccount.Controllers
                 return BadRequest("Doğrulama Başarısız");
             }
             return Ok("Otp Eşleştirme Başarılı.");
+        }
+        [HttpGet("isTokenExpired")]
+        [Authorize]
+        public string IsTokenExpired()
+        {
+            return "Geçerli";
         }
     }
 }
