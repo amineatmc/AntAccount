@@ -90,6 +90,7 @@ namespace AntalyaTaksiAccount.Services
             return deleteDriverResult.IsSuccessStatusCode;
         }
 
+<<<<<<< HEAD
         public async Task<bool> DeletePassenger(int userId)
         {
             AddJwtToken();
@@ -99,6 +100,13 @@ namespace AntalyaTaksiAccount.Services
 
             return deletePassengerResult.IsSuccessStatusCode;
         }
+=======
+        public async Task<bool> DeletePassenger(int passengerID)
+        {
+            throw new NotImplementedException("Not Implemented.");
+        }
+
+>>>>>>> 4b3be0b063236b28083997c5494ea09743df77ee
     }
 
     public class DriverNode
