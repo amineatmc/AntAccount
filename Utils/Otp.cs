@@ -19,10 +19,10 @@ namespace AntalyaTaksiAccount.Utils
         private readonly ATAccountContext _aTAccountContext;
         string rootDir = "./Content/OtpMessage/";
         private readonly IConnectionMultiplexer _connectionMultiplexer;
-        public Otp(ATAccountContext aTAccountContext/*, IConnectionMultiplexer connectionMultiplexer*/)
+        public Otp(ATAccountContext aTAccountContext, IConnectionMultiplexer connectionMultiplexer)
         {
             _aTAccountContext = aTAccountContext;
-            // _connectionMultiplexer = connectionMultiplexer;
+             _connectionMultiplexer = connectionMultiplexer;
         }
 
         public string SendOtp(VerimorOtpSend verimorOtpSend)
@@ -90,8 +90,9 @@ namespace AntalyaTaksiAccount.Utils
                 #endregion
                 var name = checkOtpDto.UserID + "_" + checkOtpDto.Phone;
 
-                ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("192.168.2.154:6379");
-                var db = redis.GetDatabase();
+               // ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("192.168.2.154:6379");
+              // var redis= _connectionMultiplexer.IsConnected= true;
+                var db = _connectionMultiplexer.GetDatabase(1);
                 var dd = db.StringSet(name, serializeOtp);
                 db.KeyExpire(name, DateTime.Now.AddSeconds(60));
 
@@ -106,8 +107,7 @@ namespace AntalyaTaksiAccount.Utils
 
         public string  CheckOtpVerification(CheckOtpDto checkOtpDto)
         {
-            ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("192.168.2.154:6379");
-            var db = redis.GetDatabase();
+            var db = _connectionMultiplexer.GetDatabase(1);
             var name = checkOtpDto.UserID + "_" + checkOtpDto.Phone;
             string get = db.StringGet(name);
             if (get!=null)

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Json;
@@ -23,11 +24,14 @@ namespace AntalyaTaksiAccount.Controllers
         //private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ATAccountContext _aTAccountContext;
         private IConfiguration _configuration;
+        private readonly IConnectionMultiplexer _connectionMultiplexer;
+
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
-        public LoginController(ATAccountContext aTAccountContext, IConfiguration configuration)
+        public LoginController(ATAccountContext aTAccountContext, IConfiguration configuration,IConnectionMultiplexer connectionMultiplexer)
         {
             _aTAccountContext = aTAccountContext;
             _configuration = configuration;
+            _connectionMultiplexer = connectionMultiplexer;
             // _otp = otp;
             //_signInManager = signInManager;
         }
@@ -164,7 +168,7 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpPost("OtpSend")]
         public async Task<ActionResult> OtpSend(CheckOtpDto checkOtpDto)
         {
-            Otp _otp = new Otp(_aTAccountContext);
+            Otp _otp = new Otp(_aTAccountContext,_connectionMultiplexer);
             var result = _otp.CheckOtpSendMethod(checkOtpDto);
 
             return Ok("Otp Gönderimi Başarılı.");
@@ -173,7 +177,7 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpPost("CheckOtp")]
         public async Task<ActionResult> CheckOtp(CheckOtpDto checkOtpDto)
         {
-            Otp _otp = new Otp(_aTAccountContext);
+            Otp _otp = new Otp(_aTAccountContext,_connectionMultiplexer);
             var result =  _otp.CheckOtpVerification(checkOtpDto);
             if (result=="false")
             {
