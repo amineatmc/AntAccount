@@ -99,7 +99,6 @@ namespace AntalyaTaksiAccount.Services
 
             return deletePassengerResult.IsSuccessStatusCode;
         }
-
     }
 
     public class DriverNode
