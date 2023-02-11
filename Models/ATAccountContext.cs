@@ -16,7 +16,7 @@ namespace AntalyaTaksiAccount.Models
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!_environmentDetermination.IsDevelopment)
+            if (_environmentDetermination.IsDevelopment)
             {
                 optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DevCon"));
             }

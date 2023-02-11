@@ -129,13 +129,22 @@ namespace AntalyaTaksiAccount.Controllers
                     user2.Phone =  user.AllUser.Phone;
 
 
-                    _aTAccountContext.Entry(user).State = EntityState.Modified;
-                    _aTAccountContext.AllUsers.Update(user2);
+                   // _aTAccountContext.Entry(user).State = EntityState.Modified;
+                _aTAccountContext.Drivers.Update(user);
+                _aTAccountContext.AllUsers.Update(user2);
 
-                   _aTAccountContext.SaveChanges();
+                try
+                {
+                    await _aTAccountContext.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {                   
+                  
+                }
+                return Ok("Güncellendi");
 
 
-                    return Ok("Kayıt Güncellendi.");
+                return Ok("Kayıt Güncellendi.");
                 //}
                 //else return NoContent();
             }
