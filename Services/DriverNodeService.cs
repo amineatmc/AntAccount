@@ -15,14 +15,16 @@ namespace AntalyaTaksiAccount.Services
             _configuration = configuration;
         }
 
-        public async Task<bool> SendDriver(int driverId, int stationId)
+        public async Task<bool> SendDriver(int driverId, int stationId,int allUserId)
         {
             AddJwtToken();
 
             DriverNode driverNode = new DriverNode
             {
                 driverId = driverId,
-                stationId = stationId
+                stationId = stationId,
+                allUserId= allUserId
+
             };
             var sendDriverResult = await _httpClient.PostAsJsonAsync<DriverNode>("/drivers", driverNode);
             string message = await sendDriverResult.Content.ReadAsStringAsync();
@@ -94,6 +96,7 @@ namespace AntalyaTaksiAccount.Services
     {
         public int driverId { get; set; }
         public int stationId { get; set; }
+        public int allUserId { get; set; }
     }
 
 
