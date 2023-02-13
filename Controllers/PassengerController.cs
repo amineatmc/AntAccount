@@ -110,6 +110,11 @@ namespace AntalyaTaksiAccount.Controllers
                 return NotFound();
             }
             passenger.Activity = 0;
+            var allUser = await _context.AllUsers.FindAsync(passenger.AllUserID);
+            allUser.Activity = 0;
+
+            _context.AllUsers.Update(allUser);
+
             await _context.SaveChangesAsync();
             _driverNodeService.DeletePassenger(id);
 

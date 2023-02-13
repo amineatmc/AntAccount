@@ -64,7 +64,18 @@ namespace AntalyaTaksiAccount.Controllers
                 return BadRequest();
             }
 
+
+            AllUser user2 = await (from c in _context.AllUsers where c.AllUserID == station.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
+            user2.Name = station.AllUser.Name;
+            user2.Surname = station.AllUser.Surname;
+            user2.MailAdress = station.AllUser.MailAdress;
+            user2.Phone = station.AllUser.Phone;
+
+
             _context.Entry(station).State = EntityState.Modified;
+            _context.Stations.Update(station);
+            _context.AllUsers.Update(user2);
+
 
             try
             {
@@ -82,7 +93,7 @@ namespace AntalyaTaksiAccount.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Stations
@@ -114,6 +125,10 @@ namespace AntalyaTaksiAccount.Controllers
                 return NotFound();
             }
             station.Activity = 0;
+            AllUser user2 = await (from c in _context.AllUsers where c.AllUserID == station.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
+            user2.Activity = 0;
+
+            _context.AllUsers.Update(user2);
             await _context.SaveChangesAsync();
 
             _driverNodeService.DeleteStation(id);
