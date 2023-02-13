@@ -31,14 +31,7 @@ builder.Services.AddAuthentication(options =>
     //options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     //options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     //options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddCookie()
- .AddGoogle(GoogleDefaults.AuthenticationScheme, googleOptions =>
- {
-     googleOptions.ClientId = "1063124829350-i4c5l73tlci3075l7fvsjmt5pamvn3i4.apps.googleusercontent.com";
-     googleOptions.ClientSecret = "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";
-     googleOptions.ReturnUrlParameter = "https://localhost:44314/api/Login/GoogleResponse";
- })
-.AddJwtBearer(o =>
+}).AddJwtBearer(o =>
 {
     o.TokenValidationParameters = new TokenValidationParameters
     {
@@ -52,6 +45,14 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true
     };
 });
+//.AddCookie()
+// .AddGoogle(GoogleDefaults.AuthenticationScheme, googleOptions =>
+// {
+//     googleOptions.ClientId = "1063124829350-i4c5l73tlci3075l7fvsjmt5pamvn3i4.apps.googleusercontent.com";
+//     googleOptions.ClientSecret = "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";
+//     googleOptions.ReturnUrlParameter = "https://localhost:44314/api/Login/GoogleResponse";
+// });
+
 
 
 
