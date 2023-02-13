@@ -11,7 +11,7 @@ namespace AntalyaTaksiAccount.Services
         public DriverNodeService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri("https://1a62-89-43-78-197.eu.ngrok.io");
+            _httpClient.BaseAddress = new Uri("https://antalyataksinode.azurewebsites.net");
             _configuration = configuration;
         }
 
@@ -112,12 +112,14 @@ namespace AntalyaTaksiAccount.Services
     public class StationNode
     {
         public int stationId { get; set; }
+        public int allUserId { get; set; }
         public double latitude { get; set; }
         public double longitude { get; set; }
     }
     public class UserNode
     {
         public int userId { get; set; }
+        public int allUserId { get; set; }
     }
 
 }
