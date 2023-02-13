@@ -155,18 +155,52 @@ namespace AntalyaTaksiAccount.Controllers
             }
         }
 
+        //[HttpDelete("{id}")]
+        //public async void Delete(int id)
+        //{
+        //    try
+        //    {
+
+        //        var user = await (from c in _aTAccountContext.Drivers where c.DriverID == id && c.Activity == 1 select c).FirstOrDefaultAsync();
+        //        user.Activity = 0;
+
+
+        //        _aTAccountContext.Entry(user).State = EntityState.Modified;
+        //        _aTAccountContext.Drivers.Update(user);
+        //        await _driverNodeService.DeleteDriver(id);
+        //        _aTAccountContext.SaveChanges();
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //    }
+        //}
+
+
         [HttpDelete("{id}")]
-        public async void Delete(int id)
+        public async Task<IActionResult> DeleteDrivers(int id)
         {
-            try
+            if (_aTAccountContext.Drivers == null)
             {
-                Models.Driver user = await (from c in _aTAccountContext.Drivers where c.DriverID == id && c.Activity == 1 select c).FirstOrDefaultAsync();
-                await _driverNodeService.DeleteDriver(id);
+                return NotFound();
             }
-            catch (Exception ex)
+            var passenger = await _aTAccountContext.Drivers.FindAsync(id);
+            if (passenger == null)
             {
+                return NotFound();
             }
+            passenger.Activity = 0;
+
+            var allUser = await _aTAccountContext.AllUsers.FindAsync(passenger.AllUserID);
+            allUser.Activity = 0;
+
+            _aTAccountContext.AllUsers.Update(allUser);
+            await _aTAccountContext.SaveChangesAsync();
+            _driverNodeService.DeleteDriver(id);
+
+            return NoContent();
         }
+
 
         [HttpPost("driverwithstation")]
         public async Task<ActionResult> AddDriverWithStation(AddDriverWithStationRequest addDriverWithStation)

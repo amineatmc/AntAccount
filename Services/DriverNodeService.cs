@@ -31,13 +31,14 @@ namespace AntalyaTaksiAccount.Services
             return sendDriverResult.IsSuccessStatusCode;
         }
 
-        public async Task<bool> SendPassenger(int passengerId)
+        public async Task<bool> SendPassenger(int passengerId,int allUserId)
         {
             AddJwtToken();
 
             UserNode userNode = new UserNode
             {
-                userId= passengerId
+                userId= passengerId,
+                allUserId=allUserId
             };
             var sendDriverResult = await _httpClient.PostAsJsonAsync<UserNode>("/users", userNode);
             string message = await sendDriverResult.Content.ReadAsStringAsync();
@@ -52,17 +53,20 @@ namespace AntalyaTaksiAccount.Services
 
         }
 
-        public async Task<bool> SendStation(int stationID, string latitude, string longtitude)
+        public async Task<bool> SendStation(int stationID, string latitude, string longtitude,int allUserId)
         {
-            double latitudeAsDouble = Convert.ToDouble(latitude);
-            double longtitudeAsDouble = Convert.ToDouble(longtitude);
+            AddJwtToken(); 
 
-            AddJwtToken();
+            var latitudeAsDouble = Convert.ToDouble(latitude);
+            var longtitudeAsDouble = Convert.ToDouble(longtitude);
+
+           
             StationNode stationNode = new StationNode
             {
                 latitude = latitudeAsDouble,
                 longitude = longtitudeAsDouble,
-                stationId = stationID
+                stationId = stationID,
+                allUserId = allUserId
 
             };
             var sendDriverResult = await _httpClient.PostAsJsonAsync("/stations", stationNode);

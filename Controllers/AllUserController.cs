@@ -111,7 +111,7 @@ namespace AntalyaTaksiAccount.Controllers
                         _aTAccountContext.Passengers.Add(passenger);
                         _aTAccountContext.SaveChanges();
 
-                        bool resultOfNodeService = await _driverNodeService.SendPassenger(passenger.PassengerID);
+                        bool resultOfNodeService = await _driverNodeService.SendPassenger(passenger.PassengerID,Convert.ToInt32(passenger.AllUserID));
                         break;
                     case 3:
                         Station station = new Station();

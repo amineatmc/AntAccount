@@ -22,6 +22,7 @@ namespace AntalyaTaksiAccount.Controllers
         public StationsController(ATAccountContext context, DriverNodeService driverNodeService)
         {
             _context = context;
+            _driverNodeService = driverNodeService;
         }
 
         // GET: api/Stations
@@ -146,8 +147,9 @@ namespace AntalyaTaksiAccount.Controllers
             allUser.MailAdress = addStationWithStationRequest.MailAddress;
             allUser.Phone = addStationWithStationRequest.Phone;
             allUser.Password = Helper.PasswordEncode("123456");
-            _context.AllUsers.Add(allUser);
             allUser.UserType = 3;
+
+            _context.AllUsers.Add(allUser);
 
             Station station = new Station();
             station.Latitude = addStationWithStationRequest.Latitude;
@@ -159,18 +161,25 @@ namespace AntalyaTaksiAccount.Controllers
             station.StationNumber = 0;
             station.StationStatu = false;
             station.Ip = "0.0.0.0";
-            _context.Stations.Add(station);
+            _context.Add(station);
 
-            _context.SaveChangesAsync();
+            _context.SaveChanges();
+            try
+            {                   
+                bool resultOfNodeService = await _driverNodeService.SendStation(station.StationID, station.Latitude, station.Longitude, Convert.ToInt32(station.AllUserID));
+                if (!resultOfNodeService)
+                {
+                    //TODO Add POlly for this logic. 
+                }
 
-            bool resultOfNodeService = await _driverNodeService.SendStation(station.StationID, addStationWithStationRequest.Latitude, addStationWithStationRequest.Longtitude);
-
-            if (!resultOfNodeService)
-            {
-                //TODO Add POlly for this logic. 
+                return Ok();
             }
+            catch (Exception ex)
+            {
 
-            return Ok();
+                return BadRequest(ex);
+            }
+            
         }
 
     }
