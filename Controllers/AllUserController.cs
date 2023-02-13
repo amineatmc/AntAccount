@@ -76,7 +76,7 @@ namespace AntalyaTaksiAccount.Controllers
                 user1.MailAdress = user.MailAdress;
                 user1.Password = Helper.PasswordEncode(user.Password);
                 user1.Phone = user.Phone;
-                user1.MailVerify = 0;
+                user1.MailVerify = 1;
                 user1.Activity = 1;
                 user1.UserType = user.UserType;
                 _aTAccountContext.AllUsers.Add(user1);
