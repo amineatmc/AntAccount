@@ -129,13 +129,14 @@ namespace AntalyaTaksiAccount.Controllers
                     user2.Phone =  user.AllUser.Phone;
 
 
-                   // _aTAccountContext.Entry(user).State = EntityState.Modified;
+                    _aTAccountContext.Entry(user).State = EntityState.Modified;
                 _aTAccountContext.Drivers.Update(user);
                 _aTAccountContext.AllUsers.Update(user2);
 
                 try
                 {
                     await _aTAccountContext.SaveChangesAsync();
+                  //  await _driverNodeService.(id);
                 }
                 catch (DbUpdateConcurrencyException)
                 {                   
