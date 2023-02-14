@@ -16,10 +16,10 @@ namespace AntalyaTaksiAccount.Controllers
 
         private readonly ATAccountContext _aTAccountContext;
         private readonly DriverNodeService _driverNodeService;
-        // private readonly ILogger<DriverController> _logger;
-        public DriverController(ATAccountContext aTAccountContext, DriverNodeService driverNodeService)
+         private readonly ILogger<DriverController> _logger;
+        public DriverController(ATAccountContext aTAccountContext, DriverNodeService driverNodeService,ILogger<DriverController> logger)
         {
-            // _logger = logger;
+             _logger = logger;
             _aTAccountContext = aTAccountContext;
             _driverNodeService = driverNodeService;
         }
@@ -48,10 +48,12 @@ namespace AntalyaTaksiAccount.Controllers
             try
             {
                 var user = await _aTAccountContext.Drivers.Where(c => c.Activity == 1 && c.DriverID == id).FirstOrDefaultAsync();
+                _logger.LogInformation("test log", DateTime.Now.ToString());
                 return user;
             }
             catch (Exception)
             {
+                _logger.LogInformation("test log", DateTime.Now.ToString());
                 Driver user = new Driver();
                 return user;
             }
