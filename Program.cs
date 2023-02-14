@@ -112,7 +112,7 @@ builder.Services.AddCors(options =>
 //.AddFacebook(facebookOptions => { ... });
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
-    .WriteTo.Console()
+    .WriteTo.AzureApp()
     .CreateLogger();
 
 Host.CreateDefaultBuilder(args)
