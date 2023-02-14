@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Serilog;
 
 
 
@@ -88,7 +89,13 @@ builder.Services.AddCors(options =>
 //.AddGoogle(googleOptions => { ... })
 //.AddTwitter(twitterOptions => { ... })
 //.AddFacebook(facebookOptions => { ... });
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateLogger();
 
+Host.CreateDefaultBuilder(args)
+    .UseSerilog();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
