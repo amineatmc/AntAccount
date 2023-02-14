@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 using System.Text;
 using Serilog;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 
 
@@ -91,7 +92,8 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("https://anttaxi.mobilulasim.com").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
     });
 });
-
+builder.Services.AddHealthChecks()
+ .AddCheck("self", () => HealthCheckResult.Healthy());
 //builder.Services.AddAuthentication()
 //    .AddGoogle(googleOptions => {
 //        googleOptions.ClientId = "104743001505-4db8mq6lki3ep6pcfl4br0a79l3tlhe4.apps.googleusercontent.com";
