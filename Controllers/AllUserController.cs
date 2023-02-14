@@ -27,13 +27,13 @@ namespace AntalyaTaksiAccount.Controllers
             try
             {
                 var users = await _aTAccountContext.AllUsers.Where(c => c.Activity == 1).ToListAsync();
+
                 _logger.LogInformation("istek geldi");
+
                 return users;
             }
             catch (Exception ex)
             {
-                //Serilog.Sinks.MSSqlServer use
-                _logger.LogError(ex,ex.Message);
                 return new List<AllUser>();
             }
         }

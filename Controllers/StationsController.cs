@@ -115,6 +115,11 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStation(int id)
         {
+            Station ss= await (from c in _context.Stations where c.StationID == id && c.Activity == 1 select c).FirstOrDefaultAsync();
+            if (ss == null)
+            {
+                return NotFound("Kayıt Bulunamadı");
+            }
             if (_context.Stations == null)
             {
                 return NotFound();
@@ -133,7 +138,7 @@ namespace AntalyaTaksiAccount.Controllers
 
             _driverNodeService.DeleteStation(id);
 
-            return NoContent();
+            return Ok("Kayıt Silindi");
         }
 
         private bool StationExists(int id)
