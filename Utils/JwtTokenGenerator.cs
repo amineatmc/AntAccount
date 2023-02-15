@@ -28,8 +28,9 @@ namespace AntalyaTaksiAccount.Utils
               //  userid= driver.DriverID;
             if (appType == "3")
                 appType = "Station";
-               // userid = station.StationID;
-
+            // userid = station.StationID;
+            if (appType == "4")
+                appType = "Admin";
 
             var securityDescriptor = new SecurityTokenDescriptor
             {
