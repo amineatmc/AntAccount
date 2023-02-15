@@ -65,11 +65,7 @@ namespace AntalyaTaksiAccount.Models
             modelBuilder.Entity<Role>().Property(c => c.Activity).HasDefaultValue(1).IsRequired();
 
             modelBuilder.Entity<AllUser>().HasKey(c => c.AllUserID).IsClustered();
-            modelBuilder.Entity<AllUser>().Property(c => c.Name).HasMaxLength(100);
-            modelBuilder.Entity<AllUser>().Property(c => c.Surname).HasMaxLength(100);
-            modelBuilder.Entity<AllUser>().Property(c => c.MailAdress).IsRequired();
-            modelBuilder.Entity<AllUser>().Property(c => c.Phone).IsRequired();
-            modelBuilder.Entity<AllUser>().Property(c => c.Password).IsRequired();
+            
             modelBuilder.Entity<AllUser>().Property(c => c.MailVerify).IsRequired().HasDefaultValue(0);
 
 
