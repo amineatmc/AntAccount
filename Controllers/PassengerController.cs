@@ -72,7 +72,12 @@ namespace AntalyaTaksiAccount.Controllers
             {
                 return BadRequest();
             }
-
+            AllUserValidator validations = new AllUserValidator();
+            var validationResult = validations.Validate(passenger.AllUser);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
             AllUser user1 = await (from c in _context.AllUsers where c.AllUserID == passenger.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
             user1.Name = passenger.AllUser.Name;
             user1.Surname = passenger.AllUser.Surname;
