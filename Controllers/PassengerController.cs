@@ -72,20 +72,58 @@ namespace AntalyaTaksiAccount.Controllers
             {
                 return BadRequest();
             }
-            AllUserValidator validations = new AllUserValidator();
-            var validationResult = validations.Validate(passenger.AllUser);
-            if (!validationResult.IsValid)
+            if (passenger.AllUserID != null && passenger.AllUserID != 0)
             {
-                return BadRequest(validationResult.Errors);
+                return BadRequest();
             }
+            //AllUserValidator validations = new AllUserValidator();
+            //var validationResult = validations.Validate(passenger.AllUser);
+            //if (!validationResult.IsValid)
+            //{
+            //    return BadRequest(validationResult.Errors);
+            //}
             AllUser user1 = await (from c in _context.AllUsers where c.AllUserID == passenger.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
-            user1.Name = passenger.AllUser.Name;
-            user1.Surname = passenger.AllUser.Surname;
-            user1.MailAdress = passenger.AllUser.MailAdress;
-            user1.Phone = passenger.AllUser.Phone;
+            if (user1 == null)
+            { return NoContent(); }
+            if (passenger.AllUser.Name != null && passenger.AllUser.Name != "")
+            {
+                user1.Name = passenger.AllUser.Name;
+            }
+            if (passenger.AllUser.Surname != null && passenger.AllUser.Surname != "")
+            {
+                user1.Surname = passenger.AllUser.Surname;
+            }
 
-            _context.Entry(passenger).State = EntityState.Modified;
-            _context.AllUsers.Update(user1);
+            if (passenger.AllUser.MailAdress != null && passenger.AllUser.MailAdress != "")
+            {
+                user1.MailAdress = passenger.AllUser.MailAdress;
+            }
+
+            if (passenger.AllUser.Phone != null && passenger.AllUser.Phone != "")
+            {
+                user1.Phone = passenger.AllUser.Phone;
+            }
+
+
+            Passenger passenger1 = await (from c in _context.Passengers where c.PassengerID == passenger.PassengerID select c).FirstOrDefaultAsync();
+            if (passenger1 == null)
+            { return NoContent(); }
+            if (passenger.IdNo != null && passenger.IdNo != "")
+            {
+                passenger1.IdNo = passenger.IdNo;
+            }
+            if (passenger.Birthday != null)
+            {
+                passenger1.Birthday = passenger.Birthday;
+            }
+
+
+
+
+            //_context.Entry(passenger).State = EntityState.Modified;
+            //_context.AllUsers.Update(user1);
+            //_context.Passengers.Update(passenger1);
+
 
             try
             {
@@ -156,7 +194,7 @@ namespace AntalyaTaksiAccount.Controllers
             allUser.Phone = addPassengerWithStationRequest.Phone;
             allUser.Password = Helper.PasswordEncode("123456");
             allUser.UserType = 2;
-          
+
             AllUserValidator validations = new AllUserValidator();
             var validationResult = validations.Validate(allUser);
             if (!validationResult.IsValid)

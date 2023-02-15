@@ -98,7 +98,7 @@ namespace AntalyaTaksiAccount.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> PutDriver(int id,Driver user)
+        public async Task<ActionResult> PutDriver(int id, Driver user)
         {
             try
             {
@@ -108,50 +108,49 @@ namespace AntalyaTaksiAccount.Controllers
                 }
 
 
-                //if (user != null && user.DriverID != 0)
-                //{
-                //    Models.Driver driver = await (from c in _aTAccountContext.Drivers where c.DriverID == user.DriverID && c.Activity == 1 select c).FirstOrDefaultAsync();
-                //    if (driver == null) { return NoContent(); }
-
-                //    if (driver.RoleID != user.RoleID)
-                //    {
-                //        driver.RoleID = user.RoleID;
-                //    }
-                //driver.IdNo=user.IdNo;
-                //driver.DriverLicenseNo=user.DriverLicenseNo;
-                //driver.Rating=user.Rating;
-                //driver.BirthDay=user.BirthDay;
-                //driver.Pet=user.Pet;
-                AllUserValidator validations = new AllUserValidator();
-                var validationResult = validations.Validate(user.AllUser);
-                if (!validationResult.IsValid)
+                if (user != null && user.DriverID != 0)
                 {
-                    return BadRequest(validationResult.Errors);
+                    Models.Driver driver = await (from c in _aTAccountContext.Drivers where c.DriverID == user.DriverID && c.Activity == 1 select c).FirstOrDefaultAsync();
+                    if (driver == null) { return NoContent(); }
+
+                    //if (driver.RoleID != user.RoleID)
+                    //{
+                    //    driver.RoleID = user.RoleID;
+                    //}
+                    //driver.IdNo = user.IdNo;
+                    //driver.DriverLicenseNo = user.DriverLicenseNo;
+                    //driver.Rating = user.Rating;
+                    //driver.BirthDay = user.BirthDay;
+                    driver.Pet = user.Pet;
+                    //AllUserValidator validations = new AllUserValidator();
+                    //var validationResult = validations.Validate(user.AllUser);
+                    //if (!validationResult.IsValid)
+                    //{
+                    //    return BadRequest(validationResult.Errors);
+                    //}
+                    //AllUser user2 = await (from c in _aTAccountContext.AllUsers where c.AllUserID == user.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
+                    //    user2.Name = user.AllUser.Name;
+                    //    user2.Surname = user.AllUser.Surname;
+                    //    user2.MailAdress = user.AllUser.MailAdress;
+                    //    user2.Phone =  user.AllUser.Phone;
+
+
+                    //    _aTAccountContext.Entry(user).State = EntityState.Modified;
+                    //_aTAccountContext.Drivers.Update(user);
+                    //_aTAccountContext.AllUsers.Update(user2);
                 }
-                AllUser user2 = await (from c in _aTAccountContext.AllUsers where c.AllUserID == user.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
-                    user2.Name = user.AllUser.Name;
-                    user2.Surname = user.AllUser.Surname;
-                    user2.MailAdress = user.AllUser.MailAdress;
-                    user2.Phone =  user.AllUser.Phone;
-
-
-                    _aTAccountContext.Entry(user).State = EntityState.Modified;
-                _aTAccountContext.Drivers.Update(user);
-                _aTAccountContext.AllUsers.Update(user2);
-
                 try
                 {
                     await _aTAccountContext.SaveChangesAsync();
-                  //  await _driverNodeService.(id);
+                    //  await _driverNodeService.(id);
                 }
                 catch (DbUpdateConcurrencyException)
-                {                   
-                  
+                {
+
                 }
                 return Ok("Güncellendi");
 
 
-                return Ok("Kayıt Güncellendi.");
                 //}
                 //else return NoContent();
             }
@@ -240,7 +239,7 @@ namespace AntalyaTaksiAccount.Controllers
             _aTAccountContext.AllUsers.Add(allUser);
 
             Driver driver = new Driver();
-           
+
             driver.IdNo = addDriverWithStation.IdNo;
             driver.Ip = "0.0.0.0";
             driver.BirthDay = addDriverWithStation.Birthday;
@@ -263,13 +262,13 @@ namespace AntalyaTaksiAccount.Controllers
 
             //var stationController = new StationsController(_aTAccountContext, null);
             //var stationResult = await stationController.GetStation(10);
-           // driver.Station = stationResult.Value;  //Todo Get From Request.
+            // driver.Station = stationResult.Value;  //Todo Get From Request.
 
             _aTAccountContext.Add(driver);
 
             await _aTAccountContext.SaveChangesAsync();
 
-            bool resultOfNodeService = await _driverNodeService.SendDriver(driver.DriverID, driver.StationID,driver.AllUser.AllUserID);
+            bool resultOfNodeService = await _driverNodeService.SendDriver(driver.DriverID, driver.StationID, driver.AllUser.AllUserID);
             if (!resultOfNodeService)
             {
                 //TODO Add POlly for this logic. 
