@@ -222,8 +222,6 @@ namespace AntalyaTaksiAccount.Controllers
                 return BadRequest("Var olan bir Telefon numarası.");
             }
 
-
-
             AllUser allUser = new AllUser();
             allUser.Surname = addDriverWithStation.Surname;
             allUser.MailVerify = 1;

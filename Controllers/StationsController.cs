@@ -115,22 +115,26 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteStation(int id)
         {
-            Station ss= await (from c in _context.Stations where c.StationID == id && c.Activity == 1 select c).FirstOrDefaultAsync();
-            if (ss == null)
-            {
-                return NotFound("Kayıt Bulunamadı");
-            }
+            //Station ss= await (from c in _context.Stations where c.StationID == id && c.Activity == 1 select c).FirstOrDefaultAsync();
+            //if (ss == null)
+            //{
+            //    return NotFound("Kayıt Bulunamadı");
+            //}
             if (_context.Stations == null)
             {
-                return NotFound();
+                return NotFound("Kayıt Bulunamadı");
             }
             var station = await _context.Stations.FindAsync(id);
             if (station == null)
             {
-                return NotFound();
+                return NotFound("Kayıt Bulunamadı");
             }
             station.Activity = 0;
             AllUser user2 = await (from c in _context.AllUsers where c.AllUserID == station.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
+            if (user2==null)
+            {
+                return NotFound("Kayıt Bulunamadı");
+            }
             user2.Activity = 0;
 
             _context.AllUsers.Update(user2);
