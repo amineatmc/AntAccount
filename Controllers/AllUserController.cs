@@ -1,6 +1,7 @@
 ﻿using AntalyaTaksiAccount.Models;
 using AntalyaTaksiAccount.Services;
 using AntalyaTaksiAccount.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ namespace AntalyaTaksiAccount.Controllers
             _driverNodeService = driverNodeService;
         }
         [HttpGet("Get")]
+        [Authorize]
         public async Task<List<AllUser>> Get()
         {
             try
@@ -38,6 +40,7 @@ namespace AntalyaTaksiAccount.Controllers
             }
         }
         [HttpGet("GetByMail/{mailAdress}")]
+        [Authorize]
         private async Task<AllUser> GetByMail(string mailAdress)
         {
             try
@@ -185,6 +188,7 @@ namespace AntalyaTaksiAccount.Controllers
         }
 
         [HttpPut("Put")]
+        [Authorize]
         public async Task<ActionResult> Put(AllUser user)
         {
             try
@@ -223,6 +227,7 @@ namespace AntalyaTaksiAccount.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize]
         public async void Delete(int id)
         {
             try

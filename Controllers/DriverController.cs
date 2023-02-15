@@ -3,6 +3,7 @@ using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Services;
 using AntalyaTaksiAccount.Utils;
 using AntalyaTaksiAccount.ValidationRules;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.Intrinsics.X86;
@@ -26,12 +27,19 @@ namespace AntalyaTaksiAccount.Controllers
         }
 
         [HttpGet("Get")]
+        [Authorize]
         public async Task<List<Driver>> Get()
         {
             try
             {
                 var users = await _aTAccountContext.Drivers.Where(c => c.Activity == 1).ToListAsync();
-
+                if (users.Count>0)
+                {
+                    foreach (var item in users)
+                    {
+                        item.AllUser.Password = "";
+                    }
+                }
                 return users;
             }
             catch (Exception)
@@ -44,12 +52,15 @@ namespace AntalyaTaksiAccount.Controllers
 
 
         [HttpGet("Get/{id}")]
+        [Authorize]
         public async Task<Driver> Get(int id)
         {
             try
             {
                 var user = await _aTAccountContext.Drivers.Where(c => c.Activity == 1 && c.DriverID == id).FirstOrDefaultAsync();
                 _logger.LogInformation("test log", DateTime.Now.ToString());
+                if (user != null)
+                    user.AllUser.Password = "";
                 return user;
             }
             catch (Exception)
@@ -60,11 +71,14 @@ namespace AntalyaTaksiAccount.Controllers
             }
         }
         [HttpGet("GetByUserID/{id}")]
+        [Authorize]
         public async Task<Driver> GetByUserID(int id)
         {
             try
             {
                 var user = await _aTAccountContext.Drivers.Where(c => c.Activity == 1 && c.AllUserID == id).FirstOrDefaultAsync();
+                if (user != null)
+                    user.AllUser.Password = "";
                 return user;
             }
             catch (Exception)
@@ -100,6 +114,7 @@ namespace AntalyaTaksiAccount.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<ActionResult> PutDriver(int id, Driver user)
         {
             try
@@ -185,6 +200,7 @@ namespace AntalyaTaksiAccount.Controllers
 
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteDrivers(int id)
         {
             if (_aTAccountContext.Drivers == null)

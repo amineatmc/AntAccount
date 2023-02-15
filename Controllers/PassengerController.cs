@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using AntalyaTaksiAccount.ValidationRules;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -26,16 +27,26 @@ namespace AntalyaTaksiAccount.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Passenger>>> GetPassengers()
         {
             if (_context.Passengers == null)
             {
                 return NotFound();
             }
-            return await _context.Passengers.ToListAsync();
+            var passengers= await _context.Passengers.ToListAsync();
+            if (passengers.Count > 0)
+            {
+                foreach (var item in passengers)
+                {
+                    item.AllUser.Password = "";
+                }
+            }
+            return passengers;
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Passenger>> GetPassenger(int id)
         {
             if (_context.Passengers == null)
@@ -43,7 +54,7 @@ namespace AntalyaTaksiAccount.Controllers
                 return NotFound();
             }
             var passenger = await _context.Passengers.FindAsync(id);
-
+            passenger.AllUser.Password = "";
             if (passenger == null)
             {
                 return NotFound();
@@ -66,6 +77,7 @@ namespace AntalyaTaksiAccount.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutStation(int id, Passenger passenger)
         {
             if (id != passenger.PassengerID)
@@ -144,6 +156,7 @@ namespace AntalyaTaksiAccount.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeletePassenger(int id)
         {
             if (_context.Passengers == null)

@@ -1,4 +1,5 @@
 ﻿using AntalyaTaksiAccount.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,7 @@ namespace AntalyaTaksiAccount.Controllers
             _aTAccountContext= aTAccountContext;
         }
         [HttpGet("Get")]
+        [Authorize]
         public async Task<List<Role>> Get()
         {
             var roles=await _aTAccountContext.Roles.Where(c => c.Activity == 1).ToListAsync();
@@ -24,6 +26,7 @@ namespace AntalyaTaksiAccount.Controllers
 
 
         [HttpGet("Get/{id}")]
+        [Authorize]
         public async Task<Role> Get(int id)
         {
             var role=await _aTAccountContext.Roles.Where(c => c.RoleID == id && c.Activity == 1).FirstOrDefaultAsync();
@@ -32,6 +35,7 @@ namespace AntalyaTaksiAccount.Controllers
 
 
         [HttpPost("Post")]
+        [Authorize]
         public async Task<ActionResult> Post(Role role)
         {
             try
@@ -54,12 +58,14 @@ namespace AntalyaTaksiAccount.Controllers
 
         // PUT api/<RoleController>/5
         [HttpPut("{id}")]
+        [Authorize]
         public void Put(int id, [FromBody] string value)
         {
         }
 
         // DELETE api/<RoleController>/5
         [HttpDelete("{id}")]
+        [Authorize]
         public void Delete(int id)
         {
         }
