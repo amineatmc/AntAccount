@@ -2,6 +2,7 @@
 using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Services;
 using AntalyaTaksiAccount.Utils;
+using AntalyaTaksiAccount.ValidationRules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.Intrinsics.X86;
@@ -118,13 +119,18 @@ namespace AntalyaTaksiAccount.Controllers
                 //    {
                 //        driver.RoleID = user.RoleID;
                 //    }
-                    //driver.IdNo=user.IdNo;
-                    //driver.DriverLicenseNo=user.DriverLicenseNo;
-                    //driver.Rating=user.Rating;
-                    //driver.BirthDay=user.BirthDay;
-                    //driver.Pet=user.Pet;
-
-                    AllUser user2 = await (from c in _aTAccountContext.AllUsers where c.AllUserID == user.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
+                //driver.IdNo=user.IdNo;
+                //driver.DriverLicenseNo=user.DriverLicenseNo;
+                //driver.Rating=user.Rating;
+                //driver.BirthDay=user.BirthDay;
+                //driver.Pet=user.Pet;
+                AllUserValidator validations = new AllUserValidator();
+                var validationResult = validations.Validate(user.AllUser);
+                if (!validationResult.IsValid)
+                {
+                    return BadRequest(validationResult.Errors);
+                }
+                AllUser user2 = await (from c in _aTAccountContext.AllUsers where c.AllUserID == user.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
                     user2.Name = user.AllUser.Name;
                     user2.Surname = user.AllUser.Surname;
                     user2.MailAdress = user.AllUser.MailAdress;
