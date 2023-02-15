@@ -65,7 +65,7 @@ namespace AntalyaTaksiAccount.Utils
 
             try
             {
-                var any = aTAccountContext.Drivers.Any(c => c.Activity == 1 && c.AllUser.Phone == phoneNumber);
+                var any = aTAccountContext.AllUsers.Any(c => c.Activity == 1 && c.Phone == phoneNumber);
                 return !any;
 
             }
