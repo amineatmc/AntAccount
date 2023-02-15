@@ -9,6 +9,7 @@ using AntalyaTaksiAccount.Models;
 using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Utils;
 using AntalyaTaksiAccount.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -27,17 +28,27 @@ namespace AntalyaTaksiAccount.Controllers
 
         // GET: api/Stations
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Station>>> GetStations()
         {
             if (_context.Stations == null)
             {
                 return NotFound();
             }
-            return await _context.Stations.ToListAsync();
+            var stations= await _context.Stations.ToListAsync();
+            if (stations.Count>0)
+            {
+                foreach (var item in stations)
+                {
+                    item.AllUser.Password = "";
+                }
+            }
+            return stations;
         }
 
         // GET: api/Stations/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Station>> GetStation(int id)
         {
             if (_context.Stations == null)
@@ -45,7 +56,7 @@ namespace AntalyaTaksiAccount.Controllers
                 return NotFound();
             }
             var station = await _context.Stations.FindAsync(id);
-
+            station.AllUser.Password = "";
             if (station == null)
             {
                 return NotFound();
@@ -57,6 +68,7 @@ namespace AntalyaTaksiAccount.Controllers
         // PUT: api/Stations/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutStation(int id, Station station)
         {
             if (id != station.StationID)
@@ -113,6 +125,7 @@ namespace AntalyaTaksiAccount.Controllers
 
         // DELETE: api/Stations/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteStation(int id)
         {
             if (_context.Stations == null)
