@@ -68,7 +68,7 @@ namespace AntalyaTaksiAccount.Models
             modelBuilder.Entity<AllUser>().Property(c => c.Name).HasMaxLength(100);
             modelBuilder.Entity<AllUser>().Property(c => c.Surname).HasMaxLength(100);
             modelBuilder.Entity<AllUser>().Property(c => c.MailAdress).IsRequired();
-            modelBuilder.Entity<AllUser>().Property(c => c.Phone).IsRequired().HasMaxLength(11);
+            modelBuilder.Entity<AllUser>().Property(c => c.Phone).IsRequired();
             modelBuilder.Entity<AllUser>().Property(c => c.Password).IsRequired();
             modelBuilder.Entity<AllUser>().Property(c => c.MailVerify).IsRequired().HasDefaultValue(0);
 
