@@ -171,6 +171,12 @@ namespace AntalyaTaksiAccount.Controllers
         {
             try
             {
+                var gsm = _aTAccountContext.AllUsers.Where(x=>x.AllUserID==checkOtpDto.UserID).FirstOrDefault();
+                if (gsm == null) 
+                {
+                    return BadRequest("Geçersiz Gsm");
+                }
+                checkOtpDto.Phone=gsm.Phone;
                 Otp _otp = new Otp(_aTAccountContext, _connectionMultiplexer);
                 var result = _otp.CheckOtpSendMethod(checkOtpDto);
             }
