@@ -5,6 +5,9 @@ using AntalyaTaksiAccount.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using AntalyaTaksiAccount.ValidationRules;
+using FluentValidation;
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -71,10 +74,10 @@ namespace AntalyaTaksiAccount.Controllers
             }
 
             AllUser user1 = await (from c in _context.AllUsers where c.AllUserID == passenger.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
-            user1.Name=passenger.AllUser.Name;
-            user1.Surname=passenger.AllUser.Surname;
-            user1.MailAdress=passenger.AllUser.MailAdress;
-            user1.Phone=passenger.AllUser.Phone;
+            user1.Name = passenger.AllUser.Name;
+            user1.Surname = passenger.AllUser.Surname;
+            user1.MailAdress = passenger.AllUser.MailAdress;
+            user1.Phone = passenger.AllUser.Phone;
 
             _context.Entry(passenger).State = EntityState.Modified;
             _context.AllUsers.Update(user1);
@@ -148,23 +151,31 @@ namespace AntalyaTaksiAccount.Controllers
             allUser.Phone = addPassengerWithStationRequest.Phone;
             allUser.Password = Helper.PasswordEncode("123456");
             allUser.UserType = 2;
+          
+            AllUserValidator validations = new AllUserValidator();
+            var validationResult = validations.Validate(allUser);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
             _context.AllUsers.Add(allUser);
 
             Passenger passenger = new Passenger();
             passenger.Activity = 1;
             passenger.IdNo = "123";
-            passenger.Birthday= DateTime.UtcNow;
+            passenger.Birthday = DateTime.UtcNow;
             passenger.Pet = false;
             passenger.Travel = false;
             passenger.Banned = false;
-            passenger.Lang ="1" ;
+            passenger.Lang = "1";
             passenger.Lat = "1";
             passenger.Created = DateTime.UtcNow;
             passenger.AllUser = allUser;
             _context.Passengers.Add(passenger);
             _context.SaveChanges();
 
-            bool resultOfNodeService = await _driverNodeService.SendPassenger(passenger.PassengerID,Convert.ToInt32(passenger.AllUserID));
+            bool resultOfNodeService = await _driverNodeService.SendPassenger(passenger.PassengerID, Convert.ToInt32(passenger.AllUserID));
 
             if (!resultOfNodeService)
             {

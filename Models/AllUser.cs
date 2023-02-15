@@ -9,7 +9,6 @@ namespace AntalyaTaksiAccount.Models
         public string? Surname { get; set; }
         public string MailAdress { get; set; }
         public string Password { get; set; }
-        [MaxLength(11), MinLength(3)]
         public string Phone { get; set; }
         //1:Driver 2:passenger 3:Station
         public int UserType { get; set; }
