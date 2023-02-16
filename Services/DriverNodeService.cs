@@ -26,7 +26,7 @@ namespace AntalyaTaksiAccount.Services
                 allUserId= allUserId
 
             };
-            var sendDriverResult = await _httpClient.PostAsJsonAsync<DriverNode>("/SendDriver?code=hqCMNbhwWLqFsJafskQ2LOQfqi4kWhcQshq0_LKEuVJTAzFu2ePoVQ==", driverNode);
+            var sendDriverResult = await _httpClient.PostAsJsonAsync<DriverNode>($"/SendDriver?code=hqCMNbhwWLqFsJafskQ2LOQfqi4kWhcQshq0_LKEuVJTAzFu2ePoVQ==&driverId={driverId}&stationId={stationId}&allUserId={allUserId}", driverNode);
             string message = await sendDriverResult.Content.ReadAsStringAsync();
             return sendDriverResult.IsSuccessStatusCode;
         }
@@ -40,7 +40,7 @@ namespace AntalyaTaksiAccount.Services
                 passengerId= passengerId,
                 allUserId=allUserId
             };
-            var sendDriverResult = await _httpClient.PostAsJsonAsync<UserNode>("/SendPassenger?code=pEZpwil0NRiKULC0Y_D4Vf__D2OyQ3gahHj2Ik1mo4rAAzFuo3MmFA==", userNode);
+            var sendDriverResult = await _httpClient.PostAsJsonAsync<UserNode>($"/SendPassenger?code=pEZpwil0NRiKULC0Y_D4Vf__D2OyQ3gahHj2Ik1mo4rAAzFuo3MmFA==&passengerId={passengerId}&allUserId={allUserId}", userNode);
             string message = await sendDriverResult.Content.ReadAsStringAsync();
             return sendDriverResult.IsSuccessStatusCode;
         }
