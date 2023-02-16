@@ -255,7 +255,6 @@ namespace AntalyaTaksiAccount.Controllers
             _aTAccountContext.AllUsers.Add(allUser);
 
             Driver driver = new Driver();
-
             driver.IdNo = addDriverWithStation.IdNo;
             driver.Ip = "0.0.0.0";
             driver.BirthDay = addDriverWithStation.Birthday;
@@ -293,5 +292,64 @@ namespace AntalyaTaksiAccount.Controllers
             return Ok();
         }
 
+
+        [HttpPut("PutDriverPanel")]
+        public async Task<ActionResult> PutDriverPanel(int id, Driver driver)
+        {
+            if (id != driver.DriverID)
+            {
+                return BadRequest();
+            }
+            if (driver.AllUserID != null && driver.AllUserID != 0)
+            {
+                return BadRequest();
+            }
+            //AllUserValidator validations = new AllUserValidator();
+            //var validationResult = validations.Validate(passenger.AllUser);
+            //if (!validationResult.IsValid)
+            //{
+            //    return BadRequest(validationResult.Errors);
+            //}
+            AllUser user1 = await (from c in _aTAccountContext.AllUsers where c.AllUserID == driver.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
+            if (user1 == null)
+            { return NoContent(); }
+            if (driver.AllUser.Name != null && driver.AllUser.Name != "")
+            {
+                user1.Name = driver.AllUser.Name;
+            }
+            if (driver.AllUser.Surname != null && driver.AllUser.Surname != "")
+            {
+                user1.Surname = driver.AllUser.Surname;
+            }
+
+            if (driver.AllUser.MailAdress != null && driver.AllUser.MailAdress != "")
+            {
+                user1.MailAdress = driver.AllUser.MailAdress;
+            }
+
+            if (driver.AllUser.Phone != null && driver.AllUser.Phone != "")
+            {
+                user1.Phone = driver.AllUser.Phone;
+            }
+
+
+            Driver user = await (from c in _aTAccountContext.Drivers where c.DriverID == driver.DriverID select c).FirstOrDefaultAsync();
+            if (user == null)
+            { return NoContent(); }
+            if (driver.IdNo != null && driver.IdNo != "")
+            {
+                user.IdNo = driver.IdNo;
+            }
+            if (user.BirthDay != null)
+            {
+                user.BirthDay = driver.BirthDay;
+            }
+
+                await _aTAccountContext.SaveChangesAsync();
+           
+            return Ok("Güncellendi");
+        }
+            
+        
     }
 }
