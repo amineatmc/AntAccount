@@ -231,8 +231,8 @@ namespace AntalyaTaksiAccount.Controllers
         [Authorize]
         public async Task<ActionResult> Put(int id, string password)
         {
-            var userClaims = Request.HttpContext.User.Claims;
-            var userId = int.Parse(userClaims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
+            var userClaims = Request.HttpContext.User.Claims.ToList();
+            var userId =int.Parse(userClaims[1].Value);
             try
             {
                 if (id==userId)
