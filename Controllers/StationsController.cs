@@ -11,6 +11,7 @@ using AntalyaTaksiAccount.Utils;
 using AntalyaTaksiAccount.Services;
 using Microsoft.AspNetCore.Authorization;
 using AntalyaTaksiAccount.Services.AntalyaTaksiAccount.Services;
+using AntalyaTaksiAccount.ValidationRules;
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -186,6 +187,13 @@ namespace AntalyaTaksiAccount.Controllers
             allUser.Phone = addStationWithStationRequest.Phone;
             allUser.Password = Helper.PasswordEncode("123456");
             allUser.UserType = 3;
+
+            AllUserValidator validations = new AllUserValidator();
+            var validationResult = validations.Validate(allUser);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
 
             _context.AllUsers.Add(allUser);
 

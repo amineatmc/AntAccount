@@ -253,6 +253,15 @@ namespace AntalyaTaksiAccount.Controllers
             allUser.Phone = addDriverWithStation.Phone;
             allUser.Password = Helper.PasswordEncode("123456");
             allUser.UserType = 1;
+
+            AllUserValidator validations = new AllUserValidator();
+            var validationResult = validations.Validate(allUser);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
+
             _aTAccountContext.AllUsers.Add(allUser);
 
             Driver driver = new Driver();
