@@ -11,8 +11,10 @@ using StackExchange.Redis;
 using System.Text;
 using Serilog;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-
-
+using AspNet.Security.OAuth.Apple;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,8 +58,26 @@ builder.Services.AddAuthentication(options =>
 //     googleOptions.ReturnUrlParameter = "https://localhost:44314/api/Login/GoogleResponse";
 // });
 
+#region Signin with Apple OpenIdConnect 
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = AppleAuthenticationDefaults.AuthenticationScheme;
+})
+    .AddCookie()
+    .AddApple(options =>
+    {
+        options.ClientId = "<Your_Client_Id>";
+        options.ClientSecret = "<Your_Client_Secret>";
+        options.CallbackPath = "/signin-apple";
+        options.AuthorizationEndpoint = "https://appleid.apple.com/auth/authorize";
+        options.TokenEndpoint = "https://appleid.apple.com/auth/token";
+        options.UserInformationEndpoint = "https://appleid.apple.com/v1/users/self";
+        
+    });
 
+#endregion
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
