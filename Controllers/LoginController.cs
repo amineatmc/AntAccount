@@ -110,7 +110,7 @@ namespace AntalyaTaksiAccount.Controllers
                    return  BadRequest("Phone or Password is invalid");
                 }
                 string encodedPassword = Helper.PasswordEncode(signIn.Password);
-                user = _aTAccountContext.AllUsers.Where(c => c.Phone == signIn.Phone && c.Password == encodedPassword ).FirstOrDefaultAsync().Result;
+                user = _aTAccountContext.AllUsers.Where(c => c.Phone == signIn.Phone && c.Password == encodedPassword && c.Activity==1 ).FirstOrDefaultAsync().Result;
 
 
                 if (user == null)
