@@ -11,8 +11,7 @@ using StackExchange.Redis;
 using System.Text;
 using Serilog;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-
-
+using AntalyaTaksiAccount.Services.AntalyaTaksiAccount.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +24,7 @@ builder.Services.AddSingleton<EnvironmentDetermination>(environmentDetermination
 builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 builder.Services.AddDbContext<ATAccountContext>();
 
-builder.Services.AddHttpClient<DriverNodeService>();
+builder.Services.AddHttpClient<DriverNodeServiceOld>();
 
 builder.Services.AddAuthentication(options =>
 {

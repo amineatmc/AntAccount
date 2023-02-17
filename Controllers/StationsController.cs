@@ -10,6 +10,7 @@ using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Utils;
 using AntalyaTaksiAccount.Services;
 using Microsoft.AspNetCore.Authorization;
+using AntalyaTaksiAccount.Services.AntalyaTaksiAccount.Services;
 using AntalyaTaksiAccount.ValidationRules;
 
 namespace AntalyaTaksiAccount.Controllers
@@ -19,9 +20,9 @@ namespace AntalyaTaksiAccount.Controllers
     public class StationsController : ControllerBase
     {
         private readonly ATAccountContext _context;
-        private readonly DriverNodeService _driverNodeService;
+        private readonly DriverNodeServiceOld _driverNodeService;
 
-        public StationsController(ATAccountContext context, DriverNodeService driverNodeService)
+        public StationsController(ATAccountContext context, DriverNodeServiceOld driverNodeService)
         {
             _context = context;
             _driverNodeService = driverNodeService;

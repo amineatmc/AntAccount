@@ -1,5 +1,6 @@
 ﻿using AntalyaTaksiAccount.Models;
 using AntalyaTaksiAccount.Services;
+using AntalyaTaksiAccount.Services.AntalyaTaksiAccount.Services;
 using AntalyaTaksiAccount.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,16 +15,15 @@ namespace AntalyaTaksiAccount.Controllers
     {
         private readonly ATAccountContext _aTAccountContext;
         private readonly ILogger<AllUserController> _logger;
-        private readonly DriverNodeService _driverNodeService;
+        private readonly DriverNodeServiceOld _driverNodeService;
 
-        public AllUserController(ILogger<AllUserController> logger, ATAccountContext aTAccountContext, DriverNodeService driverNodeService)
+        public AllUserController(ILogger<AllUserController> logger, ATAccountContext aTAccountContext, DriverNodeServiceOld driverNodeService)
         {
             _logger = logger;
             _aTAccountContext = aTAccountContext;
             _driverNodeService = driverNodeService;
         }
         [HttpGet("Get")]
-        [Authorize]
         public async Task<List<AllUser>> Get()
         {
             try
