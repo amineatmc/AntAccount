@@ -160,25 +160,32 @@ namespace AntalyaTaksiAccount.Controllers
         [Authorize]
         public async Task<IActionResult> DeletePassenger(int id)
         {
-            if (_context.Passengers == null)
+            try
             {
-                return NotFound();
+                if (_context.Passengers == null)
+                {
+                    return NotFound();
+                }
+                var passenger = await _context.Passengers.FindAsync(id);
+                if (passenger == null)
+                {
+                    return NotFound();
+                }
+                passenger.Activity = 0;
+                var allUser = await _context.AllUsers.FindAsync(passenger.AllUserID);
+                allUser.Activity = 0;
+
+                _context.AllUsers.Update(allUser);
+                _context.Passengers.Update(passenger);
+                await _context.SaveChangesAsync();
+                _driverNodeService.DeletePassenger(id);
+
+                return Ok("Kayıt Silindi");
             }
-            var passenger = await _context.Passengers.FindAsync(id);
-            if (passenger == null)
+            catch (Exception )
             {
-                return NotFound();
+                return BadRequest("hata");
             }
-            passenger.Activity = 0;
-            var allUser = await _context.AllUsers.FindAsync(passenger.AllUserID);
-            allUser.Activity = 0;
-
-            _context.AllUsers.Update(allUser);
-
-            await _context.SaveChangesAsync();
-            _driverNodeService.DeletePassenger(id);
-
-            return NoContent();
         }
 
         private bool PassengerExists(int id)

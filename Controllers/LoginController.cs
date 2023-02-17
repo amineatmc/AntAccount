@@ -56,11 +56,11 @@ namespace AntalyaTaksiAccount.Controllers
 
                     string encodedPassword = Helper.PasswordEncode(signIn.password);
 
-                    user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username && c.Password == encodedPassword).FirstOrDefaultAsync().Result;
+                    user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username && c.Password == encodedPassword && c.Activity==1).FirstOrDefaultAsync().Result;
                 }
                 else
                 {
-                    user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username).FirstOrDefaultAsync().Result;
+                    user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username && c.Activity==1).FirstOrDefaultAsync().Result;
                 }
                 if (user == null)
                 {

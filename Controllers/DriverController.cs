@@ -204,25 +204,33 @@ namespace AntalyaTaksiAccount.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteDrivers(int id)
         {
-            if (_aTAccountContext.Drivers == null)
+            try
             {
-                return NotFound();
+                if (_aTAccountContext.Drivers == null)
+                {
+                    return NotFound();
+                }
+                var driver = await _aTAccountContext.Drivers.FindAsync(id);
+                if (driver == null)
+                {
+                    return NotFound();
+                }
+                driver.Activity = 0;
+
+                var allUser = await _aTAccountContext.AllUsers.FindAsync(driver.AllUserID);
+                allUser.Activity = 0;
+
+                _aTAccountContext.AllUsers.Update(allUser);
+                _aTAccountContext.Drivers.Update(driver);
+                await _aTAccountContext.SaveChangesAsync();
+                _driverNodeService.DeleteDriver(id);
+
+                return Ok("Kayıt Silindi");
             }
-            var passenger = await _aTAccountContext.Drivers.FindAsync(id);
-            if (passenger == null)
+            catch (Exception)
             {
-                return NotFound();
+                return BadRequest("hata");
             }
-            passenger.Activity = 0;
-
-            var allUser = await _aTAccountContext.AllUsers.FindAsync(passenger.AllUserID);
-            allUser.Activity = 0;
-
-            _aTAccountContext.AllUsers.Update(allUser);
-            await _aTAccountContext.SaveChangesAsync();
-            _driverNodeService.DeleteDriver(id);
-
-            return NoContent();
         }
 
 
