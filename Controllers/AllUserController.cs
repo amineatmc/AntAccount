@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -226,29 +227,32 @@ namespace AntalyaTaksiAccount.Controllers
                 return Problem();
             }
         }
-        //[HttpPut("PutPasssword")]
-        //[Authorize]
-        //public async Task<ActionResult> Put(int id, string password)
-        //{
-        //    try
-        //    {
-        //        if (id != 0)
-        //        {
-        //            AllUser user1 = await (from c in _aTAccountContext.AllUsers where c.AllUserID == id && c.Activity == 1 select c).FirstOrDefaultAsync();
-        //            if (user1 == null) { return NoContent(); }
+        [HttpPut("PutPassword")]
+        [Authorize]
+        public async Task<ActionResult> Put(int id, string password)
+        {
+            var userClaims = Request.HttpContext.User.Claims.ToList();
+            var userId =int.Parse(userClaims[1].Value);
+            try
+            {
+                if (id==userId)
+                {
+                    AllUser user1 = await (from c in _aTAccountContext.AllUsers where c.AllUserID == id && c.Activity == 1 select c).FirstOrDefaultAsync();
+                    if (user1 == null) { return NoContent(); }
 
-        //            user1.Password = Helper.PasswordEncode(password);
-        //            _aTAccountContext.AllUsers.Update(user1);
-        //            _aTAccountContext.SaveChanges();
-        //            return Ok("Kayıt Güncellendi.");
-        //        }
-        //        else return NoContent();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Problem();
-        //    }
-        //}
+                    user1.Password = Helper.PasswordEncode(password);
+                    _aTAccountContext.AllUsers.Update(user1);
+                    _aTAccountContext.SaveChanges();
+                    return Ok("Kayıt Güncellendi.");
+                }
+              
+                else return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return Problem();
+            }
+        }
         [HttpDelete("{id}")]
         [Authorize]
         public async void Delete(int id)
