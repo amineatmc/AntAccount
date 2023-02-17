@@ -11,7 +11,7 @@ namespace AntalyaTaksiAccount.Services
         public DriverNodeService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri("https://antalyataksinode.azurewebsites.net");
+            _httpClient.BaseAddress = new Uri("https://taxi7x24winfunctionappwin.azurewebsites.net/api");
             _configuration = configuration;
         }
 
@@ -26,7 +26,7 @@ namespace AntalyaTaksiAccount.Services
                 allUserId= allUserId
 
             };
-            var sendDriverResult = await _httpClient.PostAsJsonAsync<DriverNode>("/drivers", driverNode);
+            var sendDriverResult = await _httpClient.PostAsJsonAsync<DriverNode>("/SendDriver?code=hqCMNbhwWLqFsJafskQ2LOQfqi4kWhcQshq0_LKEuVJTAzFu2ePoVQ==", driverNode);
             string message = await sendDriverResult.Content.ReadAsStringAsync();
             return sendDriverResult.IsSuccessStatusCode;
         }
@@ -37,10 +37,10 @@ namespace AntalyaTaksiAccount.Services
 
             UserNode userNode = new UserNode
             {
-                userId= passengerId,
+                passengerId= passengerId,
                 allUserId=allUserId
             };
-            var sendDriverResult = await _httpClient.PostAsJsonAsync<UserNode>("/users", userNode);
+            var sendDriverResult = await _httpClient.PostAsJsonAsync<UserNode>("/SendPassenger?code=pEZpwil0NRiKULC0Y_D4Vf__D2OyQ3gahHj2Ik1mo4rAAzFuo3MmFA==", userNode);
             string message = await sendDriverResult.Content.ReadAsStringAsync();
             return sendDriverResult.IsSuccessStatusCode;
         }
@@ -69,7 +69,7 @@ namespace AntalyaTaksiAccount.Services
                 allUserId = allUserId
 
             };
-            var sendDriverResult = await _httpClient.PostAsJsonAsync("/stations", stationNode);
+            var sendDriverResult = await _httpClient.PostAsJsonAsync($"/SendStation?code=w3-4TUW1_d3AWTo3X9il4VNCHzXlc6G8RE_Y4lom9D6BAzFuCD2tYA==",stationNode);
             string message = await sendDriverResult.Content.ReadAsStringAsync();
             return sendDriverResult.IsSuccessStatusCode;
         }
@@ -77,7 +77,8 @@ namespace AntalyaTaksiAccount.Services
         public async Task<bool> DeleteStation(int stationID)
         {
             AddJwtToken();
-            var deleteDriverResult = await _httpClient.DeleteAsync("/stations/" + stationID);
+           
+            var deleteDriverResult = await _httpClient.DeleteAsync("/DeleteStation?code=jFL8N9IzIUh4Oc1UgyltXj1NMsOF0t5PG24qG9fv9Ip_AzFujwnDgw==&stationID=" + stationID);
 
             string message = await deleteDriverResult.Content.ReadAsStringAsync();
 
@@ -87,7 +88,7 @@ namespace AntalyaTaksiAccount.Services
         public async Task<bool> DeleteDriver(int driverID)
         {
             AddJwtToken();
-            var deleteDriverResult = await _httpClient.DeleteAsync("/drivers/" + driverID);
+            var deleteDriverResult = await _httpClient.DeleteAsync("/DeleteDriver?code=8qZ_7X7GnU3wV5hRFMkTUFpXKp6QwYa1-xdyBB4em5XlAzFuSEWSsA==&driverID=" + driverID);
 
             string message = await deleteDriverResult.Content.ReadAsStringAsync();
 
@@ -97,7 +98,7 @@ namespace AntalyaTaksiAccount.Services
         public async Task<bool> DeletePassenger(int userId)
         {
             AddJwtToken();
-            var deletePassengerResult = await _httpClient.DeleteAsync("/users/" + userId);
+            var deletePassengerResult = await _httpClient.DeleteAsync("/DeletePassenger?code=CzfWF8VP4ksCcfMi_LMcObb9aM4OPbtTATTo1ZoZXQzVAzFuNL4rLA==&userID=" + userId);
 
             string message = await deletePassengerResult.Content.ReadAsStringAsync();
 
@@ -122,7 +123,7 @@ namespace AntalyaTaksiAccount.Services
     }
     public class UserNode
     {
-        public int userId { get; set; }
+        public int passengerId { get; set; }
         public int allUserId { get; set; }
     }
 
