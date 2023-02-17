@@ -2,6 +2,7 @@
 using AntalyaTaksiAccount.Services;
 using AntalyaTaksiAccount.Services.AntalyaTaksiAccount.Services;
 using AntalyaTaksiAccount.Utils;
+using AntalyaTaksiAccount.ValidationRules;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -76,13 +77,21 @@ namespace AntalyaTaksiAccount.Controllers
 
                 AllUser user1 = new AllUser();
                 user1.Name = user.Name;
-                user1.Surname = user.Surname;
+                user1.Surname = user.Surname;               
                 user1.MailAdress = user.MailAdress;
-                user1.Password = Helper.PasswordEncode(user.Password);
+                user1.Password = user.Password;
                 user1.Phone = user.Phone;
                 user1.MailVerify = 1;
                 user1.Activity = 1;
                 user1.UserType = user.UserType;
+
+                AllUserValidator validations = new AllUserValidator();
+                var validationResult = validations.Validate(user1);
+                if (!validationResult.IsValid)
+                {
+                    return BadRequest(validationResult.Errors);
+                }
+                user1.Password=Helper.PasswordEncode(user.Password);
                 _aTAccountContext.AllUsers.Add(user1);
                 _aTAccountContext.SaveChanges();
 
