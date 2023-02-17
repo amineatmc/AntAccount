@@ -135,29 +135,37 @@ namespace AntalyaTaksiAccount.Controllers
             //{
             //    return NotFound("Kayıt Bulunamadı");
             //}
-            if (_context.Stations == null)
+            try
             {
-                return NotFound("Kayıt Bulunamadı");
+                if (_context.Stations == null)
+                {
+                    return NotFound("Kayıt Bulunamadı");
+                }
+                var station = await _context.Stations.FindAsync(id);
+                if (station == null)
+                {
+                    return NotFound("Kayıt Bulunamadı");
+                }
+                station.Activity = 0;
+                AllUser user2 = await (from c in _context.AllUsers where c.AllUserID == station.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
+                if (user2 == null)
+                {
+                    return NotFound("Kayıt Bulunamadı");
+                }
+                user2.Activity = 0;
+
+                _context.AllUsers.Update(user2);
+                _context.Stations.Update(station);
+                await _context.SaveChangesAsync();
+
+                _driverNodeService.DeleteStation(id);
+
+                return Ok("Kayıt Silindi");
             }
-            var station = await _context.Stations.FindAsync(id);
-            if (station == null)
+            catch (Exception)
             {
-                return NotFound("Kayıt Bulunamadı");
+                return BadRequest();
             }
-            station.Activity = 0;
-            AllUser user2 = await (from c in _context.AllUsers where c.AllUserID == station.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
-            if (user2==null)
-            {
-                return NotFound("Kayıt Bulunamadı");
-            }
-            user2.Activity = 0;
-
-            _context.AllUsers.Update(user2);
-            await _context.SaveChangesAsync();
-
-            _driverNodeService.DeleteStation(id);
-
-            return Ok("Kayıt Silindi");
         }
 
         private bool StationExists(int id)
