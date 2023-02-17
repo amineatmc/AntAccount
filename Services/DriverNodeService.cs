@@ -17,7 +17,7 @@ namespace AntalyaTaksiAccount.Services
 
         public async Task<bool> SendDriver(int driverId, int stationId,int allUserId)
         {
-            AddJwtToken();
+           
 
             DriverNode driverNode = new DriverNode
             {
@@ -33,15 +33,16 @@ namespace AntalyaTaksiAccount.Services
 
         public async Task<bool> SendPassenger(int passengerId,int allUserId)
         {
-            AddJwtToken();
-
+            
             UserNode userNode = new UserNode
             {
                 passengerId= passengerId,
                 allUserId=allUserId
             };
+
             var sendDriverResult = await _httpClient.PostAsJsonAsync<UserNode>("/SendPassenger?code=pEZpwil0NRiKULC0Y_D4Vf__D2OyQ3gahHj2Ik1mo4rAAzFuo3MmFA==", userNode);
             string message = await sendDriverResult.Content.ReadAsStringAsync();
+            // message satırları kaldırılabilir functionda loglaması yapılıyor.
             return sendDriverResult.IsSuccessStatusCode;
         }
 
@@ -55,7 +56,7 @@ namespace AntalyaTaksiAccount.Services
 
         public async Task<bool> SendStation(int stationID, string latitude, string longtitude,int allUserId)
         {
-            AddJwtToken(); 
+           
 
             var latitudeAsDouble = Convert.ToDouble(latitude);
             var longtitudeAsDouble = Convert.ToDouble(longtitude);
@@ -76,7 +77,7 @@ namespace AntalyaTaksiAccount.Services
 
         public async Task<bool> DeleteStation(int stationID)
         {
-            AddJwtToken();
+          
            
             var deleteDriverResult = await _httpClient.DeleteAsync("/DeleteStation?code=jFL8N9IzIUh4Oc1UgyltXj1NMsOF0t5PG24qG9fv9Ip_AzFujwnDgw==&stationID=" + stationID);
 
@@ -87,7 +88,7 @@ namespace AntalyaTaksiAccount.Services
 
         public async Task<bool> DeleteDriver(int driverID)
         {
-            AddJwtToken();
+            
             var deleteDriverResult = await _httpClient.DeleteAsync("/DeleteDriver?code=8qZ_7X7GnU3wV5hRFMkTUFpXKp6QwYa1-xdyBB4em5XlAzFuSEWSsA==&driverID=" + driverID);
 
             string message = await deleteDriverResult.Content.ReadAsStringAsync();
@@ -97,7 +98,7 @@ namespace AntalyaTaksiAccount.Services
 
         public async Task<bool> DeletePassenger(int userId)
         {
-            AddJwtToken();
+           
             var deletePassengerResult = await _httpClient.DeleteAsync("/DeletePassenger?code=CzfWF8VP4ksCcfMi_LMcObb9aM4OPbtTATTo1ZoZXQzVAzFuNL4rLA==&userID=" + userId);
 
             string message = await deletePassengerResult.Content.ReadAsStringAsync();
