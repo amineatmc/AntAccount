@@ -206,7 +206,7 @@ namespace AntalyaTaksiAccount.Controllers
             allUser.Name = addPassengerWithStationRequest.Name;
             allUser.MailAdress = addPassengerWithStationRequest.MailAddress;
             allUser.Phone = addPassengerWithStationRequest.Phone;
-            allUser.Password = Helper.PasswordEncode("123456");
+            allUser.Password ="123456";
             allUser.UserType = 2;
 
             AllUserValidator validations = new AllUserValidator();
@@ -215,7 +215,7 @@ namespace AntalyaTaksiAccount.Controllers
             {
                 return BadRequest(validationResult.Errors);
             }
-
+            allUser.Password = Helper.PasswordEncode(allUser.Password);
             _context.AllUsers.Add(allUser);
 
             Passenger passenger = new Passenger();

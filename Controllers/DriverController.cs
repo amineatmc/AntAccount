@@ -251,7 +251,7 @@ namespace AntalyaTaksiAccount.Controllers
             allUser.Name = addDriverWithStation.Name;
             allUser.MailAdress = addDriverWithStation.MailAddress;
             allUser.Phone = addDriverWithStation.Phone;
-            allUser.Password = Helper.PasswordEncode("123456");
+            allUser.Password ="123456";
             allUser.UserType = 1;
 
             AllUserValidator validations = new AllUserValidator();
@@ -261,7 +261,7 @@ namespace AntalyaTaksiAccount.Controllers
                 return BadRequest(validationResult.Errors);
             }
 
-
+            allUser.Password = Helper.PasswordEncode(allUser.Password);
             _aTAccountContext.AllUsers.Add(allUser);
 
             Driver driver = new Driver();
