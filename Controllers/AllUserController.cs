@@ -227,7 +227,7 @@ namespace AntalyaTaksiAccount.Controllers
                 return Problem();
             }
         }
-        [HttpPut("PutPasssword")]
+        [HttpPut("PutPassword")]
         [Authorize]
         public async Task<ActionResult> Put(int id, string password)
         {
@@ -245,16 +245,7 @@ namespace AntalyaTaksiAccount.Controllers
                     _aTAccountContext.SaveChanges();
                     return Ok("Kayıt Güncellendi.");
                 }
-                if (id != 0)
-                {
-                    AllUser user1 = await (from c in _aTAccountContext.AllUsers where c.AllUserID == id && c.Activity == 1 select c).FirstOrDefaultAsync();
-                    if (user1 == null) { return NoContent(); }
-
-                    user1.Password = Helper.PasswordEncode(password);
-                    _aTAccountContext.AllUsers.Update(user1);
-                    _aTAccountContext.SaveChanges();
-                    return Ok("Kayıt Güncellendi.");
-                }
+              
                 else return NoContent();
             }
             catch (Exception ex)
