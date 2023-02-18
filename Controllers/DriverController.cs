@@ -367,7 +367,82 @@ namespace AntalyaTaksiAccount.Controllers
            
             return Ok("Güncellendi");
         }
+
+        [HttpPut("PutDriverPanel2")]
+        public async Task<ActionResult> PutDriverPanel2(int id, PutDriverRequest putDriverRequest)
+        {
+            if (id != putDriverRequest.DriverID)
+            {
+                return BadRequest();
+            }
+            var driver=await _aTAccountContext.Drivers.Where(d => d.DriverID == putDriverRequest.DriverID && d.Activity == 1).FirstOrDefaultAsync();
+            if(driver == null)
+            {
+                return NoContent();
+            }
+
+
+
+            var allUserID=driver.AllUserID;
+
+            AllUser user1 = await (from c in _aTAccountContext.AllUsers where c.AllUserID == driver.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
+
+            if (user1 == null)
+            {
+                return NoContent();
+            }
+
+            if (putDriverRequest.DriverLicenseNo != null) { 
             
-        
+                driver.DriverLicenseNo = putDriverRequest.DriverLicenseNo;
+            }
+            if (putDriverRequest.BirthDay != null)
+            {
+                driver.BirthDay = putDriverRequest.BirthDay.Value;
+
+            }
+            if (putDriverRequest.Pet != null)
+            {
+                driver.Pet = putDriverRequest.Pet.Value;
+            }
+            if (putDriverRequest.Penalty != null)
+            {
+
+
+                driver.Penalty = putDriverRequest.Penalty.Value;
+            }
+            if (putDriverRequest.IDNo != null)
+            {
+
+                driver.IdNo = putDriverRequest.IDNo;
+            }
+
+          
+
+            if (driver.AllUser.Name != null && driver.AllUser.Name != "")
+            {
+                user1.Name = putDriverRequest.Name;
+            }
+            if (driver.AllUser.Surname != null && driver.AllUser.Surname != "")
+            {
+                user1.Surname = putDriverRequest.Surname;
+            }
+
+            if (driver.AllUser.MailAdress != null && driver.AllUser.MailAdress != "")
+            {
+                user1.MailAdress= putDriverRequest.MailAdress;
+            }
+
+            if (driver.AllUser.Phone != null && driver.AllUser.Phone != "")
+            {
+                user1.Phone = putDriverRequest.Phone;
+            }
+
+            await _aTAccountContext.SaveChangesAsync();
+
+
+            return Ok();
+        }
+
     }
 }
