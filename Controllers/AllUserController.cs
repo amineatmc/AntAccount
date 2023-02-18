@@ -1,4 +1,5 @@
 ﻿using AntalyaTaksiAccount.Models;
+using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Services;
 using AntalyaTaksiAccount.Services.AntalyaTaksiAccount.Services;
 using AntalyaTaksiAccount.Utils;
@@ -77,7 +78,7 @@ namespace AntalyaTaksiAccount.Controllers
 
                 AllUser user1 = new AllUser();
                 user1.Name = user.Name;
-                user1.Surname = user.Surname;               
+                user1.Surname = user.Surname;
                 user1.MailAdress = user.MailAdress;
                 user1.Password = user.Password;
                 user1.Phone = user.Phone;
@@ -91,7 +92,7 @@ namespace AntalyaTaksiAccount.Controllers
                 {
                     return BadRequest(validationResult.Errors);
                 }
-                user1.Password=Helper.PasswordEncode(user.Password);
+                user1.Password = Helper.PasswordEncode(user.Password);
                 _aTAccountContext.AllUsers.Add(user1);
                 _aTAccountContext.SaveChanges();
 
@@ -116,15 +117,15 @@ namespace AntalyaTaksiAccount.Controllers
                         passenger.Birthday = DateTime.Now;
                         passenger.Pet = true;
                         passenger.Travel = false;
-                        passenger.Disabled= false;
-                        passenger.Banned= false;
-                        passenger.Lang= "tr";
+                        passenger.Disabled = false;
+                        passenger.Banned = false;
+                        passenger.Lang = "tr";
                         passenger.Lat = "";
 
                         _aTAccountContext.Passengers.Add(passenger);
                         _aTAccountContext.SaveChanges();
 
-                        bool resultOfNodeService = await _driverNodeService.SendPassenger(passenger.PassengerID,Convert.ToInt32(passenger.AllUserID));
+                        bool resultOfNodeService = await _driverNodeService.SendPassenger(passenger.PassengerID, Convert.ToInt32(passenger.AllUserID));
                         break;
                     case 3:
                         Station station = new Station();
@@ -238,7 +239,7 @@ namespace AntalyaTaksiAccount.Controllers
         }
         [HttpPut("PutPassword")]
         [Authorize]
-        public async Task<ActionResult> Put(int id, string password)
+        public async Task<ActionResult> Put([FromQuery] int id, [FromBody] UpdatePassword updatePassword)
         {
             var userClaims = Request.HttpContext.User.Claims.ToList();
             var userId =int.Parse(userClaims[1].Value);
@@ -248,11 +249,18 @@ namespace AntalyaTaksiAccount.Controllers
                 {
                     AllUser user1 = await (from c in _aTAccountContext.AllUsers where c.AllUserID == id && c.Activity == 1 select c).FirstOrDefaultAsync();
                     if (user1 == null) { return NoContent(); }
+                    if (user1.Password==Helper.PasswordEncode(updatePassword.oldPassword))
+                    {
+                        user1.Password= Helper.PasswordEncode(updatePassword.newPassword);
+                        _aTAccountContext.AllUsers.Update(user1);
+                        _aTAccountContext.SaveChanges();
+                        return Ok("Şifre Güncellendi.");
+                    }
 
-                    user1.Password = Helper.PasswordEncode(password);
-                    _aTAccountContext.AllUsers.Update(user1);
-                    _aTAccountContext.SaveChanges();
-                    return Ok("Kayıt Güncellendi.");
+                    else
+                    {
+                        return BadRequest("Girmiş olduğunuz şifre eski şifrenizle uyuşmamaktadır.");
+                    }
                 }
               
                 else return NoContent();
