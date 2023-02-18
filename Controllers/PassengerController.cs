@@ -83,12 +83,17 @@ namespace AntalyaTaksiAccount.Controllers
         {
             if (id != passenger.PassengerID)
             {
-                return BadRequest();
+                return BadRequest("All User ID is not valid");
             }
-            if (passenger.AllUserID != null && passenger.AllUserID != 0)
+            if (passenger.AllUserID == null)
             {
-                return BadRequest();
+                return BadRequest("All User ID is not valid");
             }
+                if (passenger.AllUserID ==0)
+            {
+                return BadRequest("All User ID is not valid");
+            }
+
             //AllUserValidator validations = new AllUserValidator();
             //var validationResult = validations.Validate(passenger.AllUser);
             //if (!validationResult.IsValid)
