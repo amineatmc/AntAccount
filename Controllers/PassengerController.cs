@@ -139,6 +139,17 @@ namespace AntalyaTaksiAccount.Controllers
                 passenger1.Lang = passenger.Lang;
             }
 
+            if (passenger.Pet != null)
+            {
+                passenger1.Pet = passenger.Pet;
+            }
+
+            if (passenger.Disabled != null)
+            {
+                passenger1.Disabled = passenger.Disabled;
+            }
+
+
 
 
             //_context.Entry(passenger).State = EntityState.Modified;
