@@ -134,7 +134,10 @@ namespace AntalyaTaksiAccount.Controllers
             {
                 passenger1.Birthday = passenger.Birthday;
             }
-
+            if (passenger.Lang != null && passenger.Lang != "")
+            {
+                passenger1.Lang = passenger.Lang;
+            }
 
 
 
