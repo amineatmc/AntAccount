@@ -68,6 +68,10 @@ namespace AntalyaTaksiAccount.Controllers
                     return BadRequest("Var olan bir email adresi.");
                 }
 
+                if (!Helper.UnicPhoneNumberControl(user.Phone, _aTAccountContext))
+                {
+                    return BadRequest("Var olan bir Telefon numarası.");
+                }
                 // string tempPassword = Helper.GeneratePassword();
                 //user.Password = Helper.PasswordEncode(tempPassword);
 
@@ -92,6 +96,7 @@ namespace AntalyaTaksiAccount.Controllers
                 {
                     return BadRequest(validationResult.Errors);
                 }
+
                 user1.Password = Helper.PasswordEncode(user.Password);
                 _aTAccountContext.AllUsers.Add(user1);
                 _aTAccountContext.SaveChanges();
@@ -105,6 +110,7 @@ namespace AntalyaTaksiAccount.Controllers
                         driver.StationID = 10;
                         driver.RoleID = 1;
                         driver.CreatedDate = DateTime.Now;
+                        
                         _aTAccountContext.Drivers.Add(driver);
                         _aTAccountContext.SaveChanges();
                         break;
@@ -121,6 +127,7 @@ namespace AntalyaTaksiAccount.Controllers
                         passenger.Banned = false;
                         passenger.Lang = "tr";
                         passenger.Lat = "";
+                        
 
                         _aTAccountContext.Passengers.Add(passenger);
                         _aTAccountContext.SaveChanges();
