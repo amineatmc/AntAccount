@@ -1,6 +1,7 @@
 ﻿using AntalyaTaksiAccount.Models;
 using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Utils;
+using AntalyaTaksiAccount.ValidationRules;
 using Azure.Core.Serialization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -165,7 +166,43 @@ namespace AntalyaTaksiAccount.Controllers
             signIn.OtherAuthentication = true;
             return await LoginUser(signIn);
         }
+        [HttpPost("ForgotPassword")]
+        public async Task<ActionResult> ForgetMyPassword( [FromQuery] int Id, [FromBody] ForgetPassword forgetPassword)
+        {
+            var userClaims = Request.HttpContext.User.Claims.ToList();
+            var userId = int.Parse(userClaims[1].Value);
+            try
+            {
+                if (Id == userId)
+                {
+                    AllUser user1 = await (from c in _aTAccountContext.AllUsers where c.AllUserID == Id && c.Activity == 1 select c).FirstOrDefaultAsync();
+                    if (user1 == null) { return NoContent(); }
 
+                    if (forgetPassword.newPassword1==forgetPassword.newPassword2)
+                    {
+                        user1.Password = forgetPassword.newPassword1;
+                        AllUserValidator validations = new AllUserValidator();
+                        var validationResult = validations.Validate(user1);
+                        if (!validationResult.IsValid)
+                        {
+                            return BadRequest(validationResult.Errors);
+                        }
+                        user1.Password = Helper.PasswordEncode(forgetPassword.newPassword1);
+                        
+                        _aTAccountContext.AllUsers.Update(user1);
+                        _aTAccountContext.SaveChanges();
+                        return Ok("Şifreniz Değiştirildi.");
+                    }
+
+                }
+                return NoContent();
+
+            }
+            catch (Exception ex)
+            {
+                return Problem();
+            }
+        }
         [HttpPost("OtpSend")]
         public async Task<ActionResult> OtpSend(CheckOtpDto checkOtpDto)
         {
