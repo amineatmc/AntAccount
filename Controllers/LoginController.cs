@@ -203,6 +203,8 @@ namespace AntalyaTaksiAccount.Controllers
                 return Problem();
             }
         }
+
+
         [HttpPost("OtpSend")]
         public async Task<ActionResult> OtpSend(CheckOtpDto checkOtpDto)
         {
@@ -235,6 +237,68 @@ namespace AntalyaTaksiAccount.Controllers
             }
             return Ok("Otp Eşleştirme Başarılı.");
         }
+        #region ForgotMyPassword OTP 
+
+        [HttpPost("OtpSendForForgetPassword")]
+        public async Task<ActionResult> OtpSendForgetPassword(CheckOtpDto checkOtpDto)
+        {
+            try
+            {
+                var gsm = _aTAccountContext.AllUsers.Where(x => x.Phone == checkOtpDto.Phone).FirstOrDefault();
+                if (gsm == null)
+                {
+                    return BadRequest("Geçersiz Gsm");
+                }
+                checkOtpDto.Phone = gsm.Phone;
+                checkOtpDto.UserID = gsm.AllUserID;
+                Otp _otp = new Otp(_aTAccountContext, _connectionMultiplexer);
+                var result = _otp.OTPSendForgotPassword(checkOtpDto);
+            }
+            catch (Exception ex)
+            {
+                return Ok(ex.Message);
+            }
+            return Ok("Otp Gönderimi Başarılı.");
+        }
+
+        [HttpPost("CheckOtpForgetPassword")]
+        public async Task<ActionResult> CheckOtpForgetPassword(CheckOtpDto checkOtpDto)
+        {
+            Otp _otp = new Otp(_aTAccountContext, _connectionMultiplexer);
+          
+            var user = _aTAccountContext.AllUsers.Where(x => x.Phone == checkOtpDto.Phone).FirstOrDefault();
+            if (user==null)
+            {
+                return BadRequest("Girilen numaraya ait kullanıcı bulanamadı!");
+            }
+            checkOtpDto.UserID = user.AllUserID;
+            var result = _otp.CheckOtpVerification(checkOtpDto);
+            if (result == "false")
+            {
+                return BadRequest("Doğrulama Başarısız");
+            }
+            int userid = 0;
+            if (user.UserType == 1)
+            {
+                var driver = _aTAccountContext.Drivers.Where(x => x.AllUserID == user.AllUserID).FirstOrDefault();
+                userid = driver.DriverID;
+                
+            }
+            if (user.UserType == 2)
+            {
+                var passenger = _aTAccountContext.Passengers.Where(x => x.AllUserID == user.AllUserID).FirstOrDefault();
+                userid = passenger.PassengerID;
+            }
+            if (user.UserType == 3)
+            {
+                var station = _aTAccountContext.Stations.Where(x => x.AllUserID == user.AllUserID).FirstOrDefault();
+                userid = station.StationID;
+            }
+            JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
+            string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType.ToString(), userid);
+            return Ok(token);
+        }
+        #endregion
         [HttpGet("isTokenExpired")]
         [Authorize]
         public string IsTokenExpired()
