@@ -313,6 +313,7 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpGet("ForgotMyPasssword/{mail}")]
         public async Task<ActionResult> ForgotMyPasssword(string mail)
         {
+
             try
             {
                 Models.AllUser user = await GetByMail(mail);

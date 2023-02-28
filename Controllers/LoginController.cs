@@ -294,7 +294,8 @@ namespace AntalyaTaksiAccount.Controllers
                 var station = _aTAccountContext.Stations.Where(x => x.AllUserID == user.AllUserID).FirstOrDefault();
                 userid = station.StationID;
             }
-            JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
+            TimeSpan timeSpan= TimeSpan.FromMinutes(20);
+            JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(timeSpan, _configuration);
             string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType.ToString(), userid);
             return Ok(token);
         }
