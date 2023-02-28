@@ -1,6 +1,7 @@
 ﻿using AntalyaTaksiAccount.Models;
 using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Utils;
+using AspNet.Security.OAuth.Apple;
 using AntalyaTaksiAccount.ValidationRules;
 using Azure.Core.Serialization;
 using Microsoft.AspNetCore.Authentication;
@@ -29,7 +30,7 @@ namespace AntalyaTaksiAccount.Controllers
         private readonly IConnectionMultiplexer _connectionMultiplexer;
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
-        public LoginController(ATAccountContext aTAccountContext, IConfiguration configuration,IConnectionMultiplexer connectionMultiplexer)
+        public LoginController(ATAccountContext aTAccountContext, IConfiguration configuration, IConnectionMultiplexer connectionMultiplexer)
         {
             _aTAccountContext = aTAccountContext;
             _configuration = configuration;
@@ -48,11 +49,11 @@ namespace AntalyaTaksiAccount.Controllers
                 {
                     if (string.IsNullOrEmpty(signIn.username))
                     {
-                       return  BadRequest("Mail or Password is invalid");
+                        return BadRequest("Mail or Password is invalid");
                     }
                     else if (string.IsNullOrEmpty(signIn.password))
                     {
-                     return   BadRequest("Mail or Password is invalid");
+                        return BadRequest("Mail or Password is invalid");
                     }
 
                     string encodedPassword = Helper.PasswordEncode(signIn.password);
@@ -65,27 +66,27 @@ namespace AntalyaTaksiAccount.Controllers
                 }
                 if (user == null)
                 {
-                   return  BadRequest("Mail or Password is invalid");
+                    return BadRequest("Mail or Password is invalid");
                 }
-                int userid=0;
+                int userid = 0;
                 if (user.UserType == 1)
                 {
                     var driver = _aTAccountContext.Drivers.Where(x => x.AllUserID == user.AllUserID).FirstOrDefault();
                     userid = driver.DriverID;
-                   // var station = _context.Stations.Where(x => x.AllUserID == id).FirstOrDefault();
+                    // var station = _context.Stations.Where(x => x.AllUserID == id).FirstOrDefault();
                 }
-                if (user.UserType==2)
+                if (user.UserType == 2)
                 {
                     var passenger = _aTAccountContext.Passengers.Where(x => x.AllUserID == user.AllUserID).FirstOrDefault();
                     userid = passenger.PassengerID;
                 }
-                if (user.UserType==3)
+                if (user.UserType == 3)
                 {
                     var station = _aTAccountContext.Stations.Where(x => x.AllUserID == user.AllUserID).FirstOrDefault();
                     userid = station.StationID;
                 }
                 JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
-                string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType.ToString(),userid);
+                string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType.ToString(), userid);
                 return Ok(token);
 
             }
@@ -104,11 +105,11 @@ namespace AntalyaTaksiAccount.Controllers
 
                 if (string.IsNullOrEmpty(signIn.Phone))
                 {
-                   return  BadRequest("Phone or Password is invalid");
+                    return BadRequest("Phone or Password is invalid");
                 }
                 else if (string.IsNullOrEmpty(signIn.Password))
                 {
-                   return  BadRequest("Phone or Password is invalid");
+                    return BadRequest("Phone or Password is invalid");
                 }
                 string encodedPassword = Helper.PasswordEncode(signIn.Password);
                 user = _aTAccountContext.AllUsers.Where(c => c.Phone == signIn.Phone && c.Password == encodedPassword && c.Activity==1 ).FirstOrDefaultAsync().Result;
@@ -137,7 +138,7 @@ namespace AntalyaTaksiAccount.Controllers
                     userid = station.StationID;
                 }
                 JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(_configuration);
-                string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType.ToString(),userid);
+                string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType.ToString(), userid);
                 return Ok(token);
 
             }
@@ -150,11 +151,61 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpGet("Login1")]
         public async Task Login1()
         {
+
             await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties()
             {
                 RedirectUri = Url.Action("GoogleResponse")
             });
         }
+        //[HttpGet("Login2")]
+        //public async Task Login2()
+        //{
+        //    await HttpContext.ChallengeAsync(AppleAuthenticationDefaults.AuthenticationScheme, new AuthenticationProperties()
+        //    {
+        //        RedirectUri= Url.Action("AppleLogin")
+        //    });
+        //    //return Challenge(new AuthenticationProperties { RedirectUri = "/" }, AppleAuthenticationDefaults.AuthenticationScheme);
+        //}
+
+        //[HttpGet("AppleLogin")]
+        //public async Task<ActionResult<string>> AppleLogin()
+        //{
+        //    var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //    var email = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
+        //    var username= HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+
+        //    Models.DummyModels.SignIn signIn = new SignIn();
+        //    signIn.username = username;
+        //    signIn.OtherAuthentication = true;
+        //    return await LoginUser(signIn);
+
+        //}
+        [AllowAnonymous]
+        [Route("AppleLogin")]
+        [HttpGet]
+        public IActionResult SignInApple()
+        {
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action(nameof(HandleAppleLogin))
+            };
+            return Challenge(properties, AppleAuthenticationDefaults.AuthenticationScheme);
+        }
+        [AllowAnonymous]
+        [Route("AppleLogin/handle")]
+        [HttpGet]
+        public async Task<ActionResult<string>> HandleAppleLogin()
+        {
+            var authenticateResult = await HttpContext.AuthenticateAsync(AppleAuthenticationDefaults.AuthenticationScheme);
+            var claims = authenticateResult.Principal.Claims.ToList();
+            Models.DummyModels.SignIn signIn = new SignIn();
+            signIn.username = claims[4].Value;
+            signIn.OtherAuthentication = true;
+            return await LoginUser(signIn);
+            //Apple kimlik doğrulama işlemi tamamlandıktan sonra yapılacak işlemler burada yapılabilir.
+
+        }
+
 
         [HttpGet("GoogleResponse")]
         public async Task<ActionResult<string>> GoogleResponse()
@@ -205,17 +256,18 @@ namespace AntalyaTaksiAccount.Controllers
         }
 
 
+
         [HttpPost("OtpSend")]
         public async Task<ActionResult> OtpSend(CheckOtpDto checkOtpDto)
         {
             try
             {
-                var gsm = _aTAccountContext.AllUsers.Where(x=>x.AllUserID==checkOtpDto.UserID).FirstOrDefault();
-                if (gsm == null) 
+                var gsm = _aTAccountContext.AllUsers.Where(x => x.AllUserID == checkOtpDto.UserID).FirstOrDefault();
+                if (gsm == null)
                 {
                     return BadRequest("Geçersiz Gsm");
                 }
-                checkOtpDto.Phone=gsm.Phone;
+                checkOtpDto.Phone = gsm.Phone;
                 Otp _otp = new Otp(_aTAccountContext, _connectionMultiplexer);
                 var result = _otp.CheckOtpSendMethod(checkOtpDto);
             }
@@ -229,9 +281,9 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpPost("CheckOtp")]
         public async Task<ActionResult> CheckOtp(CheckOtpDto checkOtpDto)
         {
-            Otp _otp = new Otp(_aTAccountContext,_connectionMultiplexer);
-            var result =  _otp.CheckOtpVerification(checkOtpDto);
-            if (result=="false")
+            Otp _otp = new Otp(_aTAccountContext, _connectionMultiplexer);
+            var result = _otp.CheckOtpVerification(checkOtpDto);
+            if (result == "false")
             {
                 return BadRequest("Doğrulama Başarısız");
             }

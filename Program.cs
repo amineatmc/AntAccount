@@ -11,7 +11,10 @@ using StackExchange.Redis;
 using System.Text;
 using Serilog;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using AntalyaTaksiAccount.Services.AntalyaTaksiAccount.Services;
+using AspNet.Security.OAuth.Apple;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +27,7 @@ builder.Services.AddSingleton<EnvironmentDetermination>(environmentDetermination
 builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 builder.Services.AddDbContext<ATAccountContext>();
 
-builder.Services.AddHttpClient<DriverNodeServiceOld>();
+builder.Services.AddHttpClient<DriverNodeService>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -46,17 +49,35 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true
     };
-});
-//.AddCookie()
-// .AddGoogle(GoogleDefaults.AuthenticationScheme, googleOptions =>
-// {
-//     googleOptions.ClientId = "1063124829350-i4c5l73tlci3075l7fvsjmt5pamvn3i4.apps.googleusercontent.com";
-//     googleOptions.ClientSecret = "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";
-//     googleOptions.ReturnUrlParameter = "https://localhost:44314/api/Login/GoogleResponse";
-// });
+})
+.AddCookie()
+ .AddGoogle(GoogleDefaults.AuthenticationScheme, googleOptions =>
+ {
+     googleOptions.ClientId = "564220647353-jufursrgbotbi9mu2tosr8q6ubh8osiq.apps.googleusercontent.com";
+     googleOptions.ClientSecret = "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";
+     googleOptions.ReturnUrlParameter = "https://antalyataksiaccount.azurewebsites.net/signin-google";
+ });
 
+#region Signin with Apple OpenIdConnect 
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = AppleAuthenticationDefaults.AuthenticationScheme;
+})
+    
+    .AddApple(options =>
+    {
+        options.ClientId = "<Your_Client_Id>";
+        options.ClientSecret = "<Your_Client_Secret>";
+        options.CallbackPath = "/signin-apple";
+        options.AuthorizationEndpoint = "https://appleid.apple.com/auth/authorize";
+        options.TokenEndpoint = "https://appleid.apple.com/auth/token";
+        options.UserInformationEndpoint = "https://appleid.apple.com/v1/users/self";
+        
+    });
 
+#endregion
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
