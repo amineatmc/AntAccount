@@ -1,10 +1,14 @@
 ﻿using AntalyaTaksiAccount.Models;
+using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Services;
+using AntalyaTaksiAccount.Services.AntalyaTaksiAccount.Services;
 using AntalyaTaksiAccount.Utils;
+using AntalyaTaksiAccount.ValidationRules;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -14,16 +18,15 @@ namespace AntalyaTaksiAccount.Controllers
     {
         private readonly ATAccountContext _aTAccountContext;
         private readonly ILogger<AllUserController> _logger;
-        private readonly DriverNodeService _driverNodeService;
+        private readonly DriverNodeServiceOld _driverNodeService;
 
-        public AllUserController(ILogger<AllUserController> logger, ATAccountContext aTAccountContext, DriverNodeService driverNodeService)
+        public AllUserController(ILogger<AllUserController> logger, ATAccountContext aTAccountContext, DriverNodeServiceOld driverNodeService)
         {
             _logger = logger;
             _aTAccountContext = aTAccountContext;
             _driverNodeService = driverNodeService;
         }
         [HttpGet("Get")]
-        [Authorize]
         public async Task<List<AllUser>> Get()
         {
             try
@@ -65,6 +68,10 @@ namespace AntalyaTaksiAccount.Controllers
                     return BadRequest("Var olan bir email adresi.");
                 }
 
+                if (!Helper.UnicPhoneNumberControl(user.Phone, _aTAccountContext))
+                {
+                    return BadRequest("Var olan bir Telefon numarası.");
+                }
                 // string tempPassword = Helper.GeneratePassword();
                 //user.Password = Helper.PasswordEncode(tempPassword);
 
@@ -77,11 +84,20 @@ namespace AntalyaTaksiAccount.Controllers
                 user1.Name = user.Name;
                 user1.Surname = user.Surname;
                 user1.MailAdress = user.MailAdress;
-                user1.Password = Helper.PasswordEncode(user.Password);
+                user1.Password = user.Password;
                 user1.Phone = user.Phone;
                 user1.MailVerify = 1;
                 user1.Activity = 1;
                 user1.UserType = user.UserType;
+
+                AllUserValidator validations = new AllUserValidator();
+                var validationResult = validations.Validate(user1);
+                if (!validationResult.IsValid)
+                {
+                    return BadRequest(validationResult.Errors);
+                }
+
+                user1.Password = Helper.PasswordEncode(user.Password);
                 _aTAccountContext.AllUsers.Add(user1);
                 _aTAccountContext.SaveChanges();
 
@@ -94,6 +110,7 @@ namespace AntalyaTaksiAccount.Controllers
                         driver.StationID = 10;
                         driver.RoleID = 1;
                         driver.CreatedDate = DateTime.Now;
+                        
                         _aTAccountContext.Drivers.Add(driver);
                         _aTAccountContext.SaveChanges();
                         break;
@@ -106,15 +123,16 @@ namespace AntalyaTaksiAccount.Controllers
                         passenger.Birthday = DateTime.Now;
                         passenger.Pet = true;
                         passenger.Travel = false;
-                        passenger.Disabled= false;
-                        passenger.Banned= false;
-                        passenger.Lang= "tr";
+                        passenger.Disabled = false;
+                        passenger.Banned = false;
+                        passenger.Lang = "tr";
                         passenger.Lat = "";
+                        
 
                         _aTAccountContext.Passengers.Add(passenger);
                         _aTAccountContext.SaveChanges();
 
-                        bool resultOfNodeService = await _driverNodeService.SendPassenger(passenger.PassengerID,Convert.ToInt32(passenger.AllUserID));
+                        bool resultOfNodeService = await _driverNodeService.SendPassenger(passenger.PassengerID, Convert.ToInt32(passenger.AllUserID));
                         break;
                     case 3:
                         Station station = new Station();
@@ -226,6 +244,39 @@ namespace AntalyaTaksiAccount.Controllers
                 return Problem();
             }
         }
+        [HttpPut("PutPassword")]
+        [Authorize]
+        public async Task<ActionResult> Put([FromQuery] int id, [FromBody] UpdatePassword updatePassword)
+        {
+            var userClaims = Request.HttpContext.User.Claims.ToList();
+            var userId =int.Parse(userClaims[1].Value);
+            try
+            {
+                if (id==userId)
+                {
+                    AllUser user1 = await (from c in _aTAccountContext.AllUsers where c.AllUserID == id && c.Activity == 1 select c).FirstOrDefaultAsync();
+                    if (user1 == null) { return NoContent(); }
+                    if (user1.Password==Helper.PasswordEncode(updatePassword.oldPassword))
+                    {
+                        user1.Password= Helper.PasswordEncode(updatePassword.newPassword);
+                        _aTAccountContext.AllUsers.Update(user1);
+                        _aTAccountContext.SaveChanges();
+                        return Ok("Şifre Güncellendi.");
+                    }
+
+                    else
+                    {
+                        return BadRequest("Girmiş olduğunuz şifre eski şifrenizle uyuşmamaktadır.");
+                    }
+                }
+              
+                else return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return Problem();
+            }
+        }
         [HttpDelete("{id}")]
         [Authorize]
         public async void Delete(int id)
@@ -262,6 +313,7 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpGet("ForgotMyPasssword/{mail}")]
         public async Task<ActionResult> ForgotMyPasssword(string mail)
         {
+
             try
             {
                 Models.AllUser user = await GetByMail(mail);

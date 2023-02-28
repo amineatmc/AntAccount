@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using AntalyaTaksiAccount.ValidationRules;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
+using AntalyaTaksiAccount.Services.AntalyaTaksiAccount.Services;
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -18,9 +19,9 @@ namespace AntalyaTaksiAccount.Controllers
     {
 
         private readonly ATAccountContext _context;
-        private readonly DriverNodeService _driverNodeService;
+        private readonly DriverNodeServiceOld _driverNodeService;
 
-        public PassengerController(ATAccountContext context, DriverNodeService driverNodeService)
+        public PassengerController(ATAccountContext context, DriverNodeServiceOld driverNodeService)
         {
             _context = context;
             _driverNodeService = driverNodeService;
@@ -82,12 +83,17 @@ namespace AntalyaTaksiAccount.Controllers
         {
             if (id != passenger.PassengerID)
             {
-                return BadRequest();
+                return BadRequest("All User ID is not valid");
             }
-            if (passenger.AllUserID != null && passenger.AllUserID != 0)
+            if (passenger.AllUserID == null)
             {
-                return BadRequest();
+                return BadRequest("All User ID is not valid");
             }
+                if (passenger.AllUserID ==0)
+            {
+                return BadRequest("All User ID is not valid");
+            }
+
             //AllUserValidator validations = new AllUserValidator();
             //var validationResult = validations.Validate(passenger.AllUser);
             //if (!validationResult.IsValid)
@@ -128,6 +134,20 @@ namespace AntalyaTaksiAccount.Controllers
             {
                 passenger1.Birthday = passenger.Birthday;
             }
+            if (passenger.Lang != null && passenger.Lang != "")
+            {
+                passenger1.Lang = passenger.Lang;
+            }
+
+            if (passenger.Pet != null)
+            {
+                passenger1.Pet = passenger.Pet;
+            }
+
+            if (passenger.Disabled != null)
+            {
+                passenger1.Disabled = passenger.Disabled;
+            }
 
 
 
@@ -159,25 +179,32 @@ namespace AntalyaTaksiAccount.Controllers
         [Authorize]
         public async Task<IActionResult> DeletePassenger(int id)
         {
-            if (_context.Passengers == null)
+            try
             {
-                return NotFound();
+                if (_context.Passengers == null)
+                {
+                    return NotFound();
+                }
+                var passenger = await _context.Passengers.FindAsync(id);
+                if (passenger == null)
+                {
+                    return NotFound();
+                }
+                passenger.Activity = 0;
+                var allUser = await _context.AllUsers.FindAsync(passenger.AllUserID);
+                allUser.Activity = 0;
+
+                _context.AllUsers.Update(allUser);
+                _context.Passengers.Update(passenger);
+                await _context.SaveChangesAsync();
+                _driverNodeService.DeletePassenger(id);
+
+                return Ok("Kayıt Silindi");
             }
-            var passenger = await _context.Passengers.FindAsync(id);
-            if (passenger == null)
+            catch (Exception )
             {
-                return NotFound();
+                return BadRequest("hata");
             }
-            passenger.Activity = 0;
-            var allUser = await _context.AllUsers.FindAsync(passenger.AllUserID);
-            allUser.Activity = 0;
-
-            _context.AllUsers.Update(allUser);
-
-            await _context.SaveChangesAsync();
-            _driverNodeService.DeletePassenger(id);
-
-            return NoContent();
         }
 
         private bool PassengerExists(int id)
@@ -205,7 +232,7 @@ namespace AntalyaTaksiAccount.Controllers
             allUser.Name = addPassengerWithStationRequest.Name;
             allUser.MailAdress = addPassengerWithStationRequest.MailAddress;
             allUser.Phone = addPassengerWithStationRequest.Phone;
-            allUser.Password = Helper.PasswordEncode("123456");
+            allUser.Password ="123456";
             allUser.UserType = 2;
 
             AllUserValidator validations = new AllUserValidator();
@@ -214,7 +241,7 @@ namespace AntalyaTaksiAccount.Controllers
             {
                 return BadRequest(validationResult.Errors);
             }
-
+            allUser.Password = Helper.PasswordEncode(allUser.Password);
             _context.AllUsers.Add(allUser);
 
             Passenger passenger = new Passenger();

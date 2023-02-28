@@ -2,6 +2,7 @@
 using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Utils;
 using AspNet.Security.OAuth.Apple;
+using AntalyaTaksiAccount.ValidationRules;
 using Azure.Core.Serialization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -57,11 +58,11 @@ namespace AntalyaTaksiAccount.Controllers
 
                     string encodedPassword = Helper.PasswordEncode(signIn.password);
 
-                    user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username && c.Password == encodedPassword).FirstOrDefaultAsync().Result;
+                    user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username && c.Password == encodedPassword && c.Activity==1).FirstOrDefaultAsync().Result;
                 }
                 else
                 {
-                    user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username).FirstOrDefaultAsync().Result;
+                    user = _aTAccountContext.AllUsers.Where(c => c.MailAdress == signIn.username && c.Activity==1).FirstOrDefaultAsync().Result;
                 }
                 if (user == null)
                 {
@@ -111,7 +112,7 @@ namespace AntalyaTaksiAccount.Controllers
                     return BadRequest("Phone or Password is invalid");
                 }
                 string encodedPassword = Helper.PasswordEncode(signIn.Password);
-                user = _aTAccountContext.AllUsers.Where(c => c.Phone == signIn.Phone && c.Password == encodedPassword).FirstOrDefaultAsync().Result;
+                user = _aTAccountContext.AllUsers.Where(c => c.Phone == signIn.Phone && c.Password == encodedPassword && c.Activity==1 ).FirstOrDefaultAsync().Result;
 
 
                 if (user == null)
@@ -216,6 +217,44 @@ namespace AntalyaTaksiAccount.Controllers
             signIn.OtherAuthentication = true;
             return await LoginUser(signIn);
         }
+        [HttpPost("ForgotPassword")]
+        public async Task<ActionResult> ForgetMyPassword( [FromQuery] int Id, [FromBody] ForgetPassword forgetPassword)
+        {
+            var userClaims = Request.HttpContext.User.Claims.ToList();
+            var userId = int.Parse(userClaims[1].Value);
+            try
+            {
+                if (Id == userId)
+                {
+                    AllUser user1 = await (from c in _aTAccountContext.AllUsers where c.AllUserID == Id && c.Activity == 1 select c).FirstOrDefaultAsync();
+                    if (user1 == null) { return NoContent(); }
+
+                    if (forgetPassword.newPassword1==forgetPassword.newPassword2)
+                    {
+                        user1.Password = forgetPassword.newPassword1;
+                        AllUserValidator validations = new AllUserValidator();
+                        var validationResult = validations.Validate(user1);
+                        if (!validationResult.IsValid)
+                        {
+                            return BadRequest(validationResult.Errors);
+                        }
+                        user1.Password = Helper.PasswordEncode(forgetPassword.newPassword1);
+                        
+                        _aTAccountContext.AllUsers.Update(user1);
+                        _aTAccountContext.SaveChanges();
+                        return Ok("Şifreniz Değiştirildi.");
+                    }
+
+                }
+                return NoContent();
+
+            }
+            catch (Exception ex)
+            {
+                return Problem();
+            }
+        }
+
 
 
         [HttpPost("OtpSend")]
@@ -250,6 +289,69 @@ namespace AntalyaTaksiAccount.Controllers
             }
             return Ok("Otp Eşleştirme Başarılı.");
         }
+        #region ForgotMyPassword OTP 
+
+        [HttpPost("OtpSendForForgetPassword")]
+        public async Task<ActionResult> OtpSendForgetPassword(CheckOtpDto checkOtpDto)
+        {
+            try
+            {
+                var gsm = _aTAccountContext.AllUsers.Where(x => x.Phone == checkOtpDto.Phone).FirstOrDefault();
+                if (gsm == null)
+                {
+                    return BadRequest("Geçersiz Gsm");
+                }
+                checkOtpDto.Phone = gsm.Phone;
+                checkOtpDto.UserID = gsm.AllUserID;
+                Otp _otp = new Otp(_aTAccountContext, _connectionMultiplexer);
+                var result = _otp.OTPSendForgotPassword(checkOtpDto);
+            }
+            catch (Exception ex)
+            {
+                return Ok(ex.Message);
+            }
+            return Ok("Otp Gönderimi Başarılı.");
+        }
+
+        [HttpPost("CheckOtpForgetPassword")]
+        public async Task<ActionResult> CheckOtpForgetPassword(CheckOtpDto checkOtpDto)
+        {
+            Otp _otp = new Otp(_aTAccountContext, _connectionMultiplexer);
+          
+            var user = _aTAccountContext.AllUsers.Where(x => x.Phone == checkOtpDto.Phone).FirstOrDefault();
+            if (user==null)
+            {
+                return BadRequest("Girilen numaraya ait kullanıcı bulanamadı!");
+            }
+            checkOtpDto.UserID = user.AllUserID;
+            var result = _otp.CheckOtpVerification(checkOtpDto);
+            if (result == "false")
+            {
+                return BadRequest("Doğrulama Başarısız");
+            }
+            int userid = 0;
+            if (user.UserType == 1)
+            {
+                var driver = _aTAccountContext.Drivers.Where(x => x.AllUserID == user.AllUserID).FirstOrDefault();
+                userid = driver.DriverID;
+                
+            }
+            if (user.UserType == 2)
+            {
+                var passenger = _aTAccountContext.Passengers.Where(x => x.AllUserID == user.AllUserID).FirstOrDefault();
+                userid = passenger.PassengerID;
+            }
+            if (user.UserType == 3)
+            {
+                var station = _aTAccountContext.Stations.Where(x => x.AllUserID == user.AllUserID).FirstOrDefault();
+                userid = station.StationID;
+            }
+            TimeSpan timeSpan= TimeSpan.FromMinutes(20);
+            JwtTokenGenerator jwtTokenGenerator = new JwtTokenGenerator(timeSpan, _configuration);
+            string token = jwtTokenGenerator.Generate(user.AllUserID, user.Name, user.MailAdress, user.UserType.ToString(), userid);
+            return Ok(token);
+        }
+        #endregion
         [HttpGet("isTokenExpired")]
         [Authorize]
         public string IsTokenExpired()

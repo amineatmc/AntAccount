@@ -1,6 +1,7 @@
 ﻿using AntalyaTaksiAccount.Models;
 using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Services;
+using AntalyaTaksiAccount.Services.AntalyaTaksiAccount.Services;
 using AntalyaTaksiAccount.Utils;
 using AntalyaTaksiAccount.ValidationRules;
 using Microsoft.AspNetCore.Authorization;
@@ -17,9 +18,9 @@ namespace AntalyaTaksiAccount.Controllers
     {
 
         private readonly ATAccountContext _aTAccountContext;
-        private readonly DriverNodeService _driverNodeService;
+        private readonly DriverNodeServiceOld _driverNodeService;
          private readonly ILogger<DriverController> _logger;
-        public DriverController(ATAccountContext aTAccountContext, DriverNodeService driverNodeService,ILogger<DriverController> logger)
+        public DriverController(ATAccountContext aTAccountContext, DriverNodeServiceOld driverNodeService,ILogger<DriverController> logger)
         {
              _logger = logger;
             _aTAccountContext = aTAccountContext;
@@ -203,25 +204,33 @@ namespace AntalyaTaksiAccount.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteDrivers(int id)
         {
-            if (_aTAccountContext.Drivers == null)
+            try
             {
-                return NotFound();
+                if (_aTAccountContext.Drivers == null)
+                {
+                    return NotFound();
+                }
+                var driver = await _aTAccountContext.Drivers.FindAsync(id);
+                if (driver == null)
+                {
+                    return NotFound();
+                }
+                driver.Activity = 0;
+
+                var allUser = await _aTAccountContext.AllUsers.FindAsync(driver.AllUserID);
+                allUser.Activity = 0;
+
+                _aTAccountContext.AllUsers.Update(allUser);
+                _aTAccountContext.Drivers.Update(driver);
+                await _aTAccountContext.SaveChangesAsync();
+                _driverNodeService.DeleteDriver(id);
+
+                return Ok("Kayıt Silindi");
             }
-            var passenger = await _aTAccountContext.Drivers.FindAsync(id);
-            if (passenger == null)
+            catch (Exception)
             {
-                return NotFound();
+                return BadRequest("hata");
             }
-            passenger.Activity = 0;
-
-            var allUser = await _aTAccountContext.AllUsers.FindAsync(passenger.AllUserID);
-            allUser.Activity = 0;
-
-            _aTAccountContext.AllUsers.Update(allUser);
-            await _aTAccountContext.SaveChangesAsync();
-            _driverNodeService.DeleteDriver(id);
-
-            return NoContent();
         }
 
 
@@ -250,8 +259,17 @@ namespace AntalyaTaksiAccount.Controllers
             allUser.Name = addDriverWithStation.Name;
             allUser.MailAdress = addDriverWithStation.MailAddress;
             allUser.Phone = addDriverWithStation.Phone;
-            allUser.Password = Helper.PasswordEncode("123456");
+            allUser.Password ="123456";
             allUser.UserType = 1;
+
+            AllUserValidator validations = new AllUserValidator();
+            var validationResult = validations.Validate(allUser);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
+            allUser.Password = Helper.PasswordEncode(allUser.Password);
             _aTAccountContext.AllUsers.Add(allUser);
 
             Driver driver = new Driver();
@@ -349,7 +367,82 @@ namespace AntalyaTaksiAccount.Controllers
            
             return Ok("Güncellendi");
         }
+
+        [HttpPut("PutDriverPanel2")]
+        public async Task<ActionResult> PutDriverPanel2(int id, PutDriverRequest putDriverRequest)
+        {
+            if (id != putDriverRequest.DriverID)
+            {
+                return BadRequest();
+            }
+            var driver=await _aTAccountContext.Drivers.Where(d => d.DriverID == putDriverRequest.DriverID && d.Activity == 1).FirstOrDefaultAsync();
+            if(driver == null)
+            {
+                return NoContent();
+            }
+
+
+
+            var allUserID=driver.AllUserID;
+
+            AllUser user1 = await (from c in _aTAccountContext.AllUsers where c.AllUserID == driver.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
+
+            if (user1 == null)
+            {
+                return NoContent();
+            }
+
+            if (putDriverRequest.DriverLicenseNo != null) { 
             
-        
+                driver.DriverLicenseNo = putDriverRequest.DriverLicenseNo;
+            }
+            if (putDriverRequest.BirthDay != null)
+            {
+                driver.BirthDay = putDriverRequest.BirthDay.Value;
+
+            }
+            if (putDriverRequest.Pet != null)
+            {
+                driver.Pet = putDriverRequest.Pet.Value;
+            }
+            if (putDriverRequest.Penalty != null)
+            {
+
+
+                driver.Penalty = putDriverRequest.Penalty.Value;
+            }
+            if (putDriverRequest.IDNo != null)
+            {
+
+                driver.IdNo = putDriverRequest.IDNo;
+            }
+
+          
+
+            if (driver.AllUser.Name != null && driver.AllUser.Name != "")
+            {
+                user1.Name = putDriverRequest.Name;
+            }
+            if (driver.AllUser.Surname != null && driver.AllUser.Surname != "")
+            {
+                user1.Surname = putDriverRequest.Surname;
+            }
+
+            if (driver.AllUser.MailAdress != null && driver.AllUser.MailAdress != "")
+            {
+                user1.MailAdress= putDriverRequest.MailAdress;
+            }
+
+            if (driver.AllUser.Phone != null && driver.AllUser.Phone != "")
+            {
+                user1.Phone = putDriverRequest.Phone;
+            }
+
+            await _aTAccountContext.SaveChangesAsync();
+
+
+            return Ok();
+        }
+
     }
 }

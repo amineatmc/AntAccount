@@ -10,6 +10,8 @@ using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Utils;
 using AntalyaTaksiAccount.Services;
 using Microsoft.AspNetCore.Authorization;
+using AntalyaTaksiAccount.Services.AntalyaTaksiAccount.Services;
+using AntalyaTaksiAccount.ValidationRules;
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -18,9 +20,9 @@ namespace AntalyaTaksiAccount.Controllers
     public class StationsController : ControllerBase
     {
         private readonly ATAccountContext _context;
-        private readonly DriverNodeService _driverNodeService;
+        private readonly DriverNodeServiceOld _driverNodeService;
 
-        public StationsController(ATAccountContext context, DriverNodeService driverNodeService)
+        public StationsController(ATAccountContext context, DriverNodeServiceOld driverNodeService)
         {
             _context = context;
             _driverNodeService = driverNodeService;
@@ -133,29 +135,37 @@ namespace AntalyaTaksiAccount.Controllers
             //{
             //    return NotFound("Kayıt Bulunamadı");
             //}
-            if (_context.Stations == null)
+            try
             {
-                return NotFound("Kayıt Bulunamadı");
+                if (_context.Stations == null)
+                {
+                    return NotFound("Kayıt Bulunamadı");
+                }
+                var station = await _context.Stations.FindAsync(id);
+                if (station == null)
+                {
+                    return NotFound("Kayıt Bulunamadı");
+                }
+                station.Activity = 0;
+                AllUser user2 = await (from c in _context.AllUsers where c.AllUserID == station.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
+                if (user2 == null)
+                {
+                    return NotFound("Kayıt Bulunamadı");
+                }
+                user2.Activity = 0;
+
+                _context.AllUsers.Update(user2);
+                _context.Stations.Update(station);
+                await _context.SaveChangesAsync();
+
+                _driverNodeService.DeleteStation(id);
+
+                return Ok("Kayıt Silindi");
             }
-            var station = await _context.Stations.FindAsync(id);
-            if (station == null)
+            catch (Exception)
             {
-                return NotFound("Kayıt Bulunamadı");
+                return BadRequest();
             }
-            station.Activity = 0;
-            AllUser user2 = await (from c in _context.AllUsers where c.AllUserID == station.AllUserID && c.Activity == 1 select c).FirstOrDefaultAsync();
-            if (user2==null)
-            {
-                return NotFound("Kayıt Bulunamadı");
-            }
-            user2.Activity = 0;
-
-            _context.AllUsers.Update(user2);
-            await _context.SaveChangesAsync();
-
-            _driverNodeService.DeleteStation(id);
-
-            return Ok("Kayıt Silindi");
         }
 
         private bool StationExists(int id)
@@ -183,9 +193,16 @@ namespace AntalyaTaksiAccount.Controllers
             allUser.Name = addStationWithStationRequest.Name;
             allUser.MailAdress = addStationWithStationRequest.MailAddress;
             allUser.Phone = addStationWithStationRequest.Phone;
-            allUser.Password = Helper.PasswordEncode("123456");
+            allUser.Password = "123456";
             allUser.UserType = 3;
 
+            AllUserValidator validations = new AllUserValidator();
+            var validationResult = validations.Validate(allUser);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+            allUser.Password = Helper.PasswordEncode(allUser.Password);
             _context.AllUsers.Add(allUser);
 
             Station station = new Station();

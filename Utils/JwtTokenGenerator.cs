@@ -11,17 +11,21 @@ namespace AntalyaTaksiAccount.Utils
     public class JwtTokenGenerator
     {
         public IConfiguration _configuration;
-        private readonly ATAccountContext _context;
-        public JwtTokenGenerator(IConfiguration configuration)
+       
+        private readonly TimeSpan _timeSpan;
+        public JwtTokenGenerator(IConfiguration configuration) : this(TimeSpan.FromHours(1), configuration)
         {
-            _configuration = configuration;
-           // _context = aTAccount;
         }
+
+        public JwtTokenGenerator(TimeSpan timeSpan, IConfiguration configuration)
+        {
+            _timeSpan = timeSpan;
+            _configuration = configuration;
+        }
+
         private string Generator(int id, string userName, string mail, string appType, string issuer, string audience, byte[] key, int userid)
         {
-            //var passenger= _context.Passengers.Where(x=>x.AllUserID==id);
-            //var driver=_context.Drivers.Where(x=>x.AllUserID==id).FirstOrDefault();
-            //var station = _context.Stations.Where(x=>x.AllUserID== id).FirstOrDefault();
+           
             if (appType == "1")
                 appType  = "Driver";
               //  userid = driver.DriverID;
@@ -38,7 +42,7 @@ namespace AntalyaTaksiAccount.Utils
             {
                 Issuer = issuer,
                 Audience = audience,
-                Expires = DateTime.UtcNow.AddHours(1),
+                Expires = DateTime.UtcNow.Add(_timeSpan),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature),
 
                 Subject = new System.Security.Claims.ClaimsIdentity(new[]
