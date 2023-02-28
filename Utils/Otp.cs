@@ -9,6 +9,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using System.Composition;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore.Migrations;
+using AntalyaTaksiAccount.Models.DummyModels;
 
 namespace AntalyaTaksiAccount.Utils
 {
@@ -114,7 +115,41 @@ namespace AntalyaTaksiAccount.Utils
             return JsonConvert.SerializeObject(otpSend);
 
         }
+        #region CheckOtpSend For ForgotMyPassword 
+        public string OTPSendForgotPassword(CheckOtpDto checkOtpDto)
+        {
+            int number = 0;
 
+            Random random = new Random();
+            number = random.Next(100000, 900000);
+
+            VerimorOtpSend otpSend = new VerimorOtpSend();
+            otpSend.Mesaj = "Guvenliginiz icin onay kodunuzu kimse ile paylasmayiniz onay kodunuz: " + number;
+            otpSend.Phone = "90" + checkOtpDto.Phone;
+            var res = SendOtp(otpSend);
+
+            try
+            {
+                checkOtpDto.OtpMessage = $"{number}";
+                string serializeOtp = JsonConvert.SerializeObject(checkOtpDto);
+
+                var name = checkOtpDto.UserID + "_" + checkOtpDto.Phone;
+
+              
+                var db = _connectionMultiplexer.GetDatabase(1);
+                var dd = db.StringSet(name, serializeOtp);
+                db.KeyExpire(name, DateTime.Now.AddSeconds(60));
+
+            }
+            catch (Exception ex)
+            {
+                var mesaj = ex.Message;
+            }
+            return JsonConvert.SerializeObject(otpSend);
+
+        }
+
+        #endregion
         public string  CheckOtpVerification(CheckOtpDto checkOtpDto)
         {
             var db = _connectionMultiplexer.GetDatabase(1);
