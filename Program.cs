@@ -49,14 +49,14 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true
     };
-});
-//.AddCookie()
-// .AddGoogle(GoogleDefaults.AuthenticationScheme, googleOptions =>
-// {
-//     googleOptions.ClientId = "1063124829350-i4c5l73tlci3075l7fvsjmt5pamvn3i4.apps.googleusercontent.com";
-//     googleOptions.ClientSecret = "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";
-//     googleOptions.ReturnUrlParameter = "https://localhost:44314/api/Login/GoogleResponse";
-// });
+})
+.AddCookie()
+ .AddGoogle(GoogleDefaults.AuthenticationScheme, googleOptions =>
+ {
+     googleOptions.ClientId = "564220647353-jufursrgbotbi9mu2tosr8q6ubh8osiq.apps.googleusercontent.com";
+     googleOptions.ClientSecret = "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";
+     googleOptions.ReturnUrlParameter = "https://antalyataksiaccount.azurewebsites.net/signin-google";
+ });
 
 #region Signin with Apple OpenIdConnect 
 
@@ -65,7 +65,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = AppleAuthenticationDefaults.AuthenticationScheme;
 })
-    .AddCookie()
+    
     .AddApple(options =>
     {
         options.ClientId = "<Your_Client_Id>";

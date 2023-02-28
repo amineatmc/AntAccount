@@ -150,6 +150,7 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpGet("Login1")]
         public async Task Login1()
         {
+
             await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties()
             {
                 RedirectUri = Url.Action("GoogleResponse")
