@@ -50,7 +50,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true
     };
 })
-.AddCookie()
+//.AddCookie()
  .AddGoogle(GoogleDefaults.AuthenticationScheme, googleOptions =>
  {
      googleOptions.ClientId = "564220647353-jufursrgbotbi9mu2tosr8q6ubh8osiq.apps.googleusercontent.com";
@@ -58,26 +58,37 @@ builder.Services.AddAuthentication(options =>
      googleOptions.ReturnUrlParameter = "https://antalyataksiaccount.azurewebsites.net/signin-google";
  });
 
-#region Signin with Apple OpenIdConnect 
+#region Signin with Apple 
 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = AppleAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-    
+
     .AddApple(options =>
     {
-        options.ClientId = "<Your_Client_Id>";
-        options.ClientSecret = "<Your_Client_Secret>";
+        options.ClientId = "tr.antalyataksiyolcu.ios";
+        options.KeyId = "7CCQN8SGV5";
+        options.TeamId = "GHDACT2N29";
+        options.ClientSecret = "AntalyaTaksiYolcu";
+        options.ReturnUrlParameter = "https://antalyataksiaccount.azurewebsites.net/signin-apple";
         options.CallbackPath = "/signin-apple";
         options.AuthorizationEndpoint = "https://appleid.apple.com/auth/authorize";
         options.TokenEndpoint = "https://appleid.apple.com/auth/token";
         options.UserInformationEndpoint = "https://appleid.apple.com/v1/users/self";
-        
     });
+//.AddCookie(options =>*/
+//{
+//    options.Cookie.Name = ".AspNetCore.Cookies";
+//    options.Cookie.HttpOnly = true;
+//    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+//    options.LoginPath = "/Login";
+//    options.LogoutPath = "/Logout";
+//});
 
-#endregion
+
+    #endregion
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
