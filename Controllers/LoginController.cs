@@ -158,13 +158,13 @@ namespace AntalyaTaksiAccount.Controllers
             });
         }
         //[HttpGet("Login2")]
-        //public async Task Login2()
+        //public async Task<IActionResult> Login2()
         //{
-        //    await HttpContext.ChallengeAsync(AppleAuthenticationDefaults.AuthenticationScheme, new AuthenticationProperties()
-        //    {
-        //        RedirectUri= Url.Action("AppleLogin")
-        //    });
-        //    //return Challenge(new AuthenticationProperties { RedirectUri = "/" }, AppleAuthenticationDefaults.AuthenticationScheme);
+        //    //await HttpContext.ChallengeAsync(AppleAuthenticationDefaults.AuthenticationScheme, new AuthenticationProperties()
+        //    //{
+        //    //    RedirectUri = Url.Action(nameof(HandleAppleLogin))
+        //    //}) ;
+        //    return Challenge(new AuthenticationProperties { RedirectUri = "/AppleLogin" }, AppleAuthenticationDefaults.AuthenticationScheme);
         //}
 
         //[HttpGet("AppleLogin")]
@@ -172,13 +172,25 @@ namespace AntalyaTaksiAccount.Controllers
         //{
         //    var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         //    var email = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
-        //    var username= HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+        //    var username = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
 
         //    Models.DummyModels.SignIn signIn = new SignIn();
         //    signIn.username = username;
         //    signIn.OtherAuthentication = true;
         //    return await LoginUser(signIn);
 
+        //}
+        //[AllowAnonymous]
+        //[Route("AppleLogin")]
+        //[HttpGet]
+        //public IActionResult SignInApple()
+        //{
+
+        //    var properties = new AuthenticationProperties
+        //    {
+        //        RedirectUri = ""//Url.Action(nameof(HandleAppleLogin))
+        //    };
+        //    return Challenge(properties, AppleAuthenticationDefaults.AuthenticationScheme);
         //}
         [AllowAnonymous]
         [Route("AppleLogin")]
@@ -187,8 +199,10 @@ namespace AntalyaTaksiAccount.Controllers
         {
             var properties = new AuthenticationProperties
             {
-                RedirectUri = Url.Action(nameof(HandleAppleLogin))
+                RedirectUri = Url.Action(nameof(HandleAppleLogin), null, null, Request.Scheme.Replace("http", "https"), "antalyataksiaccount.azurewebsites.net")
             };
+
+
             return Challenge(properties, AppleAuthenticationDefaults.AuthenticationScheme);
         }
         [AllowAnonymous]
@@ -196,7 +210,7 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpGet]
         public async Task<ActionResult<string>> HandleAppleLogin()
         {
-            var authenticateResult = await HttpContext.AuthenticateAsync(AppleAuthenticationDefaults.AuthenticationScheme);
+            var authenticateResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             var claims = authenticateResult.Principal.Claims.ToList();
             Models.DummyModels.SignIn signIn = new SignIn();
             signIn.username = claims[4].Value;

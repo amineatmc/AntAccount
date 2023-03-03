@@ -31,7 +31,7 @@ builder.Services.AddHttpClient<DriverNodeService>();
 
 builder.Services.AddAuthentication(options =>
 {
-    //options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     //options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -64,6 +64,7 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
 })
 
     .AddApple(options =>
@@ -78,25 +79,17 @@ builder.Services.AddAuthentication(options =>
         options.TokenEndpoint = "https://appleid.apple.com/auth/token";
         options.UserInformationEndpoint = "https://appleid.apple.com/v1/users/self";
     });
-//.AddCookie(options =>*/
-//{
-//    options.Cookie.Name = ".AspNetCore.Cookies";
-//    options.Cookie.HttpOnly = true;
-//    options.ExpireTimeSpan = TimeSpan.FromDays(7);
-//    options.LoginPath = "/Login";
-//    options.LogoutPath = "/Logout";
-//});
 
 
-    #endregion
+#endregion
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 ConnectionMultiplexer redis = null;
 
-if(builder.Environment.IsDevelopment())
+if (builder.Environment.IsDevelopment())
 {
-     redis = ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisDevCon"));
+    redis = ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisDevCon"));
 }
 else
 {
