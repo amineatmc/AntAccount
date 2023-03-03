@@ -149,7 +149,7 @@ namespace AntalyaTaksiAccount.Controllers
         }
 
         [HttpGet("Login1")]
-        public async Task Login1()
+        public async  Task Login1()
         {
 
             await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties()
@@ -194,16 +194,23 @@ namespace AntalyaTaksiAccount.Controllers
         //}
         [AllowAnonymous]
         [Route("AppleLogin")]
+        [RequireHttps]
         [HttpGet]
-        public IActionResult SignInApple()
+        public async Task SignInApple()
         {
-            var properties = new AuthenticationProperties
+            await HttpContext.ChallengeAsync(AppleAuthenticationDefaults.AuthenticationScheme, new AuthenticationProperties()
             {
-                RedirectUri = Url.Action(nameof(HandleAppleLogin), null, null, Request.Scheme.Replace("http", "https"), "antalyataksiaccount.azurewebsites.net")
-            };
+                RedirectUri = Url.Action(nameof(HandleAppleLogin), null, null, Request.Scheme.Replace("http", "https"), "antalyataksiaccount.iposmobil.com.tr")
+            });
+
+            //var uri = Url.Action(nameof(HandleAppleLogin), null, null, Request.Scheme.Replace("http", "https"), "antalyataksiaccount.iposmobil.com.tr");
+            //var properties = new AuthenticationProperties
+            //{
+            //    RedirectUri = Url.Action(nameof(HandleAppleLogin), null, null, Request.Scheme.Replace("http","https"), "antalyataksiaccount.iposmobil.com.tr")
+            //};
 
 
-            return Challenge(properties, AppleAuthenticationDefaults.AuthenticationScheme);
+            //return Challenge(properties, AppleAuthenticationDefaults.AuthenticationScheme);
         }
         [AllowAnonymous]
         [Route("AppleLogin/handle")]
@@ -225,7 +232,7 @@ namespace AntalyaTaksiAccount.Controllers
                  return BadRequest(ex.Message);
             }
            
-            //Apple kimlik doğrulama işlemi tamamlandıktan sonra yapılacak işlemler burada yapılabilir.
+           
 
         }
 
