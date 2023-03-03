@@ -210,12 +210,21 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpGet]
         public async Task<ActionResult<string>> HandleAppleLogin()
         {
-            var authenticateResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            var claims = authenticateResult.Principal.Claims.ToList();
-            Models.DummyModels.SignIn signIn = new SignIn();
-            signIn.username = claims[4].Value;
-            signIn.OtherAuthentication = true;
-            return await LoginUser(signIn);
+            try
+            {
+                var authenticateResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                var claims = authenticateResult.Principal.Claims.ToList();
+                Models.DummyModels.SignIn signIn = new SignIn();
+                signIn.username = claims[4].Value;
+                signIn.OtherAuthentication = true;
+                return await LoginUser(signIn);
+            }
+            catch (Exception ex)
+            {
+
+                 return BadRequest(ex.Message);
+            }
+           
             //Apple kimlik doğrulama işlemi tamamlandıktan sonra yapılacak işlemler burada yapılabilir.
 
         }
