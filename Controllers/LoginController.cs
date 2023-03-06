@@ -149,7 +149,7 @@ namespace AntalyaTaksiAccount.Controllers
         }
 
         [HttpGet("Login1")]
-        public async Task Login1()
+        public async  Task Login1()
         {
 
             await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties()
@@ -158,13 +158,13 @@ namespace AntalyaTaksiAccount.Controllers
             });
         }
         //[HttpGet("Login2")]
-        //public async Task Login2()
+        //public async Task<IActionResult> Login2()
         //{
-        //    await HttpContext.ChallengeAsync(AppleAuthenticationDefaults.AuthenticationScheme, new AuthenticationProperties()
-        //    {
-        //        RedirectUri= Url.Action("AppleLogin")
-        //    });
-        //    //return Challenge(new AuthenticationProperties { RedirectUri = "/" }, AppleAuthenticationDefaults.AuthenticationScheme);
+        //    //await HttpContext.ChallengeAsync(AppleAuthenticationDefaults.AuthenticationScheme, new AuthenticationProperties()
+        //    //{
+        //    //    RedirectUri = Url.Action(nameof(HandleAppleLogin))
+        //    //}) ;
+        //    return Challenge(new AuthenticationProperties { RedirectUri = "/AppleLogin" }, AppleAuthenticationDefaults.AuthenticationScheme);
         //}
 
         //[HttpGet("AppleLogin")]
@@ -172,7 +172,7 @@ namespace AntalyaTaksiAccount.Controllers
         //{
         //    var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         //    var email = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
-        //    var username= HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+        //    var username = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
 
         //    Models.DummyModels.SignIn signIn = new SignIn();
         //    signIn.username = username;
@@ -180,29 +180,52 @@ namespace AntalyaTaksiAccount.Controllers
         //    return await LoginUser(signIn);
 
         //}
+        //[AllowAnonymous]
+        //[Route("AppleLogin")]
+        //[HttpGet]
+        //public IActionResult SignInApple()
+        //{
+
+        //    var properties = new AuthenticationProperties
+        //    {
+        //        RedirectUri = ""//Url.Action(nameof(HandleAppleLogin))
+        //    };
+        //    return Challenge(properties, AppleAuthenticationDefaults.AuthenticationScheme);
+        //}
         [AllowAnonymous]
         [Route("AppleLogin")]
+        [RequireHttps]
         [HttpGet]
-        public IActionResult SignInApple()
+        public async Task SignInApple()
         {
-            var properties = new AuthenticationProperties
+            var uri = Url.Action(nameof(HandleAppleLogin), null, null, Request.Scheme.Replace("http", "https"), "antalyataksiaccount.iposmobil.com.tr");
+            await HttpContext.ChallengeAsync(AppleAuthenticationDefaults.AuthenticationScheme, new AuthenticationProperties()
             {
                 RedirectUri = Url.Action(nameof(HandleAppleLogin))
-            };
-            return Challenge(properties, AppleAuthenticationDefaults.AuthenticationScheme);
+            });
+
         }
         [AllowAnonymous]
         [Route("AppleLogin/handle")]
         [HttpGet]
         public async Task<ActionResult<string>> HandleAppleLogin()
         {
-            var authenticateResult = await HttpContext.AuthenticateAsync(AppleAuthenticationDefaults.AuthenticationScheme);
-            var claims = authenticateResult.Principal.Claims.ToList();
-            Models.DummyModels.SignIn signIn = new SignIn();
-            signIn.username = claims[4].Value;
-            signIn.OtherAuthentication = true;
-            return await LoginUser(signIn);
-            //Apple kimlik doğrulama işlemi tamamlandıktan sonra yapılacak işlemler burada yapılabilir.
+            try
+            {
+                var authenticateResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                var claims = authenticateResult.Principal.Claims.ToList();
+                Models.DummyModels.SignIn signIn = new SignIn();
+                signIn.username = claims[4].Value;
+                signIn.OtherAuthentication = true;
+                return await LoginUser(signIn);
+            }
+            catch (Exception ex)
+            {
+
+                 return BadRequest(ex.Message);
+            }
+           
+           
 
         }
 
