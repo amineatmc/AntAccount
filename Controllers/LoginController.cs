@@ -102,19 +102,20 @@ namespace AntalyaTaksiAccount.Controllers
                 string keys = signIn.username.ToString() + "_" + "count";
 
                 var jsonss = data.StringGet(keys);
-                BanControl persons = JsonConvert.DeserializeObject<BanControl>(jsonss);
-
-                jsonss = JsonConvert.SerializeObject(persons);
-                var value = data.StringGet(keys);
-                //int news = Convert.ToInt32(value);
-
-                if (persons.Count >= 5)
+                if (jsonss.IsNull==false)/*jsonss dolu*/
                 {
-                    return BadRequest("Lütfen 15 dakika sonra tekrar deneyin.");
+                    BanControl persons = JsonConvert.DeserializeObject<BanControl>(jsonss);
+
+                    jsonss = JsonConvert.SerializeObject(persons);
+                    var value = data.StringGet(keys);
+                    //int news = Convert.ToInt32(value);
+
+                    if (persons.Count >= 5)
+                    {
+                        return BadRequest("Lütfen 15 dakika sonra tekrar deneyin.");
+                    }
                 }
-
-
-
+                
                 int userid = 0;
                 if (user.UserType == 1)
                 {
@@ -198,17 +199,19 @@ namespace AntalyaTaksiAccount.Controllers
                 string keys = signIn.Phone.ToString() + "_" + "count";
 
                 var jsonss = data.StringGet(keys);
-                BanControl persons = JsonConvert.DeserializeObject<BanControl>(jsonss);
-
-                jsonss = JsonConvert.SerializeObject(persons);
-                var value = data.StringGet(keys);
-                //int news = Convert.ToInt32(value);
-
-                if (persons.Count >= 5)
+                if (jsonss.IsNull == false)
                 {
-                    return BadRequest("Lütfen 15 dakika sonra tekrar deneyin.");
-                }
+                    BanControl persons = JsonConvert.DeserializeObject<BanControl>(jsonss);
 
+                    jsonss = JsonConvert.SerializeObject(persons);
+                    var value = data.StringGet(keys);
+                    //int news = Convert.ToInt32(value);
+
+                    if (persons.Count >= 5)
+                    {
+                        return BadRequest("Lütfen 15 dakika sonra tekrar deneyin.");
+                    }
+                }
                 int userid = 0;
                 if (user.UserType == 1)
                 {
