@@ -18,9 +18,9 @@ namespace AntalyaTaksiAccount.Controllers
     {
         private readonly ATAccountContext _aTAccountContext;
         private readonly ILogger<AllUserController> _logger;
-        private readonly DriverNodeService _driverNodeService;
+        private readonly DriverNodeServiceOld _driverNodeService;
 
-        public AllUserController(ILogger<AllUserController> logger, ATAccountContext aTAccountContext, DriverNodeService driverNodeService)
+        public AllUserController(ILogger<AllUserController> logger, ATAccountContext aTAccountContext, DriverNodeServiceOld driverNodeService)
         {
             _logger = logger;
             _aTAccountContext = aTAccountContext;

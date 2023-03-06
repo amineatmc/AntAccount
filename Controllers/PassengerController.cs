@@ -19,9 +19,9 @@ namespace AntalyaTaksiAccount.Controllers
     {
 
         private readonly ATAccountContext _context;
-        private readonly DriverNodeService _driverNodeService;
+        private readonly DriverNodeServiceOld _driverNodeService;
 
-        public PassengerController(ATAccountContext context, DriverNodeService driverNodeService)
+        public PassengerController(ATAccountContext context, DriverNodeServiceOld driverNodeService)
         {
             _context = context;
             _driverNodeService = driverNodeService;

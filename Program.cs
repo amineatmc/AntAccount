@@ -15,6 +15,7 @@ using AspNet.Security.OAuth.Apple;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using System.Security.Claims;
+using AntalyaTaksiAccount.Services.AntalyaTaksiAccount.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +28,7 @@ builder.Services.AddSingleton<EnvironmentDetermination>(environmentDetermination
 builder.Services.AddControllers(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 builder.Services.AddDbContext<ATAccountContext>();
 
-builder.Services.AddHttpClient<DriverNodeService>();
+builder.Services.AddHttpClient<DriverNodeServiceOld>();
 
 builder.Services.AddAuthentication(options =>
 {
