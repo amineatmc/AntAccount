@@ -20,9 +20,9 @@ namespace AntalyaTaksiAccount.Controllers
     public class StationsController : ControllerBase
     {
         private readonly ATAccountContext _context;
-        private readonly DriverNodeServiceOld _driverNodeService;
+        private readonly DriverNodeService _driverNodeService;
 
-        public StationsController(ATAccountContext context, DriverNodeServiceOld driverNodeService)
+        public StationsController(ATAccountContext context, DriverNodeService driverNodeService)
         {
             _context = context;
             _driverNodeService = driverNodeService;
