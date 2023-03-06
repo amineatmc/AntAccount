@@ -198,19 +198,12 @@ namespace AntalyaTaksiAccount.Controllers
         [HttpGet]
         public async Task SignInApple()
         {
+            var uri = Url.Action(nameof(HandleAppleLogin), null, null, Request.Scheme.Replace("http", "https"), "antalyataksiaccount.iposmobil.com.tr");
             await HttpContext.ChallengeAsync(AppleAuthenticationDefaults.AuthenticationScheme, new AuthenticationProperties()
             {
-                RedirectUri = Url.Action(nameof(HandleAppleLogin), null, null, Request.Scheme.Replace("http", "https"), "antalyataksiaccount.iposmobil.com.tr")
+                RedirectUri = Url.Action(nameof(HandleAppleLogin))
             });
 
-            //var uri = Url.Action(nameof(HandleAppleLogin), null, null, Request.Scheme.Replace("http", "https"), "antalyataksiaccount.iposmobil.com.tr");
-            //var properties = new AuthenticationProperties
-            //{
-            //    RedirectUri = Url.Action(nameof(HandleAppleLogin), null, null, Request.Scheme.Replace("http","https"), "antalyataksiaccount.iposmobil.com.tr")
-            //};
-
-
-            //return Challenge(properties, AppleAuthenticationDefaults.AuthenticationScheme);
         }
         [AllowAnonymous]
         [Route("AppleLogin/handle")]
