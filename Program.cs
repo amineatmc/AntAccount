@@ -114,6 +114,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "dene", policy =>
     {
         policy.WithOrigins("https://anttaxi.mobilulasim.com").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        policy.WithOrigins("https://anttaxi.iposmobil.com.tr").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
     });
 });
 builder.Services.AddHealthChecks()
