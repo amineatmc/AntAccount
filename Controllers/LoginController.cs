@@ -16,6 +16,7 @@ using StackExchange.Redis;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace AntalyaTaksiAccount.Controllers
 {
@@ -66,8 +67,54 @@ namespace AntalyaTaksiAccount.Controllers
                 }
                 if (user == null)
                 {
+                    var db = _connectionMultiplexer.GetDatabase(4);
+                    string key = signIn.username.ToString() + "_" + "count";
+                    var jsonsd = db.StringGet(key);
+                    if (jsonsd.IsNull == true)
+                    {
+                        BanControl obj = new BanControl()
+                        {
+                            Count = 0,
+                            DateTime = DateTime.Now,
+                        };
+                        string json = JsonConvert.SerializeObject(obj);
+                        var set = db.StringSet(key, json);
+                    }
+
+                    var jsons = db.StringGet(key);
+                    BanControl person = JsonConvert.DeserializeObject<BanControl>(jsons);
+                    person.Count++;
+                    jsons = JsonConvert.SerializeObject(person);
+                    db.StringSet(key, jsons);
+
+                    if (person.Count >= 5)
+                    {
+                        db.KeyExpire(key, DateTime.Now.AddMinutes(10));
+                        return BadRequest("Lütfen 15 dakika sonra tekrar deneyin.");
+                    }
+
                     return BadRequest("Mail or Password is invalid");
                 }
+
+
+
+                var data = _connectionMultiplexer.GetDatabase(4);
+                string keys = signIn.username.ToString() + "_" + "count";
+
+                var jsonss = data.StringGet(keys);
+                BanControl persons = JsonConvert.DeserializeObject<BanControl>(jsonss);
+
+                jsonss = JsonConvert.SerializeObject(persons);
+                var value = data.StringGet(keys);
+                //int news = Convert.ToInt32(value);
+
+                if (persons.Count >= 5)
+                {
+                    return BadRequest("Lütfen 15 dakika sonra tekrar deneyin.");
+                }
+
+
+
                 int userid = 0;
                 if (user.UserType == 1)
                 {
@@ -117,7 +164,49 @@ namespace AntalyaTaksiAccount.Controllers
 
                 if (user == null)
                 {
+                    var db = _connectionMultiplexer.GetDatabase(4);
+                    string key = signIn.Phone.ToString() + "_" + "count";
+                    var jsonsd = db.StringGet(key);
+                    if (jsonsd.IsNull == true)
+                    {
+                        BanControl obj = new BanControl()
+                        {
+                            Count = 0,
+                            DateTime = DateTime.Now,
+                            //BannedTime= DateTime.Now,
+                        };
+                        string json = JsonConvert.SerializeObject(obj);
+                        var set = db.StringSet(key, json);
+                    }
+
+
+                    var jsons = db.StringGet(key);
+                    BanControl person = JsonConvert.DeserializeObject<BanControl>(jsons);
+                    person.Count++;
+                    jsons = JsonConvert.SerializeObject(person);
+                    db.StringSet(key, jsons);
+
+                    if (person.Count >= 5)
+                    {
+                        db.KeyExpire(key, DateTime.Now.AddMinutes(10));
+                        return BadRequest("Lütfen 15 dakika sonra tekrar deneyin.");
+                    }
                     return BadRequest("Phone or Password is invalid");
+                }
+
+                var data = _connectionMultiplexer.GetDatabase(4);
+                string keys = signIn.Phone.ToString() + "_" + "count";
+
+                var jsonss = data.StringGet(keys);
+                BanControl persons = JsonConvert.DeserializeObject<BanControl>(jsonss);
+
+                jsonss = JsonConvert.SerializeObject(persons);
+                var value = data.StringGet(keys);
+                //int news = Convert.ToInt32(value);
+
+                if (persons.Count >= 5)
+                {
+                    return BadRequest("Lütfen 15 dakika sonra tekrar deneyin.");
                 }
 
                 int userid = 0;
