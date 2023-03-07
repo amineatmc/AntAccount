@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using System.Security.Claims;
 using AntalyaTaksiAccount.Services.AntalyaTaksiAccount.Services;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,22 +65,25 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
 })
+.AddOAuth("Apple", options =>
+{
+    options.ClientId = "tr.antalyataksiyolcu.ios";
+    options.ClientSecret = "AntalyaTaksiYolcu";
+    options.CallbackPath = new PathString("/signin-apple");
+    options.AuthorizationEndpoint = "https://appleid.apple.com/auth/authorize";
+    options.TokenEndpoint = "https://appleid.apple.com/auth/token";
+    options.UserInformationEndpoint = "https://appleid.apple.com/v1/userinfo";
+    //options.Scope.Add("email");
+    //options.Scope.Add("name");
+    options.SaveTokens = true;
+    options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
+    options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
+    options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
+});
 
-    .AddApple(options =>
-    {
-        options.ClientId = "tr.antalyataksiyolcu.ios";
-        options.KeyId = "7CCQN8SGV5";
-        options.TeamId = "GHDACT2N29";
-        options.ClientSecret = "AntalyaTaksiYolcu";
-        options.ReturnUrlParameter = "https://antalyataksiaccount.azurewebsites.net/api/Login/AppleLogin/handle";
-        options.CallbackPath = "/api/Login/AppleLogin/handle";
-        options.AuthorizationEndpoint = "https://appleid.apple.com/auth/authorize";
-        options.TokenEndpoint = "https://appleid.apple.com/auth/token";
-        options.UserInformationEndpoint = "https://appleid.apple.com/v1/users/self";
-    });
 
 
 #endregion
