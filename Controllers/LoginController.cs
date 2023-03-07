@@ -285,12 +285,10 @@ namespace AntalyaTaksiAccount.Controllers
         //    return Challenge(properties, AppleAuthenticationDefaults.AuthenticationScheme);
         //}
         [AllowAnonymous]
-        [Route("AppleLogin")]
-        [RequireHttps]
-        [HttpGet]
+        [HttpGet("AppleLogin")]
         public async Task SignInApple()
         {
-            var uri = Url.Action(nameof(HandleAppleLogin), null, null, Request.Scheme.Replace("http", "https"), "antalyataksiaccount.iposmobil.com.tr");
+
             await HttpContext.ChallengeAsync(AppleAuthenticationDefaults.AuthenticationScheme, new AuthenticationProperties()
             {
                 RedirectUri = Url.Action(nameof(HandleAppleLogin))
@@ -298,29 +296,28 @@ namespace AntalyaTaksiAccount.Controllers
 
         }
         [AllowAnonymous]
-        [Route("AppleLogin/handle")]
-        [HttpGet]
+        [HttpGet("HandleAppleLogin")]
         public async Task<ActionResult<string>> HandleAppleLogin()
         {
             try
             {
                 var authenticateResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                var claims = authenticateResult.Principal.Claims.ToList();
+                var claims = authenticateResult.Principal.Claims;
+                var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
                 Models.DummyModels.SignIn signIn = new SignIn();
-                signIn.username = claims[4].Value;
+                signIn.username = email;
                 signIn.OtherAuthentication = true;
                 return await LoginUser(signIn);
             }
             catch (Exception ex)
             {
 
-                 return BadRequest(ex.Message);
+                return BadRequest(ex.Message);
             }
-           
-           
+
+
 
         }
-
 
         [HttpGet("GoogleResponse")]
         public async Task<ActionResult<string>> GoogleResponse()
