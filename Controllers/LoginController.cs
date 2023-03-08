@@ -75,21 +75,21 @@ namespace AntalyaTaksiAccount.Controllers
                         BanControl obj = new BanControl()
                         {
                             Count = 0,
-                            DateTime = DateTime.Now,
+                            DateTime = DateTime.Now.AddMinutes(10),
                         };
+                        db.KeyExpire(key, DateTime.Now.AddMinutes(10));
                         string json = JsonConvert.SerializeObject(obj);
                         var set = db.StringSet(key, json);
                     }
 
                     var jsons = db.StringGet(key);
                     BanControl person = JsonConvert.DeserializeObject<BanControl>(jsons);
-                    person.Count++;
+                    person.Count++;                    
                     jsons = JsonConvert.SerializeObject(person);
                     db.StringSet(key, jsons);
 
                     if (person.Count >= 5)
-                    {
-                        db.KeyExpire(key, DateTime.Now.AddMinutes(10));
+                    {                      
                         return BadRequest("Lütfen 15 dakika sonra tekrar deneyin.");
                     }
 
@@ -173,13 +173,12 @@ namespace AntalyaTaksiAccount.Controllers
                         BanControl obj = new BanControl()
                         {
                             Count = 0,
-                            DateTime = DateTime.Now,
-                            //BannedTime= DateTime.Now,
+                            DateTime = DateTime.Now.AddMinutes(10),                          
                         };
+                        db.KeyExpire(key, DateTime.Now.AddMinutes(10));
                         string json = JsonConvert.SerializeObject(obj);
                         var set = db.StringSet(key, json);
                     }
-
 
                     var jsons = db.StringGet(key);
                     BanControl person = JsonConvert.DeserializeObject<BanControl>(jsons);
@@ -188,8 +187,7 @@ namespace AntalyaTaksiAccount.Controllers
                     db.StringSet(key, jsons);
 
                     if (person.Count >= 5)
-                    {
-                        db.KeyExpire(key, DateTime.Now.AddMinutes(10));
+                    {                      
                         return BadRequest("Lütfen 15 dakika sonra tekrar deneyin.");
                     }
                     return BadRequest("Phone or Password is invalid");
@@ -202,11 +200,9 @@ namespace AntalyaTaksiAccount.Controllers
                 if (jsonss.IsNull == false)
                 {
                     BanControl persons = JsonConvert.DeserializeObject<BanControl>(jsonss);
-
                     jsonss = JsonConvert.SerializeObject(persons);
                     var value = data.StringGet(keys);
-                    //int news = Convert.ToInt32(value);
-
+                   
                     if (persons.Count >= 5)
                     {
                         return BadRequest("Lütfen 15 dakika sonra tekrar deneyin.");
