@@ -11,9 +11,8 @@ using StackExchange.Redis;
 using System.Text;
 using Serilog;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using AspNet.Security.OAuth.Apple;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.OAuth;
+using Indice.AspNetCore.Authentication.Apple;
 using System.Security.Claims;
 using AntalyaTaksiAccount.Services.AntalyaTaksiAccount.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -65,25 +64,33 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddOAuth("Apple", options =>
+}).AddOpenIdConnect(AppleDefaults.AuthenticationScheme, options =>
 {
-    options.ClientId = "tr.antalyataksiyolcu.ios";
-    options.ClientSecret = "AntalyaTaksiYolcu";
-    options.CallbackPath = new PathString("/signin-apple");
-    options.AuthorizationEndpoint = "https://appleid.apple.com/auth/authorize";
-    options.TokenEndpoint = "https://appleid.apple.com/auth/token";
-    options.UserInformationEndpoint = "https://appleid.apple.com/v1/userinfo";
-    //options.Scope.Add("email");
-    //options.Scope.Add("name");
-    options.SaveTokens = true;
-    options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
-    options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
-    options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
-});
+    options.Authority = "https://appleid.apple.com"; // disco doc: https://appleid.apple.com/.well-known/openid-configuration
 
+    options.ClientId = "tr.antalyataksiyolcu.ios"; // Service ID
+    options.CallbackPath = "/signin-apple"; // corresponding to your redirect URI
+
+    options.ResponseType = "code id_token"; // hybrid flow due to lack of PKCE support
+    options.ResponseMode = "form_post"; // form post due to prevent PII in the URL
+    options.DisableTelemetry = true;
+
+    options.Scope.Clear(); // apple does not support the profile scope
+    options.Scope.Add("openid");
+    options.Scope.Add("email");
+    options.Scope.Add("name");
+
+    // custom client secret generation - secret can be re-used for up to 6 months
+    options.Events.OnAuthorizationCodeReceived = context =>
+    {
+        context.TokenEndpointRequest.ClientSecret = JwtTokenGenerator.CreateNewToken();
+        return Task.CompletedTask;
+    };
+
+    options.UsePkce = false; // apple does not currently support PKCE (April 2021)
+});
 
 
 #endregion
