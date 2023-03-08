@@ -76,12 +76,12 @@ namespace AntalyaTaksiAccount.Utils
 
         public static string CreateNewToken()
         {
-            const string iss = "62QM29578N"; // your accounts team ID found in the dev portal
+            const string iss = "GHDACT2N29"; // your accounts team ID found in the dev portal
             const string aud = "https://appleid.apple.com";
-            const string sub = "com.scottbrady91.authdemo.service"; // same as client_id
+            const string sub = "tr.antalyataksiyolcu.ios"; // same as client_id
             var now = DateTime.UtcNow;
 
-            const string privateKey = "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgnbfHJQO9feC7yKOenScNctvHUP+Hp3AdOKnjUC3Ee9GgCgYIKoZIzj0DAQehRANCAATMgckuqQ1MhKALhLT/CA9lZrLA+VqTW/iIJ9GKimtC2GP02hCc5Vac8WuN6YjynF3JPWKTYjg2zqex5Sdn9Wj+";
+            const string privateKey = "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgHtc5aplTMSMV6admyqNpImfrjJdqoTdKkpF6V6x2HuSgCgYIKoZIzj0DAQehRANCAATObUghCLKRpUScA5rDz0jDo5lbdnVqhfBwEjM8AIO8E50FbOqmymv31bMyCLE5vn5fR9F3dewDE1UUOTubFP9z";
             var ecdsa = ECDsa.Create();
             ecdsa?.ImportPkcs8PrivateKey(Convert.FromBase64String(privateKey), out _);
 

@@ -1,9 +1,9 @@
 ﻿using AntalyaTaksiAccount.Models;
 using AntalyaTaksiAccount.Models.DummyModels;
 using AntalyaTaksiAccount.Utils;
-using AspNet.Security.OAuth.Apple;
 using AntalyaTaksiAccount.ValidationRules;
 using Azure.Core.Serialization;
+using Indice.AspNetCore.Authentication.Apple;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -249,47 +249,13 @@ namespace AntalyaTaksiAccount.Controllers
                 RedirectUri = Url.Action("GoogleResponse")
             });
         }
-        //[HttpGet("Login2")]
-        //public async Task<IActionResult> Login2()
-        //{
-        //    //await HttpContext.ChallengeAsync(AppleAuthenticationDefaults.AuthenticationScheme, new AuthenticationProperties()
-        //    //{
-        //    //    RedirectUri = Url.Action(nameof(HandleAppleLogin))
-        //    //}) ;
-        //    return Challenge(new AuthenticationProperties { RedirectUri = "/AppleLogin" }, AppleAuthenticationDefaults.AuthenticationScheme);
-        //}
-
-        //[HttpGet("AppleLogin")]
-        //public async Task<ActionResult<string>> AppleLogin()
-        //{
-        //    var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        //    var email = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
-        //    var username = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
-
-        //    Models.DummyModels.SignIn signIn = new SignIn();
-        //    signIn.username = username;
-        //    signIn.OtherAuthentication = true;
-        //    return await LoginUser(signIn);
-
-        //}
-        //[AllowAnonymous]
-        //[Route("AppleLogin")]
-        //[HttpGet]
-        //public IActionResult SignInApple()
-        //{
-
-        //    var properties = new AuthenticationProperties
-        //    {
-        //        RedirectUri = ""//Url.Action(nameof(HandleAppleLogin))
-        //    };
-        //    return Challenge(properties, AppleAuthenticationDefaults.AuthenticationScheme);
-        //}
+      
         [AllowAnonymous]
         [HttpGet("AppleLogin")]
         public async Task SignInApple()
         {
 
-            await HttpContext.ChallengeAsync(AppleAuthenticationDefaults.AuthenticationScheme, new AuthenticationProperties()
+            await HttpContext.ChallengeAsync(AppleDefaults.AuthenticationScheme, new AuthenticationProperties()
             {
                 RedirectUri = Url.Action(nameof(HandleAppleLogin))
             });
