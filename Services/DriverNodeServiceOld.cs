@@ -107,6 +107,22 @@ namespace AntalyaTaksiAccount.Services
 
                 return deletePassengerResult.IsSuccessStatusCode;
             }
+
+            public async Task<bool> UpdateDriver(int driverId, int stationId)
+            {
+                AddJwtToken();
+
+                DriverUpdateNode driverNode = new DriverUpdateNode
+                {
+
+                    stationId = stationId
+                };
+                var sendDriverResult = await _httpClient.PatchAsJsonAsync("/drivers/update/"+driverId ,driverNode);
+              
+                string message = await sendDriverResult.Content.ReadAsStringAsync();
+                return sendDriverResult.IsSuccessStatusCode;
+            }
+
         }
 
         public class DriverNode
@@ -128,6 +144,11 @@ namespace AntalyaTaksiAccount.Services
         {
             public int userId { get; set; }
             public int allUserId { get; set; }
+        }
+
+        public class DriverUpdateNode
+        {          
+            public int stationId { get; set; }         
         }
 
     }

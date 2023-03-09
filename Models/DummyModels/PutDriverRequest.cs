@@ -11,6 +11,7 @@
         public DateTime? BirthDay { get;  set; }
         public bool? Pet { get;  set; }
         public bool? Penalty { get;  set; }
+        public int? StationID { get; set; }
         public string? IDNo { get;  set; }
     }
 }

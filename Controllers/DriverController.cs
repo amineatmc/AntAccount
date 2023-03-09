@@ -407,17 +407,16 @@ namespace AntalyaTaksiAccount.Controllers
             }
             if (putDriverRequest.Penalty != null)
             {
-
-
                 driver.Penalty = putDriverRequest.Penalty.Value;
             }
             if (putDriverRequest.IDNo != null)
             {
-
                 driver.IdNo = putDriverRequest.IDNo;
             }
-
-          
+            if (putDriverRequest.StationID != null)
+            {
+                driver.StationID = Convert.ToInt32(putDriverRequest.StationID);
+            }
 
             if (driver.AllUser.Name != null && driver.AllUser.Name != "")
             {
@@ -440,6 +439,11 @@ namespace AntalyaTaksiAccount.Controllers
 
             await _aTAccountContext.SaveChangesAsync();
 
+            bool resultOfNodeService = await _driverNodeService.UpdateDriver(id, Convert.ToInt32(putDriverRequest.StationID));
+            if (!resultOfNodeService)
+            {
+                //TODO Add POlly for this logic. 
+            }
 
             return Ok();
         }
