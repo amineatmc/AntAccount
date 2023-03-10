@@ -87,6 +87,7 @@ namespace AntalyaTaksiAccount.Controllers
                     person.Count++;                    
                     jsons = JsonConvert.SerializeObject(person);
                     db.StringSet(key, jsons);
+                    db.KeyExpire(key, DateTime.Now.AddMinutes(10));
 
                     if (person.Count >= 5)
                     {                      
@@ -173,11 +174,12 @@ namespace AntalyaTaksiAccount.Controllers
                         BanControl obj = new BanControl()
                         {
                             Count = 0,
-                            DateTime = DateTime.Now.AddMinutes(10),                          
+                            DateTime = DateTime.Now,                          
                         };
-                        db.KeyExpire(key, DateTime.Now.AddMinutes(10));
                         string json = JsonConvert.SerializeObject(obj);
                         var set = db.StringSet(key, json);
+                        db.KeyExpire(key, DateTime.Now.AddSeconds(900));
+
                     }
 
                     var jsons = db.StringGet(key);
@@ -185,6 +187,7 @@ namespace AntalyaTaksiAccount.Controllers
                     person.Count++;
                     jsons = JsonConvert.SerializeObject(person);
                     db.StringSet(key, jsons);
+                    db.KeyExpire(key, DateTime.Now.AddSeconds(900));
 
                     if (person.Count >= 5)
                     {                      
